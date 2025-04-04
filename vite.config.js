@@ -19,6 +19,6 @@ export default defineConfig({
   },
   server: {
     host: '0.0.0.0', // Force Vite to use localhost
-    port: 8082,        // Keep your desired port
+    port: 8081,        // Keep your desired port
   },
 });

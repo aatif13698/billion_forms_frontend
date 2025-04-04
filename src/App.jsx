@@ -9,7 +9,10 @@ const SignUp = lazy(() => import("../src/pages/signup/SignUp"));
 const Home = lazy(() => import("../src/pages/home/Home"));
 const CreateCustomField = lazy(() => import("../src/pages/demo/customField/CreateCustomField"));
 const CreateCompany = lazy(() => import("../src/pages/company/CreateCompany"));
-const CreateClients = lazy(() => import("../src/pages/clients/CreateClients"))
+const CreateClients = lazy(() => import("../src/pages/clients/CreateClients"));
+const ListClients = lazy(() => import("../src/pages/clients/ListClients"));
+const NotFound = lazy(() => import("../src/pages/404NotFound/NotFound"));
+const ListCompany = lazy(() => import("../src/pages/company/ListCompany"))
 
 // import Home from "./pages/home/Home";
 import useDarkmode from "./Hooks/useDarkMode";
@@ -56,13 +59,17 @@ export default function App() {
           <Route path="/signup" element={<SignUp />} />
 
           <Route path="/" element={<Layout />}>
-            <Route path="home" element={<Home />} />
+            <Route path="home1" element={<Home />} />
             <Route path="createCustomField" element={<CreateCustomField />} />
-            <Route path="company" element={<CreateCompany />} />
-            <Route path="clients" element={<CreateClients />} />
-            
+            <Route path="create/company" element={<CreateCompany />} />
+            <Route path="list/company" element={<ListCompany />} />
+            <Route path="create/clients" element={<CreateClients />} />
+            <Route path="list/clients" element={<ListClients />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
         </Route>
+
+
       </Routes>
     </main>
   );

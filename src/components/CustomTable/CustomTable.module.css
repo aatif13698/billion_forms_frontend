@@ -1,0 +1,103 @@
+/* src/components/CustomTable/CustomTable.module.css */
+.tableContainer {
+    width: 100%;
+    margin: 20px 0;
+  }
+  
+  .tableWrapper {
+    overflow-x: auto;
+    /* border: 1px solid #ddd; */
+    border-radius: 4px;
+  }
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .table tbody {
+
+    border: 1px solid #ddd;
+
+
+  }
+  
+  .table th {
+    background: var(--header-bg);
+    color: var(--header-color);
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+  }
+  
+  .table td {
+    background: var(--row-bg);
+    color: var(--row-color) !important;
+    padding: 10px 15px;
+    border-top: 1px solid #eee;
+  }
+  
+  .table tr:nth-child(even) td {
+    background: var(--alternate-row-bg);
+  }
+  
+  .loadingCell {
+    text-align: center;
+    padding: 20px !important;
+  }
+  
+  .loader {
+    animation: pulse 1.5s infinite;
+  }
+  
+  .noData {
+    text-align: center;
+    padding: 20px !important;
+    color: var(--nodata-color) !important;
+  }
+  
+  .pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: transparent;
+    /* border-top: 1px solid #eee; */
+  }
+  
+  .rowsPerPage {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .rowsPerPage select {
+    /* padding: 5px; */
+    border-radius: 4px;
+    border: 1px solid #ddd;
+  }
+
+  .pageControls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .pageControls button {
+    /* padding: 5px 10px; */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    /* color: var(--nodata-color) !important; */
+    cursor: pointer;
+  }
+  
+  .pageControls button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  @keyframes pulse {
+    0% { opacity: 0.4; }
+    50% { opacity: 1; }
+    100% { opacity: 0.4; }
+  }

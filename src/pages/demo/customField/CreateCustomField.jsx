@@ -51,6 +51,34 @@ const CreateCustomField = ({ onFieldCreated }) => {
     { value: 'video/mp4', label: 'MP4 Video (.mp4)' }
   ];
 
+  const customStyles = {
+    control: (provided) => ({
+      ...provided,
+      backgroundColor: "transparent",
+      borderColor: "#ccc",
+    }),
+    input: (provided) => ({
+      ...provided,
+      backgroundColor: "transparent",
+      color: "#000",
+    }),
+    singleValue: (provided) => ({
+      ...provided,
+      color: "#000",
+    }),
+    menu: (provided) => ({
+      ...provided,
+      backgroundColor: "#333", // Dropdown background color
+    }),
+    option: (provided, { isFocused, isSelected }) => ({
+      ...provided,
+      backgroundColor: isSelected ? "#555" : isFocused ? "#444" : "transparent", // Option background color
+      color: isSelected ? "#fff" : "#ddd", // Text color for options
+      cursor: "pointer",
+    })
+  };
+
+
   // Fetch existing fields on component mount
   useEffect(() => {
     const fetchFields = async () => {
@@ -285,32 +313,32 @@ const CreateCustomField = ({ onFieldCreated }) => {
 
   return (
     <>
-      <div className="max-w-2xl mx-auto p-6 ">
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-2xl font-bold mb-6 text-gray-800">Create Custom Field</h2>
+      <div className="max-w-2xl mx-auto my-3 ">
+        <div className="bg-cardBgLight dark:bg-cardBgDark rounded-lg shadow-md p-6 mb-6">
+          <h2 className="text-2xl font-bold mb-6 text-formHeadingLight dark:text-formHeadingDark">Create Custom Field</h2>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Field Name</label>
+                <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Field Name</label>
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="w-[100%] p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-[100%] bg-transparent  p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="e.g., emergencyContact"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Label</label>
+                <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Label</label>
                 <input
                   type="text"
                   name="label"
                   value={formData.label}
                   onChange={handleChange}
                   required
-                  className="w-[100%] p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-[100%] bg-transparent p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="e.g., Emergency Contact"
                 />
               </div>
@@ -318,25 +346,26 @@ const CreateCustomField = ({ onFieldCreated }) => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Type</label>
                 <Select
                   options={fieldTypes}
                   value={fieldTypes.find(opt => opt.value === formData.type)}
                   onChange={(selected) => handleSelectChange('type', selected)}
-                  className="basic-single"
+                  className="basic-single "
                   classNamePrefix="select"
+                  styles={customStyles}
                   required
                 />
               </div>
               {['text', 'number', 'email', 'textarea', 'hyperlink'].includes(formData.type) && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Placeholder</label>
+                  <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Placeholder</label>
                   <input
                     type="text"
                     name="placeholder"
                     value={formData.placeholder}
                     onChange={handleChange}
-                    className="w-[100%] p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-[100%] bg-transparent p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="e.g., Enter your email"
                   />
                 </div>
@@ -345,13 +374,13 @@ const CreateCustomField = ({ onFieldCreated }) => {
 
             {(formData.type === 'select' || formData.type === 'multiselect') && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Options</label>
+                <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Options</label>
                 <div className="flex gap-2 mb-2">
                   <input
                     type="text"
                     value={optionInput}
                     onChange={(e) => setOptionInput(e.target.value)}
-                    className="flex-1 p-2 border border-gray-300 rounded-md"
+                    className="flex-1 bg-transparent p-2 border border-gray-300 rounded-md"
                     placeholder="Add an option"
                   />
                   <button
@@ -381,24 +410,24 @@ const CreateCustomField = ({ onFieldCreated }) => {
 
             {formData.type === 'file' && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Accepted File Types</label>
+                <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Accepted File Types</label>
                 <Select
                   isMulti
                   options={commonFileTypes}
                   value={commonFileTypes.filter(opt => formData.validation.fileTypes.includes(opt.value))}
                   onChange={handleFileTypesChange}
-                  className="basic-multi-select"
+                  className="basic-multi-select bg-transparent"
                   classNamePrefix="select"
                   placeholder="Select file types..."
                 />
                 <div className="mt-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Custom File Type</label>
+                  <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Custom File Type</label>
                   <div className="flex gap-2">
                     <input
                       type="text"
                       value={fileTypeInput}
                       onChange={(e) => setFileTypeInput(e.target.value)}
-                      className="flex-1 p-2 border border-gray-300 rounded-md"
+                      className="flex-1 bg-transparent p-2 border border-gray-300 rounded-md"
                       placeholder="e.g., image/x-icon"
                     />
                     <button
@@ -425,13 +454,13 @@ const CreateCustomField = ({ onFieldCreated }) => {
                   ))}
                 </div>
                 <div className="mt-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Max File Size (bytes)</label>
+                  <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Max File Size (bytes)</label>
                   <input
                     type="number"
                     name="validation.maxSize"
                     value={formData.validation.maxSize}
                     onChange={handleChange}
-                    className="w-[100%] p-2 border border-gray-300 rounded-md"
+                    className="w-[100%] bg-transparent p-2 border border-gray-300 rounded-md"
                     placeholder="e.g., 5242880 (5MB)"
                   />
                 </div>
@@ -446,12 +475,12 @@ const CreateCustomField = ({ onFieldCreated }) => {
                 onChange={handleChange}
                 className="h-5 w-5 text-blue-600"
               />
-              <label className="text-sm font-medium text-gray-700">Required Field</label>
+              <label className="text-sm font-medium text-formLabelLight dark:text-formLabelDark">Required Field</label>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Grid Span (1-12)</label>
+                <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Grid Span (1-12)</label>
                 <input
                   type="number"
                   name="gridConfig.span"
@@ -460,11 +489,11 @@ const CreateCustomField = ({ onFieldCreated }) => {
                   min="1"
                   max="12"
                   required
-                  className="w-[100%] p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-[100%] bg-transparent p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Order</label>
+                <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Order</label>
                 <input
                   type="number"
                   name="gridConfig.order"
@@ -472,7 +501,7 @@ const CreateCustomField = ({ onFieldCreated }) => {
                   onChange={handleChange}
                   min="0"
                   required
-                  className="w-[100%] p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-[100%] bg-transparent p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -482,44 +511,44 @@ const CreateCustomField = ({ onFieldCreated }) => {
                 <h3 className="text-lg font-medium text-gray-800">Validation</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Regex</label>
+                    <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Regex</label>
                     <input
                       type="text"
                       name="validation.regex"
                       value={formData.validation.regex}
                       onChange={handleChange}
-                      className="w-[100%] p-2 border border-gray-300 rounded-md"
+                      className="w-[100%] bg-transparent p-2 border border-gray-300 rounded-md"
                       placeholder="e.g., ^[0-9]{10}$"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Max Length</label>
+                    <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Max Length</label>
                     <input
                       type="number"
                       name="validation.maxLength"
                       value={formData.validation.maxLength}
                       onChange={handleChange}
-                      className="w-[100%] p-2 border border-gray-300 rounded-md"
+                      className="w-[100%] bg-transparent p-2 border border-gray-300 rounded-md"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Min Value</label>
+                    <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Min Value</label>
                     <input
                       type="number"
                       name="validation.min"
                       value={formData.validation.min}
                       onChange={handleChange}
-                      className="w-[100%] p-2 border border-gray-300 rounded-md"
+                      className="w-[100%] bg-transparent p-2 border border-gray-300 rounded-md"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Max Value</label>
+                    <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Max Value</label>
                     <input
                       type="number"
                       name="validation.max"
                       value={formData.validation.max}
                       onChange={handleChange}
-                      className="w-[100%] p-2 border border-gray-300 rounded-md"
+                      className="w-[100%] bg-transparent p-2 border border-gray-300 rounded-md"
                     />
                   </div>
                 </div>
@@ -545,8 +574,8 @@ const CreateCustomField = ({ onFieldCreated }) => {
         </div>
 
         {/* Display existing and newly created fields */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h3 className="text-xl font-bold mb-4 text-gray-800">Custom Fields Preview</h3>
+        <div className="bg-cardBgLight dark:bg-cardBgDark rounded-lg shadow-md p-6 mb-6">
+          <h3 className="text-xl font-bold mb-4 text-formHeadingLight dark:text-formHeadingDark">Custom Fields Preview</h3>
           <div className="grid grid-cols-12 gap-4">
             {[...existingFields, ...createdFields]
               .sort((a, b) => a.gridConfig?.order - b.gridConfig?.order)

@@ -1,8 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import companyService from "../../services/companyService";
 import Hamberger from "../../components/Hamberger/Hamberger";
+import clientService from "../../services/clientService";
+import Select from 'react-select';
+import a from "../../helper/common"
+import { useNavigate } from "react-router-dom";
 
 function CreateCompany() {
+
+
+    const navigate = useNavigate()
     const [formData, setFormData] = useState({
         name: "",
         subDomain: "",
@@ -10,11 +17,64 @@ function CreateCompany() {
         adminPassword: "",
     });
 
+    console.log("formData",formData);
+    
+
+
+
     const [errors, setErrors] = useState({});
+    const [responseError, setResponseError] = useState([])
+
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [clientsNotSetuped, setClientsNotSetuped] = useState([])
+
+   
+
+    const emailRegex = /\S+@\S+\.\S+/;
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+        let newErrors = { ...errors };
+        if (name === "adminEmail") {
+            if (!value.trim()) {
+                newErrors.adminEmail = "Email is required";
+            } else if (!emailRegex.test(value)) {
+                newErrors.adminEmail = "Please enter a valid email address";
+            } else {
+                delete newErrors.adminEmail;
+            }
+        }
+
+        if (name == "name") {
+            if (!value.trim()) {
+                newErrors.name = "Company Name is required";
+            } else if (value.trim().length < 3) {
+                newErrors.name = "Minimum 3 characters required!";
+            } else {
+                delete newErrors.name;
+            }
+        }
+
+        if (name === "adminPassword") {
+            if (!value.trim()) {
+                newErrors.adminPassword = "Password is required";
+            } else if (!passwordRegex.test(value)) {
+                newErrors.adminPassword = "Password must be at least 8 characters long and include a letter, number, and special character";
+            } else {
+                delete newErrors.adminPassword;
+            }
+        }
+
+        if (name == "subDomain") {
+            if (value == "") {
+                newErrors.subDomain = "Sub Domain Password is Required."
+            } else {
+                delete newErrors.subDomain;
+            }
+        }
+        setErrors(newErrors);
     };
 
     const validateForm = () => {
@@ -33,22 +93,45 @@ function CreateCompany() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validateForm()) return;
-
         setIsSubmitting(true);
-
         try {
             const response = await companyService.createCompany(formData);
-
-            console.log("response company", response);
-
-
             setFormData({ name: "", subDomain: "", adminEmail: "", adminPassword: "" });
+
+            navigate("/list/company")
+            
         } catch (error) {
             console.error("Error creating company:", error);
-            alert(error.message);
+            const errorMessage = error || 'An error occurred while creating company';
+            setResponseError([errorMessage]);
+
         } finally {
             setIsSubmitting(false);
         }
+    };
+
+    useEffect(() => {
+        getClientNotSetuped()
+    }, [])
+
+    async function getClientNotSetuped() {
+        try {
+            const response = await clientService.getClientsNotSetuped();
+            const data = response?.data?.data?.user?.map(type => ({ value: type?._id, label: type?.email }));
+            setClientsNotSetuped(data);
+        } catch (error) {
+            console.log("error while getting the not setuped client");
+        }
+    }
+
+    const handleSelectChange = (selectedOptions) => {
+
+        console.log("selectedOptions", selectedOptions);
+
+        setFormData({ ...formData, ["adminEmail"]: selectedOptions?.label });
+
+        setErrors((prev) => ({ ...prev, adminEmail: "" }))
+
     };
 
     return (
@@ -60,7 +143,7 @@ function CreateCompany() {
                 <div className="h-[2px] bg-black dark:bg-white mb-4"></div>
 
 
-                <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <form  className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Name */}
                     <div>
                         <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">Company Name</label>
@@ -90,7 +173,7 @@ function CreateCompany() {
                     </div>
 
                     {/* Admin Email */}
-                    <div>
+                    {/* <div>
                         <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">Admin Email</label>
                         <input
                             type="email"
@@ -99,6 +182,20 @@ function CreateCompany() {
                             onChange={handleChange}
                             className="w-[100%] bg-transparent p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Enter admin email"
+                        />
+                        {errors.adminEmail && <p className="text-red-500 text-sm mt-1">{errors.adminEmail}</p>}
+                    </div> */}
+
+                    <div>
+                        <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">Admin Email</label>
+                        <Select
+                            options={clientsNotSetuped}
+                            className="basic-multi-select bg-transparent"
+                            classNamePrefix="select"
+                            placeholder="Select Client..."
+                            onChange={handleSelectChange}
+                            styles={a.customStyles}
+                            // isClearable={true}
                         />
                         {errors.adminEmail && <p className="text-red-500 text-sm mt-1">{errors.adminEmail}</p>}
                     </div>
@@ -119,17 +216,61 @@ function CreateCompany() {
                         )}
                     </div>
 
-                    <button
-                        type="submit"
-                        className="w-[10rem] my-3 b text-white py-2 rounded-lg hover:bg-custom-gradient-button-dark dark:hover:bg-custom-gradient-button-light transition bg-custom-gradient-button-light dark:bg-custom-gradient-button-dark"
-                        disabled={isSubmitting}
-                    >
-                        {isSubmitting ? "Submitting..." : "Create Company"}
-                    </button>
+
 
                     {/* Submit Button */}
 
                 </form>
+
+                {responseError.length > 0 && (
+                    <div className="w-[100%] mt-4 flex flex-col gap-1 p-4 bg-red-100 rounded-md">
+                        {responseError.map((error, index) => (
+                            <p key={index} className="text-red-700 text-sm">{error}</p>
+                        ))}
+                    </div>
+                )}
+
+                <div className="flex justify-end mt-3">
+
+
+                    <button
+                        onClick={handleSubmit}
+                        className="w-auto px-4 my-3 text-white py-2 rounded-lg transition-all duration-300 ease-in-out 
+                        bg-custom-gradient-button-light dark:bg-custom-gradient-button-dark 
+                        hover:bg-custom-gradient-button-dark dark:hover:bg-custom-gradient-button-light 
+                        flex items-center justify-center"                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? (
+                            <>
+                                <svg
+                                    className="animate-spin mr-2 h-5 w-5 text-white"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <circle
+                                        className="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                    ></circle>
+                                    <path
+                                        className="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                    ></path>
+                                </svg>
+                                Submitting...
+                            </>
+                        ) : (
+                            "Create Company"
+                        )}
+                    </button>
+
+                </div>
+
 
             </div>
 

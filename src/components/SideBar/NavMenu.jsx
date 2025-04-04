@@ -65,13 +65,11 @@ const NavMenu = ({ isCollapsed }) => {
                     [
                         {
                             title: "Dashboard",
-                            // icon: <AiOutlineDashboard className="w-6 h-6" />,
                             icon: AiOutlineDashboard,
                             link: "/home",
                         },
                         {
                             title: "Organisation",
-                            // icon: <FaRegBuilding className="w-6 h-6" />,
                             icon: FaRegBuilding,
                             link: "/home",
                         },
@@ -82,21 +80,18 @@ const NavMenu = ({ isCollapsed }) => {
                         },
                         {
                             title: "Clients",
-                            // icon: <FaRegBuilding className="w-6 h-6" />,
                             icon: FaUserCheck,
-                            link: "/clients",
+                            link: "/list/clients",
                         },
                         {
                             title: "User",
-                            // icon: <FaRegUser className="w-6 h-6" />,
                             icon: FaUser,
                             link: "/home",
                         },
                         {
                             title: "Companies",
-                            // icon: <FaUsersViewfinder className="w-6 h-6" />,
                             icon: FaUsersViewfinder,
-                            link: "/company",
+                            link: "/list/company",
                         },
                     ]
                 )

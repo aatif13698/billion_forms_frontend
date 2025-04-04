@@ -4,8 +4,13 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import common from "../../helper/common";
 import clientService from "../../services/clientService";
 import Hamberger from "../../components/Hamberger/Hamberger";
+import { useNavigate } from "react-router-dom";
 
 function CreateClients() {
+
+    const navigate = useNavigate()
+
+
     const [formData, setFormData] = useState({
         firstName: "",
         lastName: "",
@@ -14,6 +19,9 @@ function CreateClients() {
         password: "",
         confirmPassword: ""
     });
+
+
+    const [responseError, setResponseError] = useState([])
 
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -106,7 +114,17 @@ function CreateClients() {
         if (!validateForm()) return;
         setIsSubmitting(true);
         try {
-            const response = await clientService.createClient(formData);
+
+            const dataObject = {
+                firstName: formData?.firstName,
+                lastName: formData?.lastName,
+                email: formData?.email,
+                phone: formData?.phone,
+                password: formData?.password
+            }
+
+
+            const response = await clientService.createClient(dataObject);
             setFormData({
                 firstName: "",
                 lastName: "",
@@ -116,9 +134,14 @@ function CreateClients() {
                 confirmPassword: ""
             });
             setErrors({});
+
+            navigate("/list/clients")
+
         } catch (error) {
-            console.error("Error creating client:", error);
-            alert(error.message);
+            console.log("Error creating client:", error);
+            const errorMessage = error || 'An error occurred while creating client';
+            // toast.error(errorMessage);
+            setResponseError([errorMessage]);
         } finally {
             setIsSubmitting(false);
         }
@@ -126,17 +149,11 @@ function CreateClients() {
 
     return (
         <div className="flex flex-col md:mx-4  mx-2     mt-3 min-h-screen bg-light dark:bg-dark">
-
             <Hamberger text={"Client / Add New"} />
-
-
-            <div className="w-[100%]  bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-lg p-6">
-                <h2 className="text-2xl font-semibold text-formHeadingLight dark:text-formHeadingDark mb-4 text-start">Create Client</h2>
-
+            <div className="w-[100%] mb-20  bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-lg p-6">
+                <h2 className="md:text-2xl text-1xl font-semibold text-formHeadingLight dark:text-formHeadingDark mb-4 text-start">Create Client</h2>
                 <div className="h-[1.8px] bg-black dark:bg-white mb-4"></div>
-
-                <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* First Name */}
+                <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">First Name</label>
                         <input
@@ -149,8 +166,6 @@ function CreateClients() {
                         />
                         {errors.firstName && <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>}
                     </div>
-
-                    {/* Last Name */}
                     <div>
                         <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">Last Name</label>
                         <input
@@ -163,22 +178,18 @@ function CreateClients() {
                         />
                         {errors.lastName && <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>}
                     </div>
-
-                    {/* Email */}
                     <div>
                         <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">Email</label>
                         <input
                             type="email"
                             name="email"
-                            value={formData.email} bg-transparent
+                            value={formData.email}
                             onChange={handleChange}
                             className="w-[100%]   bg-transparent p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Enter email"
                         />
                         {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                     </div>
-
-                    {/* Phone */}
                     <div>
                         <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">Phone</label>
                         <input
@@ -192,8 +203,6 @@ function CreateClients() {
                         />
                         {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
                     </div>
-
-                    {/* Password */}
                     <div className="relative">
                         <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">Password</label>
                         <input
@@ -213,8 +222,6 @@ function CreateClients() {
                         </button>
                         {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
                     </div>
-
-                    {/* Confirm Password */}
                     <div className="relative">
                         <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">Confirm Password</label>
                         <input
@@ -236,19 +243,56 @@ function CreateClients() {
                             <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>
                         )}
                     </div>
+                </form>
 
-                    {/* Submit Button */}
+                {responseError.length > 0 && (
+                    <div className="w-[100%] mt-4 flex flex-col gap-1 p-4 bg-red-100 rounded-md">
+                        {responseError.map((error, index) => (
+                            <p key={index} className="text-red-700 text-sm">{error}</p>
+                        ))}
+                    </div>
+                )}
+
+
+                <div className="flex justify-end">
                     <button
+                        onClick={handleSubmit}
                         type="submit"
-                        className="w-[8rem] my-3 text-white py-2 rounded-lg transition-all duration-300 ease-in-out 
-             bg-custom-gradient-button-light dark:bg-custom-gradient-button-dark 
-             hover:bg-custom-gradient-button-dark dark:hover:bg-custom-gradient-button-light"
+                        className="w-auto px-4 my-3 text-white py-2 rounded-lg transition-all duration-300 ease-in-out 
+    bg-custom-gradient-button-light dark:bg-custom-gradient-button-dark 
+    hover:bg-custom-gradient-button-dark dark:hover:bg-custom-gradient-button-light 
+    flex items-center justify-center"
                         disabled={isSubmitting}
                     >
-                        {isSubmitting ? "Submitting..." : "Create Client"}
+                        {isSubmitting ? (
+                            <>
+                                <svg
+                                    className="animate-spin mr-2 h-5 w-5 text-white"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <circle
+                                        className="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                    ></circle>
+                                    <path
+                                        className="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                    ></path>
+                                </svg>
+                                Submitting...
+                            </>
+                        ) : (
+                            "Create Client"
+                        )}
                     </button>
-
-                </form>
+                </div>
             </div>
         </div>
     );
