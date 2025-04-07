@@ -4,12 +4,14 @@ import Hamberger from "../../components/Hamberger/Hamberger";
 import clientService from "../../services/clientService";
 import Select from 'react-select';
 import a from "../../helper/common"
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function CreateCompany() {
+    const location = useLocation();
+    const company = location?.state?.company
+    const navigate = useNavigate();
 
-
-    const navigate = useNavigate()
+    // states
     const [formData, setFormData] = useState({
         name: "",
         subDomain: "",
@@ -17,19 +19,27 @@ function CreateCompany() {
         adminPassword: "",
     });
 
-    console.log("formData",formData);
-    
-
-
+    console.log("formData", formData);
 
     const [errors, setErrors] = useState({});
     const [responseError, setResponseError] = useState([])
-
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [clientsNotSetuped, setClientsNotSetuped] = useState([])
 
-   
+    useEffect(() => {
+        if (company) {
+            setFormData((prev) => ({
+                ...prev,
+                name: company?.name,
+                subDomain: company?.subDomain,
+                adminEmail: company?.adminEmail
+            }))
+        }
+    }, [company])
 
+
+
+    // regex
     const emailRegex = /\S+@\S+\.\S+/;
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
 
@@ -83,8 +93,15 @@ function CreateCompany() {
         if (!formData.subDomain.trim()) newErrors.subDomain = "Subdomain is required";
         if (!formData.adminEmail.trim() || !/\S+@\S+\.\S+/.test(formData.adminEmail))
             newErrors.adminEmail = "Valid email is required";
-        if (!formData.adminPassword.trim() || formData.adminPassword.length < 6)
-            newErrors.adminPassword = "Password must be at least 6 characters long";
+        if (!company) {
+            if (!formData.adminPassword.trim() || !passwordRegex.test(formData.adminPassword))
+                newErrors.adminPassword = "Password must be at least 8 characters long and include a letter, number, and special character";
+        } else {
+            if (errors?.adminPassword) {
+                if (!formData.adminPassword.trim() || !passwordRegex.test(formData.adminPassword))
+                    newErrors.adminPassword = "Password must be at least 8 characters long and include a letter, number, and special character";
+            }
+        }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -95,11 +112,17 @@ function CreateCompany() {
         if (!validateForm()) return;
         setIsSubmitting(true);
         try {
-            const response = await companyService.createCompany(formData);
+            if (company) {
+                const response = await companyService.updateCompany({ ...formData, companyId: company?._id });
+
+            } else {
+                const response = await companyService.createCompany(formData);
+
+            }
             setFormData({ name: "", subDomain: "", adminEmail: "", adminPassword: "" });
 
             navigate("/list/company")
-            
+
         } catch (error) {
             console.error("Error creating company:", error);
             const errorMessage = error || 'An error occurred while creating company';
@@ -117,7 +140,7 @@ function CreateCompany() {
     async function getClientNotSetuped() {
         try {
             const response = await clientService.getClientsNotSetuped();
-            const data = response?.data?.data?.user?.map(type => ({ value: type?._id, label: type?.email }));
+            const data = response?.data?.data?.user?.map(type => ({ value: type?.email, label: type?.email }));
             setClientsNotSetuped(data);
         } catch (error) {
             console.log("error while getting the not setuped client");
@@ -136,14 +159,14 @@ function CreateCompany() {
 
     return (
         <div className="flex flex-col md:mx-4  mx-2     mt-3 min-h-screen bg-light dark:bg-dark">
-            <Hamberger text={"Company / Add New"} />
+            <Hamberger text={`Company / ${company ? "Update" : "Add New"} `} />
             <div className="w-[100%]   bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-lg p-6">
-                <h2 className="text-2xl font-semibold text-formHeadingLight dark:text-formHeadingDark mb-4 text-start">Create Company</h2>
+                <h2 className="text-2xl font-semibold text-formHeadingLight dark:text-formHeadingDark mb-4 text-start">{`${company ? "Update" : "Create"} Company`}</h2>
 
                 <div className="h-[2px] bg-black dark:bg-white mb-4"></div>
 
 
-                <form  className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Name */}
                     <div>
                         <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">Company Name</label>
@@ -171,21 +194,6 @@ function CreateCompany() {
                         />
                         {errors.subDomain && <p className="text-red-500 text-sm mt-1">{errors.subDomain}</p>}
                     </div>
-
-                    {/* Admin Email */}
-                    {/* <div>
-                        <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">Admin Email</label>
-                        <input
-                            type="email"
-                            name="adminEmail"
-                            value={formData.adminEmail}
-                            onChange={handleChange}
-                            className="w-[100%] bg-transparent p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Enter admin email"
-                        />
-                        {errors.adminEmail && <p className="text-red-500 text-sm mt-1">{errors.adminEmail}</p>}
-                    </div> */}
-
                     <div>
                         <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">Admin Email</label>
                         <Select
@@ -195,12 +203,11 @@ function CreateCompany() {
                             placeholder="Select Client..."
                             onChange={handleSelectChange}
                             styles={a.customStyles}
-                            // isClearable={true}
+                            value={{ value: formData?.adminEmail, label: formData?.adminEmail }}
+                            isDisabled={company ? true : false}
                         />
                         {errors.adminEmail && <p className="text-red-500 text-sm mt-1">{errors.adminEmail}</p>}
                     </div>
-
-                    {/* Admin Password */}
                     <div>
                         <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">Admin Password</label>
                         <input
@@ -215,11 +222,6 @@ function CreateCompany() {
                             <p className="text-red-500 text-sm mt-1">{errors.adminPassword}</p>
                         )}
                     </div>
-
-
-
-                    {/* Submit Button */}
-
                 </form>
 
                 {responseError.length > 0 && (
@@ -236,9 +238,10 @@ function CreateCompany() {
                     <button
                         onClick={handleSubmit}
                         className="w-auto px-4 my-3 text-white py-2 rounded-lg transition-all duration-300 ease-in-out 
-                        bg-custom-gradient-button-light dark:bg-custom-gradient-button-dark 
-                        hover:bg-custom-gradient-button-dark dark:hover:bg-custom-gradient-button-light 
-                        flex items-center justify-center"                        disabled={isSubmitting}
+                bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light 
+                 hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark 
+                 flex items-center justify-center shadow-lg"
+                        disabled={isSubmitting}
                     >
                         {isSubmitting ? (
                             <>
@@ -265,7 +268,7 @@ function CreateCompany() {
                                 Submitting...
                             </>
                         ) : (
-                            "Create Company"
+                            `${company ? "Update" : "Create"} Company`
                         )}
                     </button>
 

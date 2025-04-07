@@ -6,8 +6,13 @@ import { Sidebar } from "../components/SideBar/Sidebar";
 import BottomTab from "../components/BottomTab/BottomTab";
 import Header from "../components/Header/Header";
 import MainContent from "../components/MainContent/MainContent";
+import { useLocation } from "react-router-dom";
 
 const Layout = () => {
+
+  
+
+
   const { width, breakpoints } = useWidth();
   const containerRef = useRef(null);
   const [showBottomTab, setShowBottomTab] = useState(true);
@@ -48,6 +53,8 @@ const Layout = () => {
       }
     };
   }, []);
+
+  
 
   return (
     <>

@@ -1,10 +1,15 @@
-import React, { Suspense } from 'react'
+import React, { Suspense, useEffect } from 'react'
 
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 import Header from '../Header/Header'
 import Loading from '../Loading/Loading'
 
 const MainContent = ({ isCollapsed, setIsCollapsed, toggleSidebar }) => {
+
+  
+
+
+
   return (
     <div className='w-[100%] h-full    '>
 

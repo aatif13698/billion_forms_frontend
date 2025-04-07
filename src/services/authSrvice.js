@@ -24,7 +24,7 @@ const signUp = async (data) => {
 
 const login = async (data) => {
   try {
-    const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/auth/login`, { ...data });
+    const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, { ...data });
     return response;
   } catch (error) {
     console.log("login error", error);

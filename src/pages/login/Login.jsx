@@ -226,8 +226,8 @@ const Login = ({ companyIdentifier }) => {
                                                 placeholder='Enter Email or Phone No'
                                                 onChange={handleChange}
 
-                                                className={`w-[100%] ${isDark ? "bg-inputDark text-light" : "border-2 bg-inputLight text-dark"}  p-2  rounded focus:outline-none focus:ring-2 focus:ring-cyan-100`}
-                                            />
+                                                className="w-[100%] bg-transparent p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                />
                                             <span className='text-deep-orange-400 text-sm mt-4 pb-0 mb-0'>{formDataError?.identifier}</span>
                                         </div>
 
@@ -236,7 +236,7 @@ const Login = ({ companyIdentifier }) => {
                                                 name='password'
                                                 type="password"
                                                 placeholder='Password'
-                                                className={`w-[100%] ${isDark ? "bg-inputDark text-light" : "border-2 bg-inputLight text-dark"}  p-2  rounded focus:outline-none focus:ring-2 focus:ring-cyan-100`}
+                                                className="w-[100%] bg-transparent p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                 onChange={handleChange}
                                             />
                                             <span className='text-deep-orange-400 text-sm mt-4 pb-0 mb-0'>{formDataError?.password}</span>

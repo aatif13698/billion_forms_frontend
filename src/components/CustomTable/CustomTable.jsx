@@ -17,19 +17,34 @@ function CustomTable({
     alternateRowBackground = '#fafafa',
     defaultRowsPerPage = 10,
     buttonName,
-    buttonAction
+    buttonAction,
+    updatedData,
+    currentPage,
+    setCurrentPage,
+    rowsPerPage,
+    setRowsPerPage,
+    text,
+    setText
+
+
 }) {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [rowsPerPage, setRowsPerPage] = useState(defaultRowsPerPage);
+    // const [currentPage, setCurrentPage] = useState(1);
+    // const [rowsPerPage, setRowsPerPage] = useState(defaultRowsPerPage);
     const [totalItems, setTotalItems] = useState(0);
-    const [text, setText] = useState("")
+    // const [text, setText] = useState("")
     const navigate = useNavigate();
 
     useEffect(() => {
         loadData();
     }, [currentPage, rowsPerPage]);
+
+    useEffect(() => {
+        if(updatedData && updatedData?.length > 0){
+            setData(updatedData)
+        }
+    },[updatedData])
 
     const loadData = async () => {
         try {
@@ -92,8 +107,8 @@ function CustomTable({
                 <button
                     onClick={buttonAction}
                     className="w-auto px-4 my-3 text-white py-2 rounded-lg transition-all duration-300 ease-in-out 
-                bg-custom-gradient-button-light dark:bg-custom-gradient-button-dark 
-                 hover:bg-custom-gradient-button-dark dark:hover:bg-custom-gradient-button-light 
+                bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light 
+                 hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark 
                  flex items-center justify-center shadow-lg"
                 >
                     {buttonName}
@@ -179,8 +194,8 @@ function CustomTable({
                             ) : (
                                 data?.map((row, index) => (
                                     <tr key={index}>
-                                        {columns.map((column) => (
-                                            <td key={column.key}>
+                                        {columns.map((column, index) => (
+                                            <td key={index}>
                                                 {column.render
                                                     ? column.render(row[column.key], row)
                                                     : row[column.key]}
@@ -197,8 +212,8 @@ function CustomTable({
                     <div className={styles.rowsPerPage}>
                         <span className='text-[.70rem]'>Rows per page:</span>
                         <select className='text-black dark:text-white bg-white dark:bg-cardBgDark' value={rowsPerPage} onChange={handleRowsPerPageChange}>
-                            {[5, 10, 20, 50].map((option) => (
-                                <option className='text-black dark:text-white py-1 text-[.70rem]' key={option} value={option}>
+                            {[5, 10, 20, 50].map((option, index) => (
+                                <option className='text-black dark:text-white py-1 text-[.70rem]' key={index} value={option}>
                                     {option}
                                 </option>
                             ))}
@@ -213,7 +228,7 @@ function CustomTable({
                             Previous
                         </button>
                         <span className='text-[.70rem]'>
-                            Page {currentPage} of {totalPages}
+                            Page {currentPage} of {totalPages} 
                         </span>
                         <button
                             onClick={() => handlePageChange(currentPage + 1)}
@@ -223,6 +238,14 @@ function CustomTable({
                             Next
                         </button>
                     </div>
+                </div>
+
+                <div className='flex justify-end '>
+
+                <span className='text-[.80rem] mx-4 '>
+                            Total Data - <span className='font-bold'>{totalItems} </span> 
+                        </span>
+
                 </div>
             </div>
         </>
