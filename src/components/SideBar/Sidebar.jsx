@@ -42,12 +42,12 @@ export const Sidebar = ({ isCollapsed }) => {
       {width >= breakpoints.sm && (
         <div
           className={`${sidebarWidth} ${isDark ? "" : ""
-            } h-full border-r-[0.5px] ${isDark ? "border-blue-gray-800" : "border-slate-400"
+            } h-[100%] border-r-[0.5px] ${isDark ? "border-blue-gray-800" : "border-slate-400"
             }
 
           bg-custom-gradient-sidebar
 
-            transition-all duration-300 ease-in-out`}
+            transition-all duration-300 ease-in-out overflow-y-hidden overflow-x-hidden`}
         >
           {/* Logo */}
           <Logo logoSrc={logo} to="/home" />
@@ -55,7 +55,7 @@ export const Sidebar = ({ isCollapsed }) => {
           <hr className="border-t my-3 border-gray-700" />
 
           {/* Navigation items */}
-          <SimpleBar className="px-4 w-[100%] h-[100%]  ">
+          <SimpleBar className="px-4 w-[100%]   ">
             <NavMenu isCollapsed={isCollapsed} />
           </SimpleBar>
         </div>

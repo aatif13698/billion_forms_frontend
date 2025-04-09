@@ -68,7 +68,7 @@ const Layout = () => {
 
           <Header isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} toggleSidebar={toggleSidebar} />
 
-          <div className={`h-[100%] w-[100%]  mb-14 `}>
+          <div className={`h-[100%] w-[100%]   `}>
 
             {/* main content */}
             <MainContent isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} toggleSidebar={toggleSidebar} />

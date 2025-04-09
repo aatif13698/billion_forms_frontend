@@ -27,7 +27,7 @@
     color: var(--header-color);
     padding: 12px 15px;
     text-align: left;
-    font-weight: 600;
+    font-weight: 500;
   }
   
   .table td {

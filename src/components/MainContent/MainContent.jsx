@@ -11,7 +11,7 @@ const MainContent = ({ isCollapsed, setIsCollapsed, toggleSidebar }) => {
 
 
   return (
-    <div className='w-[100%] h-full    '>
+    <div className='w-[100%] h-[100%]'>
 
       <Suspense fallback={<Loading />}>
         <Outlet />

@@ -10,10 +10,16 @@ import { RxHamburgerMenu } from "react-icons/rx";
 
 import useDarkmode from "../../Hooks/useDarkMode";
 import { FaRegUserCircle } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
 const Header = ({ isCollapsed, setIsCollapsed, toggleSidebar }) => {
     const [isDark] = useDarkmode();
     const { width, breakpoints } = useWidth();
+    const { clientUser } = useSelector((state) => state.authCustomerSlice);
+
+    console.log("clientUser",clientUser);
+    
+    
 
 
     useEffect(() => {
@@ -154,7 +160,7 @@ const Header = ({ isCollapsed, setIsCollapsed, toggleSidebar }) => {
                             <span className="">
                                 <FaRegUserCircle className={` text-lg ${isDark ? "text-white" : "text-white"} w-5 h-5` } />
                             </span>
-                            <span className="text-white">Super Admin</span>
+                            <span className="text-white">{clientUser?.firstName + " " + clientUser?.lastName}</span>
                         </div>
                     </div>
                 </div>

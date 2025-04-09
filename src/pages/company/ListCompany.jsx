@@ -28,7 +28,8 @@ function ListCompany({ noFade }) {
     const [text, setText] = useState("");
     const [updatedData, setUpdatedData] = useState([])
     const columns = [
-        { key: 'serialNumber', header: 'ID', 
+        {
+            key: 'serialNumber', header: 'ID',
             render: (value) => {
                 return (
                     <span className={`whitespace-nowrap  text-black dark:text-white  rounded-md`} >
@@ -37,7 +38,8 @@ function ListCompany({ noFade }) {
                 )
             }
         },
-        { key: 'name', header: 'Name', width: 'auto' ,
+        {
+            key: 'name', header: 'Name', width: 'auto',
             render: (value) => {
                 return (
                     <span className={`whitespace-nowrap  text-black dark:text-white  rounded-md`} >
@@ -46,7 +48,8 @@ function ListCompany({ noFade }) {
                 )
             }
         },
-        { key: 'subDomain', header: 'Sub Domain',
+        {
+            key: 'subDomain', header: 'Sub Domain',
             render: (value) => {
                 return (
                     <span className={`whitespace-nowrap  text-black dark:text-white  rounded-md`} >
@@ -54,8 +57,9 @@ function ListCompany({ noFade }) {
                     </span>
                 )
             }
-         },
-        { key: 'adminEmail', header: 'Email',
+        },
+        {
+            key: 'adminEmail', header: 'Email',
             render: (value) => {
                 return (
                     <span className={`whitespace-nowrap  text-black dark:text-white  rounded-md`} >
@@ -63,7 +67,7 @@ function ListCompany({ noFade }) {
                     </span>
                 )
             }
-         },
+        },
         {
             key: 'deletedAt', header: 'Is Deleted',
             render: (value, row) => {
@@ -233,13 +237,14 @@ function ListCompany({ noFade }) {
         }
     }
 
-   
+
 
 
     return (
-        <div className="flex flex-col md:mx-4  mx-2     mt-3 min-h-screen bg-light dark:bg-dark">
+        <div className="flex flex-col md:mx-4  mx-2  mt-3 min-h-screen     dark:bg-dark">
             <Hamberger text={"Company / List"} />
-            <div className="bg-cardBgLight dark:bg-cardBgDark rounded-lg shadow-md md:p-6 p-2 mb-6">
+
+            <div className="bg-cardBgLight dark:bg-cardBgDark rounded-lg shadow-lg md:p-6 p-2 mb-6">
                 <CustomTable
                     columns={columns}
                     fetchData={getClients}

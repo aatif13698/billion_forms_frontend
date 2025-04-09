@@ -38,7 +38,7 @@ const Logo = ({
     if (isSmallScreen && IconComponent) {
       return (
         <IconComponent
-          className="h-full w-auto"
+          className="h-auto w-auto"
           style={{
             color: isDark ? '#ffffff' : '#000000', // Dynamic color based on dark mode
             ...iconStyles,

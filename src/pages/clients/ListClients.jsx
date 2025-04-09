@@ -247,7 +247,7 @@ function ListClients({ noFade }) {
         <div className="flex flex-col md:mx-4  mx-2     mt-3 min-h-screen bg-light dark:bg-dark">
             <Hamberger text={"Client / List"} />
             <div
-             className="bg-cardBgLight dark:bg-cardBgDark rounded-lg shadow-md md:p-6 p-2 mb-6"
+             className="bg-cardBgLight dark:bg-cardBgDark rounded-lg shadow-lg md:p-6 p-2 mb-6"
              >
                 <CustomTable
                     columns={columns}

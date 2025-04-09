@@ -12,14 +12,23 @@ const CreateCompany = lazy(() => import("../src/pages/company/CreateCompany"));
 const CreateClients = lazy(() => import("../src/pages/clients/CreateClients"));
 const ListClients = lazy(() => import("../src/pages/clients/ListClients"));
 const NotFound = lazy(() => import("../src/pages/404NotFound/NotFound"));
-const ListCompany = lazy(() => import("../src/pages/company/ListCompany"))
+const ListCompany = lazy(() => import("../src/pages/company/ListCompany"));
+const ListSubscriptionPlan = lazy(() => import("../src/pages/subscriptionPlan/ListSubscriptionPlan"));
+const CreateSubscriptionPlan = lazy(() => import("../src/pages/subscriptionPlan/CreateSubscriptionPlan"))
 
 // import Home from "./pages/home/Home";
 import useDarkmode from "./Hooks/useDarkMode";
+import { useSelector } from "react-redux";
 
 export default function App() {
   const [isDark] = useDarkmode();
   const [companyIdentifier, setCompanyIdentifier] = useState(null);
+
+  const storedData = useSelector((state) => state);
+
+
+  console.log("storedData",storedData);
+  
 
 
   useEffect(() => {
@@ -52,7 +61,7 @@ export default function App() {
     >
       <Routes>
         <Route path="/" element={<AuthLayout />}>
-          <Route index element={<Navigate to="/home" />} />
+          <Route index element={<Navigate to="/list/company" />} />
 
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login companyIdentifier={companyIdentifier} />} />
@@ -65,6 +74,9 @@ export default function App() {
             <Route path="list/company" element={<ListCompany />} />
             <Route path="create/clients" element={<CreateClients />} />
             <Route path="list/clients" element={<ListClients />} />
+            <Route path="list/subscription" element={<ListSubscriptionPlan />} />
+            <Route path="create/subscription" element={<CreateSubscriptionPlan />} />
+
             <Route path="*" element={<NotFound />} />
           </Route>
         </Route>
