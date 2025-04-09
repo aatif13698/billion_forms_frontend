@@ -5,6 +5,8 @@ import { CiLight } from "react-icons/ci";
 import { AiOutlineDashboard } from "react-icons/ai";
 import { FaRegBuilding, FaUserCheck, FaUserPlus, FaUser } from "react-icons/fa";
 import { PiPaperPlaneTiltFill } from "react-icons/pi";
+import { FaArrowUpFromBracket } from "react-icons/fa6";
+
 
 import { FaUsersViewfinder } from "react-icons/fa6";
 import Icons from "./Icons";
@@ -30,6 +32,7 @@ const NavMenu = ({ isCollapsed }) => {
                 { title: "Clients", icon: FaUserCheck, link: "/list/clients" },
                 { title: "Companies", icon: FaUsersViewfinder, link: "/list/company" },
                 { title: "Subscription", icon: PiPaperPlaneTiltFill, link: "/list/subscription" },
+                { title: "Topup", icon: FaArrowUpFromBracket, link: "/list/topup" },
             ]);
         }else if(clientUser?.role?.id === 2){
             setMenuItems([
@@ -63,7 +66,8 @@ const NavMenu = ({ isCollapsed }) => {
                                     "/list/clients": ["/list/clients", "/create/clients"],
                                     "/user": ["/user", "/edit/user", "/view/user"],
                                     "/list/company": ["/list/company", "/create/company"],
-                                    "/list/subscription" : ["/list/subscription", "/create/subscription"]
+                                    "/list/subscription" : ["/list/subscription", "/create/subscription"],
+                                    "/list/topup" : ["/list/topup", "/create/topup"],
                                     // Add more mappings as needed
                                 };
 

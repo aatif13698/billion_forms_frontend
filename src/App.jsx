@@ -14,7 +14,9 @@ const ListClients = lazy(() => import("../src/pages/clients/ListClients"));
 const NotFound = lazy(() => import("../src/pages/404NotFound/NotFound"));
 const ListCompany = lazy(() => import("../src/pages/company/ListCompany"));
 const ListSubscriptionPlan = lazy(() => import("../src/pages/subscriptionPlan/ListSubscriptionPlan"));
-const CreateSubscriptionPlan = lazy(() => import("../src/pages/subscriptionPlan/CreateSubscriptionPlan"))
+const CreateSubscriptionPlan = lazy(() => import("../src/pages/subscriptionPlan/CreateSubscriptionPlan"));
+const ListTopup = lazy(() => import("../src/pages/topup/ListTopup"));
+const CreateTopup = lazy(() => import("../src/pages/topup/CreateTopup"))
 
 // import Home from "./pages/home/Home";
 import useDarkmode from "./Hooks/useDarkMode";
@@ -76,6 +78,9 @@ export default function App() {
             <Route path="list/clients" element={<ListClients />} />
             <Route path="list/subscription" element={<ListSubscriptionPlan />} />
             <Route path="create/subscription" element={<CreateSubscriptionPlan />} />
+            <Route path="list/topup" element={<ListTopup />} />
+            <Route path="create/topup" element={<CreateTopup />} />
+
 
             <Route path="*" element={<NotFound />} />
           </Route>

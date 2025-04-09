@@ -50,7 +50,7 @@ const Header = ({ isCollapsed, setIsCollapsed, toggleSidebar }) => {
 
     return (
         <div
-            className={`w-[100%] h-14 sticky left-0 top-0 flex justify-between  px-4 z-[999] border-b-[0.5px]  ${isDark ? "bg-custom-gradient-header-light " : "bg-custom-gradient-header-light border-slate-400"
+            className={`w-[100%] h-14 sticky left-0 top-0 flex justify-between  border-white dark:border-dark px-4 z-[999] border-b-[0.5px]  ${isDark ? "bg-custom-gradient-header-dark " : "bg-custom-gradient-header-light "
                 }`}
         >
             <div className={`flex w-[100%] flex-row items-center justify-between`}>

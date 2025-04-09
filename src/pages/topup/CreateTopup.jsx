@@ -10,9 +10,10 @@ import common from "../../helper/common";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Country, State, City } from "country-state-city";
 import subscriptionService from "../../services/subscriptionService";
+import topupService from "../../services/topupService";
 
 
-function CreateSubscriptionPlan() {
+function CreateTopup() {
     const location = useLocation();
     const company = location?.state?.company
     const navigate = useNavigate();
@@ -160,7 +161,7 @@ function CreateSubscriptionPlan() {
         let newErrors = { ...errors };
         if (name == "name") {
             if (!value) {
-                newErrors.name = "Subscription name is required";
+                newErrors.name = "Topup name is required";
             } else {
                 delete newErrors.name;
             }
@@ -189,7 +190,7 @@ function CreateSubscriptionPlan() {
 
         if (name == "subscriptionCharge") {
             if (!value) {
-                newErrors.subscriptionCharge = "Subscription Charge is required";
+                newErrors.subscriptionCharge = "Topup Charge is required";
             } else {
                 delete newErrors.subscriptionCharge;
             }
@@ -208,11 +209,11 @@ function CreateSubscriptionPlan() {
     const validateForm = () => {
 
         let newErrors = {};
-        if (!formData.name.trim()) newErrors.name = "Subscription name is required";
-        if (!formData.country.trim()) newErrors.country = "Country is required";
-        if (!formData.currency.trim()) newErrors.currency = "Currency is required";
+        if (!formData.name.trim()) newErrors.name = "Topup name is required";
+        // if (!formData.country.trim()) newErrors.country = "Country is required";
+        // if (!formData.currency.trim()) newErrors.currency = "Currency is required";
         if (!formData.validityPeriod.trim()) newErrors.validityPeriod = "Validity is required";
-        if (!formData.subscriptionCharge) newErrors.subscriptionCharge = "Subscription charge is required";
+        if (!formData.subscriptionCharge) newErrors.subscriptionCharge = "Topup charge is required";
         if (!formData.formLimit) newErrors.formLimit = "Form Limit is required";
         if (!formData.organisationLimit) newErrors.organisationLimit = "Organisation Limit is required";
         if (!formData.userLimint) newErrors.userLimint = "User Limint is required";
@@ -227,14 +228,14 @@ function CreateSubscriptionPlan() {
         setIsSubmitting(true);
         try {
             if (company) {
-                const response = await subscriptionService.updateSubscription({ ...formData, subscriptionPlanId: company?._id });
+                const response = await topupService.updateTopup({ ...formData, topupId: company?._id });
             } else {
-                const response = await subscriptionService.createSubscriptionPlan(formData);
+                const response = await topupService.createTopup(formData);
             }
             setFormData({
                 name: "",
-                country: "",
-                currency: "",
+                // country: "",
+                // currency: "",
                 subscriptionCharge: "",
                 formLimit: "",
                 organisationLimit: "",
@@ -242,7 +243,7 @@ function CreateSubscriptionPlan() {
                 validityPeriod: ""
             });
 
-            navigate("/list/subscription")
+            navigate("/list/topup")
 
         } catch (error) {
             console.error("Error creating subscription plan:", error);
@@ -259,9 +260,9 @@ function CreateSubscriptionPlan() {
 
     return (
         <div className="flex flex-col md:mx-4  mx-2     mt-3 min-h-screen bg-light dark:bg-dark">
-            <Hamberger text={`Subscription / ${company ? "Update" : "Add New"} `} />
+            <Hamberger text={`Topup / ${company ? "Update" : "Add New"} `} />
             <div className="w-[100%]   bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-lg p-6">
-                <h2 className="text-2xl font-semibold text-formHeadingLight dark:text-formHeadingDark mb-4 text-start">{`${company ? "Update" : "Create"} Subscription`}</h2>
+                <h2 className="text-2xl font-semibold text-formHeadingLight dark:text-formHeadingDark mb-4 text-start">{`${company ? "Update" : "Create"} Topup`}</h2>
 
                 <div className="h-[2px] bg-black dark:bg-white mb-4"></div>
 
@@ -269,7 +270,7 @@ function CreateSubscriptionPlan() {
                 <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Name */}
                     <div>
-                        <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">Subscription Name</label>
+                        <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">Top Name</label>
                         <input
                             type="text"
                             name="name"
@@ -279,49 +280,6 @@ function CreateSubscriptionPlan() {
                             placeholder="Enter subscription name"
                         />
                         {errors.name && <p className="text-red-500 text-sm mt-1">{errors?.name}</p>}
-                    </div>
-
-                    {/* country */}
-                    <div className="">
-                        <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">
-                            Country
-                        </label>
-                        <select
-                            name="country"
-                            value={countryName}
-                            className="w-[100%] bg-white text-black dark:bg-cardBgDark dark:text-white p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) => handleCountry(e)}
-                        >
-                            <option value="">--select country--</option>
-                            {countryList && countryList.length > 0 &&
-                                countryList?.map((country) => (
-                                    <option
-                                        key={country?.isoCode}
-                                        value={country?.name}
-                                        className="bg-white text-black dark:bg-cardBgDark dark:text-white"
-                                    >
-                                        {country?.name}
-                                    </option>
-                                ))}
-                        </select>
-                        {errors.country && (
-                            <p className="text-red-500 text-sm mt-1">{errors?.country}</p>
-                        )}
-                    </div>
-
-                    {/* currancy */}
-                    <div>
-                        <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">Currency</label>
-                        <input
-                            type="text"
-                            name="currency"
-                            value={formData?.currency}
-                            disabled={true}
-                            // onChange={handleChange}
-                            className="w-[100%] bg-transparent p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Currency"
-                        />
-                        {errors.name && <p className="text-red-500 text-sm mt-1">{errors?.currency}</p>}
                     </div>
 
                     <div className="">
@@ -351,7 +309,6 @@ function CreateSubscriptionPlan() {
                                 value="yearly">Yearly (12 months)</option>
                             <option
                                 className="bg-white text-black dark:bg-cardBgDark dark:text-white"
-
                                 value="infinite">Unlimited</option>
 
                         </select>
@@ -360,7 +317,7 @@ function CreateSubscriptionPlan() {
 
 
                     <div>
-                        <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">Subscription Charge</label>
+                        <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">Topup Charge</label>
                         <input
                             type="text"
                             name="subscriptionCharge"
@@ -462,7 +419,7 @@ function CreateSubscriptionPlan() {
                                 Submitting...
                             </>
                         ) : (
-                            `${company ? "Update" : "Create"} Subscription`
+                            `${company ? "Update" : "Create"} Topup`
                         )}
                     </button>
 
@@ -475,4 +432,4 @@ function CreateSubscriptionPlan() {
     );
 }
 
-export default CreateSubscriptionPlan;
+export default CreateTopup;

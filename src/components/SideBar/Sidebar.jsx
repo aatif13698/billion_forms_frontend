@@ -45,7 +45,7 @@ export const Sidebar = ({ isCollapsed }) => {
             } h-[100%] border-r-[0.5px] ${isDark ? "border-blue-gray-800" : "border-slate-400"
             }
 
-          bg-custom-gradient-sidebar
+          bg-custom-gradient-sidebar dark:bg-custom-gradient-sidebar-dark
 
             transition-all duration-300 ease-in-out overflow-y-hidden overflow-x-hidden`}
         >

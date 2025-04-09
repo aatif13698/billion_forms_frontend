@@ -248,11 +248,11 @@ function ListCompany({ noFade }) {
                 <CustomTable
                     columns={columns}
                     fetchData={getClients}
-                    headerBackground={isDark ? "#000000" : "#3f8e90"}
+                    headerBackground={isDark ? "#00868d" : "#3f8e90"}
                     headerTextColor="#fff"
-                    rowBackground={isDark ? "rgb(59 64 65)" : "#fff"}
+                    rowBackground={isDark ? "rgb(7 38 44)" : "#fff"}
                     rowTextColor={isDark ? "#fff" : "#3f8e90"}
-                    alternateRowBackground={isDark ? "#333" : "#f9f9f9"}
+                    alternateRowBackground={isDark ? "#16414ca3" : "#80abb124"}
                     defaultRowsPerPage={10}
                     buttonName={"Create Company"}
                     buttonAction={buttonAction}

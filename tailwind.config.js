@@ -17,7 +17,7 @@ const conf = withMT({
         mediumDark: "rgb(57 57 57)",
         lightButton: "rgb(23 53 81)",
         darkButton: "rgb(23 53 81)",
-        cardBgDark: "rgb(59 64 65)",
+        cardBgDark: "rgb(31 50 55)",
         cardBgLight: "#ffffff",
 
         formLabelLight : "rgb(0 0 0)",
@@ -28,14 +28,16 @@ const conf = withMT({
 
         white : "#ffffff",
         hambergerLight : "#b3ecf0",
-        hambergerDark : "rgb(110 169 173 / 60%)"
+        hambergerDark : "rgb(0 92 110 / 60%)",
         // sidebarHoverBgLight: ""
       },
       backgroundImage: {
         'custom-gradient-sidebar': "linear-gradient(to bottom, #9bf7ff, #077588, #00404b)",
+        'custom-gradient-sidebar-dark' : "linear-gradient(to bottom, #0e1516, #08798d, #0a1112)",
         'custom-gradient-button-light' : "linear-gradient(to bottom, #2b3839, #52adbc, #2b3839)",
         'custom-gradient-button-dark' : "linear-gradient(to bottom, #8bf6ff, #000000, #8bf6ff)",
         'custom-gradient-header-light' : "radial-gradient(circle, rgb(14 243 214) 0%, rgb(124 255 243) 23%, rgb(159 234 255) 100%)",
+        'custom-gradient-header-dark' : "radial-gradient(circle, rgb(11 131 136) 0%, rgb(52 71 70) 23%, rgb(33 37 38) 100%)",
         'custom-gradient-bottom-light' : "linear-gradient(to bottom, #025d64, #077588, #0c4853)"
       }
     },

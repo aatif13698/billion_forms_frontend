@@ -18,8 +18,9 @@ import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css'; // Optional: default CSS styling
 import "../../App.css"
 import subscriptionService from '../../services/subscriptionService';
+import topupService from '../../services/topupService';
 
-function ListSubscriptionPlan({ noFade }) {
+function ListTopup({ noFade }) {
   const [showLoadingModal, setShowLoadingModal] = useState(false);
   const handleCloseLoadingModal = () => {
     setShowLoadingModal(false);
@@ -43,26 +44,6 @@ function ListSubscriptionPlan({ noFade }) {
     },
     {
       key: 'name', header: 'Name', width: 'auto',
-      render: (value) => {
-        return (
-          <span className={`whitespace-nowrap  text-black dark:text-white  rounded-md`} >
-            {value}
-          </span>
-        )
-      }
-    },
-    {
-      key: 'country', header: 'Country',
-      render: (value) => {
-        return (
-          <span className={`whitespace-nowrap  text-black dark:text-white  rounded-md`} >
-            {value}
-          </span>
-        )
-      }
-    },
-    {
-      key: 'currency', header: 'Currency',
       render: (value) => {
         return (
           <span className={`whitespace-nowrap  text-black dark:text-white  rounded-md`} >
@@ -178,7 +159,7 @@ function ListSubscriptionPlan({ noFade }) {
 
   async function getData(currentPage, rowsPerPage, text) {
     try {
-      const response = await subscriptionService.getSubscriptionPlanList(currentPage, rowsPerPage, text);
+      const response = await topupService.getTopupList(currentPage, rowsPerPage, text);
       return response
     } catch (error) {
       throw error
@@ -188,32 +169,32 @@ function ListSubscriptionPlan({ noFade }) {
   async function handleView(id) {
     try {
       setShowLoadingModal(true)
-      const response = await subscriptionService.getParticularSubscriptionPlan(id);
+      const response = await topupService.getParticularTopup(id);
       setShowLoadingModal(false);
       setTimeout(() => {
-        navigate("/create/subscription", { state: { company: response?.data?.data?.data } })
+        navigate("/create/topup", { state: { company: response?.data?.data?.data } })
       }, 600);
     } catch (error) {
       setShowLoadingModal(false)
-      console.log("error while getting subscription data", error);
+      console.log("error while getting topup data", error);
     }
   }
 
   async function handleDelete(currentPage, rowsPerPage, text, id) {
     try {
       const dataObject = {
-        subscriptionPlanId: id,
+        topupId: id,
         keyword: text,
         page: currentPage,
         perPage: rowsPerPage
       }
       setShowLoadingModal(true)
-      const response = await subscriptionService.softDeleteSubscriptionPlan(dataObject);
+      const response = await topupService.softDeleteTopup(dataObject);
       setUpdatedData(response.data?.data?.data)
       setShowLoadingModal(false);
     } catch (error) {
       setShowLoadingModal(false)
-      console.log("error while deleting subscription data", error);
+      console.log("error while deleting topup data", error);
     }
   }
 
@@ -221,13 +202,13 @@ function ListSubscriptionPlan({ noFade }) {
   async function handleRestore(currentPage, rowsPerPage, text, id) {
     try {
       const dataObject = {
-        subscriptionPlanId: id,
+        topupId: id,
         keyword: text,
         page: currentPage,
         perPage: rowsPerPage
       }
       setShowLoadingModal(true)
-      const response = await subscriptionService.restoreSubscriptionPlan(dataObject);
+      const response = await topupService.restoreTopup(dataObject);
       setUpdatedData(response.data?.data?.data)
       setShowLoadingModal(false);
     } catch (error) {
@@ -237,20 +218,20 @@ function ListSubscriptionPlan({ noFade }) {
   }
 
   function buttonAction() {
-    navigate("/create/subscription")
+    navigate("/create/topup")
   }
 
   async function handleActiveInactive(currentPage, rowsPerPage, text, status, id) {
     try {
       const dataObject = {
         status: status ? "0" : "1",
-        subscriptionPlanId: id,
+        topupId: id,
         keyword: text,
         page: currentPage,
         perPage: rowsPerPage
       }
       setShowLoadingModal(true)
-      const response = await subscriptionService.activeInactive(dataObject);
+      const response = await topupService.activeInactiveTopup(dataObject);
       setUpdatedData(response.data?.data?.data)
       setShowLoadingModal(false)
     } catch (error) {
@@ -264,7 +245,7 @@ function ListSubscriptionPlan({ noFade }) {
 
   return (
     <div className="flex flex-col md:mx-4  mx-2     mt-3 min-h-screen bg-light dark:bg-dark">
-      <Hamberger text={"Subscription Plan / List"} />
+      <Hamberger text={"Topup Plan / List"} />
       <div className="bg-cardBgLight dark:bg-cardBgDark rounded-lg shadow-lg md:p-6 p-2 mb-6">
         <CustomTable
           columns={columns}
@@ -275,7 +256,7 @@ function ListSubscriptionPlan({ noFade }) {
           rowTextColor={isDark ? "#fff" : "#3f8e90"}
           alternateRowBackground={isDark ? "#16414ca3" : "#80abb124"}
           defaultRowsPerPage={10}
-          buttonName={"Create Subscription"}
+          buttonName={"Create Topup"}
           buttonAction={buttonAction}
           currentPage={currentPage}
           updatedData={updatedData}
@@ -322,4 +303,4 @@ function ListSubscriptionPlan({ noFade }) {
   )
 }
 
-export default ListSubscriptionPlan
+export default ListTopup
