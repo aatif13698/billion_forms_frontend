@@ -21,8 +21,9 @@ const ListSubscribed = lazy(() => import("../src/pages/subscribed/ListSubscribed
 const CreatedSubscribed = lazy(() => import("../src/pages/subscribed/CreatedSubscribed"));
 const ViewSubscribed = lazy(() => import("../src/pages/subscribed/ViewSubscribed"));
 
-import PrivateRoute from "./routes/privateRoute";
 import PublicRoute from "./routes/PublicRoute";
+import PrivateRoute from "./routes/privateRoute";
+
 
 // import Home from "./pages/home/Home";
 import useDarkmode from "./Hooks/useDarkMode";
