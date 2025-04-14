@@ -22,7 +22,7 @@ const CreatedSubscribed = lazy(() => import("../src/pages/subscribed/CreatedSubs
 const ViewSubscribed = lazy(() => import("../src/pages/subscribed/ViewSubscribed"));
 
 import PublicRoute from "./routes/PublicRoute";
-import PrivateRoute from "./routes/privateRoute";
+import PrivateRoute from "./routes/PrivateRoute";
 
 
 // import Home from "./pages/home/Home";
