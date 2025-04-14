@@ -75,7 +75,6 @@ export default function App() {
           </Route>
 
 
-          {/* testing */}
 
           <Route element={<PrivateRoute isLoggedIn={isLoggedIn} />} >
             <Route path="/" element={<Layout />}>
