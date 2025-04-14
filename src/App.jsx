@@ -16,21 +16,23 @@ const ListCompany = lazy(() => import("../src/pages/company/ListCompany"));
 const ListSubscriptionPlan = lazy(() => import("../src/pages/subscriptionPlan/ListSubscriptionPlan"));
 const CreateSubscriptionPlan = lazy(() => import("../src/pages/subscriptionPlan/CreateSubscriptionPlan"));
 const ListTopup = lazy(() => import("../src/pages/topup/ListTopup"));
-const CreateTopup = lazy(() => import("../src/pages/topup/CreateTopup"))
+const CreateTopup = lazy(() => import("../src/pages/topup/CreateTopup"));
+const ListSubscribed = lazy(() => import("../src/pages/subscribed/ListSubscribed"));
+const CreatedSubscribed = lazy(() => import("../src/pages/subscribed/CreatedSubscribed"));
+const ViewSubscribed = lazy(() => import("../src/pages/subscribed/ViewSubscribed"));
+
+import PrivateRoute from "./routes/privateRoute";
+import PublicRoute from "./routes/PublicRoute";
 
 // import Home from "./pages/home/Home";
 import useDarkmode from "./Hooks/useDarkMode";
 import { useSelector } from "react-redux";
 
 export default function App() {
+
+  const { isAuth: isLoggedIn } = useSelector((state) => state?.authCustomerSlice);
   const [isDark] = useDarkmode();
   const [companyIdentifier, setCompanyIdentifier] = useState(null);
-
-  const storedData = useSelector((state) => state);
-
-
-  console.log("storedData",storedData);
-  
 
 
   useEffect(() => {
@@ -63,27 +65,34 @@ export default function App() {
     >
       <Routes>
         <Route path="/" element={<AuthLayout />}>
-          <Route index element={<Navigate to="/list/company" />} />
+          {/* <Route index element={<Navigate to="/list/company" />} /> */}
 
-          <Route path="/" element={<Login />} />
-          <Route path="/login" element={<Login companyIdentifier={companyIdentifier} />} />
-          <Route path="/signup" element={<SignUp />} />
-
-          <Route path="/" element={<Layout />}>
-            <Route path="home1" element={<Home />} />
-            <Route path="createCustomField" element={<CreateCustomField />} />
-            <Route path="create/company" element={<CreateCompany />} />
-            <Route path="list/company" element={<ListCompany />} />
-            <Route path="create/clients" element={<CreateClients />} />
-            <Route path="list/clients" element={<ListClients />} />
-            <Route path="list/subscription" element={<ListSubscriptionPlan />} />
-            <Route path="create/subscription" element={<CreateSubscriptionPlan />} />
-            <Route path="list/topup" element={<ListTopup />} />
-            <Route path="create/topup" element={<CreateTopup />} />
-
-
-            <Route path="*" element={<NotFound />} />
+          <Route element={<PublicRoute isLoggedIn={isLoggedIn} />} >
+            <Route path="/" element={<Login />} />
+            <Route path="/login" element={<Login companyIdentifier={companyIdentifier} />} />
+            <Route path="/signup" element={<SignUp />} />
           </Route>
+
+          <Route element={<PrivateRoute isLoggedIn={isLoggedIn} />} >
+            <Route path="/" element={<Layout />}>
+              <Route path="home1" element={<Home />} />
+              <Route path="createCustomField" element={<CreateCustomField />} />
+              <Route path="create/company" element={<CreateCompany />} />
+              <Route path="list/company" element={<ListCompany />} />
+              <Route path="create/clients" element={<CreateClients />} />
+              <Route path="list/clients" element={<ListClients />} />
+              <Route path="list/subscription" element={<ListSubscriptionPlan />} />
+              <Route path="create/subscription" element={<CreateSubscriptionPlan />} />
+              <Route path="list/topup" element={<ListTopup />} />
+              <Route path="create/topup" element={<CreateTopup />} />
+              <Route path="list/subscribed" element={<ListSubscribed />} />
+              <Route path="create/subscribed" element={<CreatedSubscribed />} />
+              <Route path="view/subscribed" element={<ViewSubscribed />} />
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </Route>
+
+
         </Route>
 
 

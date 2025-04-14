@@ -17,8 +17,24 @@ const conf = withMT({
         mediumDark: "rgb(57 57 57)",
         lightButton: "rgb(23 53 81)",
         darkButton: "rgb(23 53 81)",
-        cardBgDark: "rgb(31 50 55)",
+        cardBgDark: "rgb(14 66 80)",
         cardBgLight: "#ffffff",
+
+        subscriptionCardBgLightFrom : "#03cac3",
+        subscriptionCardBgLightTo : "#008883",
+
+        subscriptionCardBgDarkFrom : "#1b5e5c",
+        subscriptionCardBgDarkTo : "#202e2d",
+
+        textGradientLightFrom : "#00ff85",
+        textGradientLightkTo : "#6aff2c",
+
+
+        textGradientDarktFrom : "#2eff00",
+        textGradientDarkTo : "#ffffff",
+
+
+
 
         formLabelLight : "rgb(0 0 0)",
         formLabelDark : "rgb(255 255 255)",

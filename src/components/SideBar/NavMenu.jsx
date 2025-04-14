@@ -6,6 +6,8 @@ import { AiOutlineDashboard } from "react-icons/ai";
 import { FaRegBuilding, FaUserCheck, FaUserPlus, FaUser } from "react-icons/fa";
 import { PiPaperPlaneTiltFill } from "react-icons/pi";
 import { FaArrowUpFromBracket } from "react-icons/fa6";
+import { MdOutlineSubscriptions } from "react-icons/md";
+
 
 
 import { FaUsersViewfinder } from "react-icons/fa6";
@@ -33,6 +35,7 @@ const NavMenu = ({ isCollapsed }) => {
                 { title: "Companies", icon: FaUsersViewfinder, link: "/list/company" },
                 { title: "Subscription", icon: PiPaperPlaneTiltFill, link: "/list/subscription" },
                 { title: "Topup", icon: FaArrowUpFromBracket, link: "/list/topup" },
+                { title: "subscribed", icon: MdOutlineSubscriptions, link: "/list/subscribed" },
             ]);
         }else if(clientUser?.role?.id === 2){
             setMenuItems([
@@ -68,6 +71,7 @@ const NavMenu = ({ isCollapsed }) => {
                                     "/list/company": ["/list/company", "/create/company"],
                                     "/list/subscription" : ["/list/subscription", "/create/subscription"],
                                     "/list/topup" : ["/list/topup", "/create/topup"],
+                                    "/list/subscribed" : ["/list/subscribed", "/create/subscribed", "/view/subscribed"],
                                     // Add more mappings as needed
                                 };
 
@@ -117,14 +121,14 @@ const NavMenu = ({ isCollapsed }) => {
             </ul>
 
             {/* Logo */}
-            <hr className="border-t border-gray-700" />
+            {/* <hr className="border-t border-gray-700" />
             <div className="flex my-4 justify-center">
                 <img
                     src={logo}
                     className="h-[6rem] bg-white rounded-md w-auto object-contain"
                     alt="Logo"
                 />
-            </div>
+            </div> */}
         </>
     );
 };

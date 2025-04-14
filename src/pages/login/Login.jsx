@@ -140,7 +140,7 @@ const Login = ({ companyIdentifier }) => {
             // Update loading toast to success
             toast.success('Login successful!');
 
-            navigate("/home");
+            navigate("/dashboard");
 
         } catch (error) {
 

@@ -5,7 +5,7 @@ export default function NotFound() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen text-center">
       <img
-        src={images?.notFound}
+        src={images?.notFound2}
         alt="Page Not Found"
         className="md:w-96 w-80 h-auto"
       />

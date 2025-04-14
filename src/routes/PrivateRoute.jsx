@@ -1,7 +1,7 @@
 import React from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
 
-const privateRoute = ({isLoggedIn}) => {
+const PrivateRoute = ({isLoggedIn}) => {
   return isLoggedIn ? (
     <Outlet/>
   ) : 
@@ -9,4 +9,4 @@ const privateRoute = ({isLoggedIn}) => {
   <Navigate to="/login" />
 }
 
-export default privateRoute
+export default PrivateRoute

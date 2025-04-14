@@ -1,12 +1,32 @@
+// import React from 'react'
+
+// function ListSubscribed() {
+//   return (
+//     <div>
+//       List Subscribed
+//     </div>
+//   )
+// }
+
+// export default ListSubscribed
+
+
+
+
+
+
+
+
 
 
 import React, { useEffect, useState, Fragment } from 'react'
 import CustomTable from '../../components/CustomTable/CustomTable'
 import useDarkmode from '../../Hooks/useDarkMode';
 import Hamberger from '../../components/Hamberger/Hamberger';
-import { FaRegEye } from "react-icons/fa";
 import { FaRegEdit } from "react-icons/fa";
 import { FaRedoAlt } from "react-icons/fa";
+import { FaRegEye } from "react-icons/fa6";
+
 
 
 import { FaTrashAlt } from "react-icons/fa";
@@ -18,8 +38,10 @@ import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css'; // Optional: default CSS styling
 import "../../App.css"
 import subscriptionService from '../../services/subscriptionService';
+import topupService from '../../services/topupService';
+import subscribedUserService from '../../services/subscribedUserService';
 
-function ListSubscriptionPlan({ noFade }) {
+function ListSubscribed({ noFade }) {
   const [showLoadingModal, setShowLoadingModal] = useState(false);
   const handleCloseLoadingModal = () => {
     setShowLoadingModal(false);
@@ -42,135 +64,89 @@ function ListSubscriptionPlan({ noFade }) {
       }
     },
     {
-      key: 'name', header: 'Name', width: 'auto',
-      render: (value) => {
-        return (
-          <span className={`whitespace-nowrap  text-black dark:text-white  rounded-md`} >
-            {value}
-          </span>
-        )
-      }
-    },
-    {
-      key: 'country', header: 'Country',
-      render: (value) => {
-        return (
-          <span className={`whitespace-nowrap  text-black dark:text-white  rounded-md`} >
-            {value}
-          </span>
-        )
-      }
-    },
-    {
-      key: 'currency', header: 'Currency',
-      render: (value) => {
-        return (
-          <span className={`whitespace-nowrap  text-black dark:text-white  rounded-md`} >
-            {value}
-          </span>
-        )
-      }
-    },
-    {
-      key: 'subscriptionCharge', header: 'Charge',
-      render: (value) => {
-        return (
-          <span className={`whitespace-nowrap  text-black dark:text-white  rounded-md`} >
-            {value}
-          </span>
-        )
-      }
-    },
-    {
-      key: 'validityPeriod', header: 'Validity',
-      render: (value) => {
-        return (
-          <span className={`whitespace-nowrap  text-black dark:text-white  rounded-md`} >
-            {value}
-          </span>
-        )
-      }
-    },
-    {
-      key: 'formLimit', header: 'Form Limit',
+      header: 'Customer Name', width: 'auto',
       render: (value, row) => {
+        const fullName = (row?.userId?.firstName + " " + row?.userId?.lastName);
         return (
-          <span
-            className={`whitespace-nowrap  text-black dark:text-white  rounded-md`}
-          >
-            {value}
+          <span className={`whitespace-nowrap  text-black dark:text-white  rounded-md`} >
+            {fullName}
           </span>
         )
-      },
+      }
     },
     {
-      key: 'isActive',
-      header: 'Status',
+      header: 'Total Forms', width: 'auto',
       render: (value, row) => {
-        console.log("row active", row?.isActive);
+        const limit = (row?.totalFormLimit);
         return (
-          <Tippy
-            content={value ? "Click to deactivate" : "Click to activate"}
-            placement="top"
-            theme="custom"
-          >
-
-            <button
-              onClick={() => handleActiveInactive(currentPage, rowsPerPage, text, row?.isActive, row?._id)}
-              className={`${value ? "bg-green-500/60" : "bg-red-500/50"} text-[.80rem] font-bold text-black dark:text-white px-2 py-1 rounded-md`}
-            >
-              {value ? "Active" : "InActive"}
-            </button>
-
-          </Tippy>
-
+          <span className={`whitespace-nowrap ${limit < 200 ? "bg-red-300/45" : "bg-green-300/65"} shadow-md px-2 py-1  text-black dark:text-white  rounded-md`} >
+            {limit}
+          </span>
         )
-      },
+      }
     },
+    {
+      header: 'Total Organisations', width: 'auto',
+      render: (value, row) => {
+        const limit = (row?.totalOrgLimit);
+        return (
+          <span className={`whitespace-nowrap ${limit < 1 ? "bg-red-300/45" : "bg-green-300/65"} shadow-md  px-2 py-1   text-black dark:text-white  rounded-md`} >
+            {limit}
+          </span>
+        )
+      }
+    },
+    {
+      header: 'Total Usrs', width: 'auto',
+      render: (value, row) => {
+        const limit = (row?.totalUserLimint);
+        return (
+          <span className={`whitespace-nowrap text-center ${limit < 1 ? "bg-red-300/45" : "bg-green-300/65"} shadow-md  px-2 py-1  text-black dark:text-white  rounded-md`} >
+            {limit}
+          </span>
+        )
+      }
+    },
+
+
+    // {
+    //   key: 'isActive',
+    //   header: 'Status',
+    //   render: (value, row) => {
+    //     console.log("row active", row?.isActive);
+    //     return (
+    //       <Tippy
+    //         content={value ? "Click to deactivate" : "Click to activate"}
+    //         placement="top"
+    //         theme="custom"
+    //       >
+    //         <button
+    //           onClick={() => handleActiveInactive(currentPage, rowsPerPage, text, row?.isActive, row?._id)}
+    //           className={`${value ? "bg-green-500/60" : "bg-red-500/50"} shadow-lg text-[.80rem] font-bold text-black dark:text-white px-2 py-1 rounded-md`}
+    //         >
+    //           {value ? "Active" : "InActive"}
+    //         </button>
+    //       </Tippy>
+    //     )
+    //   },
+    // },
     {
       header: 'Action',
       render: (value, row) => (
         <div className='flex gap-3'>
           <Tippy
-            content={"Edit"}
+            content={"View Details"}
             placement="top"
             theme="custom"
           >
             <button
-              className='bg-hambergerLight dark:bg-hambergerDark p-2 rounded-md'
+              className='bg-hambergerLight dark:bg-hambergerDark p-2 rounded-md shadow-lg'
               onClick={() => handleView(row?._id)}
             >
-              <FaRegEdit />
+              <FaRegEye />
             </button>
           </Tippy>
-          {
-            row?.deletedAt ?
-              <Tippy
-                content={"Restore"}
-                placement="top"
-                theme="custom"
-              >
-                <button
-                  onClick={() => handleRestore(currentPage, rowsPerPage, text, row?._id)}
-                  className='bg-green-100 dark:bg-green-900/60 p-2 rounded-md'
-                >
-                  <FaRedoAlt />
-                </button>
-              </Tippy>
-              :
-              <Tippy
-                content={"Delete"}
-                placement="top"
-                theme="custom"
-              >
-                <button
-                  onClick={() => handleDelete(currentPage, rowsPerPage, text, row?._id)}
-                  className='bg-red-100 dark:bg-red-900 p-2 rounded-md'
-                >
-                  <FaTrashAlt />
-                </button>
-              </Tippy>
-          }
+
         </div>
       ),
     }
@@ -178,7 +154,7 @@ function ListSubscriptionPlan({ noFade }) {
 
   async function getData(currentPage, rowsPerPage, text) {
     try {
-      const response = await subscriptionService.getSubscriptionPlanList(currentPage, rowsPerPage, text);
+      const response = await subscribedUserService.getSubscribedUserList(currentPage, rowsPerPage, text);
       return response
     } catch (error) {
       throw error
@@ -188,32 +164,32 @@ function ListSubscriptionPlan({ noFade }) {
   async function handleView(id) {
     try {
       setShowLoadingModal(true)
-      const response = await subscriptionService.getParticularSubscriptionPlan(id);
+      const response = await subscribedUserService.getParticularSubscribedUser(id);
       setShowLoadingModal(false);
       setTimeout(() => {
-        navigate("/create/subscription", { state: { company: response?.data?.data?.data } })
+        navigate("/view/subscribed", { state: { company: response?.data?.data } })
       }, 600);
     } catch (error) {
       setShowLoadingModal(false)
-      console.log("error while getting subscription data", error);
+      console.log("error while getting topup data", error);
     }
   }
 
   async function handleDelete(currentPage, rowsPerPage, text, id) {
     try {
       const dataObject = {
-        subscriptionPlanId: id,
+        topupId: id,
         keyword: text,
         page: currentPage,
         perPage: rowsPerPage
       }
       setShowLoadingModal(true)
-      const response = await subscriptionService.softDeleteSubscriptionPlan(dataObject);
+      const response = await topupService.softDeleteTopup(dataObject);
       setUpdatedData(response.data?.data?.data)
       setShowLoadingModal(false);
     } catch (error) {
       setShowLoadingModal(false)
-      console.log("error while deleting subscription data", error);
+      console.log("error while deleting topup data", error);
     }
   }
 
@@ -221,13 +197,13 @@ function ListSubscriptionPlan({ noFade }) {
   async function handleRestore(currentPage, rowsPerPage, text, id) {
     try {
       const dataObject = {
-        subscriptionPlanId: id,
+        topupId: id,
         keyword: text,
         page: currentPage,
         perPage: rowsPerPage
       }
       setShowLoadingModal(true)
-      const response = await subscriptionService.restoreSubscriptionPlan(dataObject);
+      const response = await topupService.restoreTopup(dataObject);
       setUpdatedData(response.data?.data?.data)
       setShowLoadingModal(false);
     } catch (error) {
@@ -237,20 +213,20 @@ function ListSubscriptionPlan({ noFade }) {
   }
 
   function buttonAction() {
-    navigate("/create/subscription")
+    navigate("/create/subscribed")
   }
 
   async function handleActiveInactive(currentPage, rowsPerPage, text, status, id) {
     try {
       const dataObject = {
         status: status ? "0" : "1",
-        subscriptionPlanId: id,
+        topupId: id,
         keyword: text,
         page: currentPage,
         perPage: rowsPerPage
       }
       setShowLoadingModal(true)
-      const response = await subscriptionService.activeInactive(dataObject);
+      const response = await topupService.activeInactiveTopup(dataObject);
       setUpdatedData(response.data?.data?.data)
       setShowLoadingModal(false)
     } catch (error) {
@@ -263,8 +239,8 @@ function ListSubscriptionPlan({ noFade }) {
 
 
   return (
-    <div className="flex flex-col md:mx-4  mx-2     mt-3  bg-light dark:bg-dark">
-      <Hamberger text={"Subscription Plan / List"} />
+    <div className="flex flex-col md:mx-4  mx-2     mt-3 min-h-screen bg-light dark:bg-dark">
+      <Hamberger text={"Subscribed / List"} />
       <div className="bg-cardBgLight dark:bg-cardBgDark rounded-lg shadow-lg md:p-6 p-2 mb-6">
         <CustomTable
           columns={columns}
@@ -275,7 +251,7 @@ function ListSubscriptionPlan({ noFade }) {
           rowTextColor={isDark ? "#fff" : "#3f8e90"}
           alternateRowBackground={isDark ? "#16414ca3" : "#80abb124"}
           defaultRowsPerPage={10}
-          buttonName={"Create Subscription"}
+          buttonName={"Assign Subscription"}
           buttonAction={buttonAction}
           currentPage={currentPage}
           updatedData={updatedData}
@@ -322,4 +298,4 @@ function ListSubscriptionPlan({ noFade }) {
   )
 }
 
-export default ListSubscriptionPlan
+export default ListSubscribed

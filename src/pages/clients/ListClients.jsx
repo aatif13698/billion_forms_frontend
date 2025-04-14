@@ -50,10 +50,10 @@ function ListClients({ noFade }) {
         },
         {
             key: 'phone', header: 'Phone', width: '200px',
-            render: (value) => {
+            render: (value, row) => {
                 return (
                     <span className={`whitespace-nowrap  text-black dark:text-white  rounded-md`} >
-                        {value}
+                        {row?.phone}
                     </span>
                 )
             }

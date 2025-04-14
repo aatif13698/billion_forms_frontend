@@ -12,6 +12,17 @@ const handleKeyPress = (e) => {
     }
 };
 
+function formatDateToReadableString(isoDateString) {
+  const date = new Date(isoDateString);
+  
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = date.toLocaleString('default', { month: 'long' });
+  const year = date.getFullYear();
+
+  return `${day} ${month}, ${year}`;
+}
+
+
 
 
 const customStyles = {
@@ -44,5 +55,6 @@ const customStyles = {
 
 export default {
     handleKeyPress,
-    customStyles
+    customStyles,
+    formatDateToReadableString
 }

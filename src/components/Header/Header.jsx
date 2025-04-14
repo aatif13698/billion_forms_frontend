@@ -1,25 +1,39 @@
 import React, { useEffect, useRef, useState } from "react";
-import { FaInstagram } from "react-icons/fa";
+import { FaInstagram, FaSignOutAlt, FaUser } from "react-icons/fa";
 import logo from "../../assets/logo/logo.png";
 import logoWhite from "../../assets/logo/logo.png";
 
 import useWidth from "../../Hooks/useWidth";
 import { GoHeart } from "react-icons/go";
 import { FiSearch } from "react-icons/fi";
+import { TfiUser } from "react-icons/tfi";
+import { FcBusinessman } from "react-icons/fc";
+import { FcExport } from "react-icons/fc";
+
+
+
 import { RxHamburgerMenu } from "react-icons/rx";
 
 import useDarkmode from "../../Hooks/useDarkMode";
 import { FaRegUserCircle } from "react-icons/fa";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { logOut } from "../../store/reducer/auth/authCustomerSlice";
 
 const Header = ({ isCollapsed, setIsCollapsed, toggleSidebar }) => {
+
+    const dispatch = useDispatch();
     const [isDark] = useDarkmode();
     const { width, breakpoints } = useWidth();
     const { clientUser } = useSelector((state) => state.authCustomerSlice);
 
-    console.log("clientUser",clientUser);
-    
-    
+    const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+
+
+    const dropdownRef = useRef(null);
+    const profileDropdownRef = useRef(null);
+
+
+
 
 
     useEffect(() => {
@@ -29,15 +43,26 @@ const Header = ({ isCollapsed, setIsCollapsed, toggleSidebar }) => {
     }, [width])
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const dropdownRef = useRef(null);
+
+
+    const toggleProfileDropdown = () => {
+        setIsProfileDropdownOpen(!isProfileDropdownOpen);
+    };
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
     };
 
     const handleClickOutside = (event) => {
+        console.log("clicking outside");
+
         if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
             setIsDropdownOpen(false);
+        }
+        console.log("profileDropdownRef", profileDropdownRef);
+
+        if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
+            setIsProfileDropdownOpen(false);
         }
     };
 
@@ -47,6 +72,16 @@ const Header = ({ isCollapsed, setIsCollapsed, toggleSidebar }) => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
+
+
+
+    function handleLogout() {
+        localStorage.removeItem("SAAS_BILLION_FORMS_customer_token")
+        localStorage.removeItem("SAAS_BILLION_FORMS_customerInfo")
+        localStorage.removeItem("SAAS_BILLION_FORMS_expiryTime")
+        dispatch(logOut());
+        navigate("/login");
+    }
 
     return (
         <div
@@ -93,7 +128,7 @@ const Header = ({ isCollapsed, setIsCollapsed, toggleSidebar }) => {
                                         width < breakpoints.lg || width <= breakpoints.sm ? "" :
                                             <div className="flex items-center gap-3 ">
                                                 <button onClick={toggleSidebar} className="hover:bg-blue-200/30 p-2 rounded-full transition duration-300 ease-in-out">
-                                                    <RxHamburgerMenu className={` text-lg ${isDark ? "text-white" : "text-white"}` } />
+                                                    <RxHamburgerMenu className={` text-lg ${isDark ? "text-white" : "text-white"}`} />
                                                 </button>
                                                 <h2 className="text-lg text-white">Dashboard</h2>
                                             </div>
@@ -102,41 +137,9 @@ const Header = ({ isCollapsed, setIsCollapsed, toggleSidebar }) => {
                                 </>
                             )}
                         </div>
-
-                        {/* <div
-              className={`absolute  z-10 mt-2 w-[120%] origin-top-right rounded-md ${
-                isDark ? "bg-dark text-light" : "bg-light"
-              } shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transform transition ease-in-out duration-200 ${
-                isDropdownOpen
-                  ? "opacity-100 scale-100"
-                  : "opacity-0 scale-95 pointer-events-none"
-              }`}
-              role="menu"
-              aria-orientation="vertical"
-              aria-labelledby="menu-button"
-            >
-              <div className="py-1" role="none">
-                <a
-                  href="#"
-                  className="block px-4 py-2 text-sm "
-                  role="menuitem"
-                  id="menu-item-0"
-                >
-                  Following
-                </a>
-                <a
-                  href="#"
-                  className="block px-4 py-2 text-sm "
-                  role="menuitem"
-                  id="menu-item-1"
-                >
-                  Favorites
-                </a>
-              </div>
-            </div> */}
                     </div>
                 </div>
-                <div className="w-[60%] h-[100%]   py-2">
+                <div ref={profileDropdownRef} className="w-[60%] h-[100%]    py-2">
                     <div className="w-[100%] h-[100%]  flex justify-end  ">
                         {/* search */}
                         {/* <div className="w-[80%] h-[100%] overflow-hidden">
@@ -154,11 +157,40 @@ const Header = ({ isCollapsed, setIsCollapsed, toggleSidebar }) => {
               </div>
             </div> */}
 
-                        {/* heart img */}
+                        <div
+
+                            className={`absolute top-8 z-10 mt-2 w-auto origin-top-right rounded-md ${isDark ? "bg-cardBgDark text-light" : "bg-white text-gray-800"
+                                } shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transform transition ease-in-out duration-200 ${isProfileDropdownOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
+                                }`}
+                            role="menu"
+                            aria-orientation="vertical"
+                            aria-labelledby="menu-button"
+                        >
+                            <div className="py-1" role="none">
+                                <button
+                                    className="flex items-center gap-3 px-4 py-2 text-sm w-[100%] text-left hover:bg-gray-100  dark:hover:bg-gray-700 transition-all rounded-md"
+                                    role="menuitem"
+                                // onClick={() => navigate("/account")} // Navigate without reload
+                                >
+                                    <FcBusinessman className="h-6 w-6" />
+                                    <p>Profile</p>
+                                </button>
+                                <button
+                                    className="flex items-center gap-3 px-4 py-2 text-sm w-[100%] text-left hover:bg-red-100 dark:hover:bg-red-700 transition-all rounded-md"
+                                    role="menuitem"
+                                    onClick={handleLogout}
+                                >
+                                    <FcExport className="text-red-500 h-6 w-6" />
+                                    <p>Logout</p>
+                                </button>
+                            </div>
+                        </div>
 
                         <div className="w-auto gap-2 flex justify-center items-center ">
-                            <span className="">
-                                <FaRegUserCircle className={` text-lg ${isDark ? "text-white" : "text-white"} w-5 h-5` } />
+                            <span
+                                onClick={toggleProfileDropdown}
+                                className="">
+                                <FaUser className={` text-lg ${isDark ? "text-white" : "text-white"} w-5 h-5`} />
                             </span>
                             <span className="text-white">{clientUser?.firstName + " " + clientUser?.lastName}</span>
                         </div>
