@@ -110,10 +110,12 @@ import PropTypes from "prop-types";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { AiOutlineDashboard } from "react-icons/ai";
-import { FaRegBuilding, FaUser, FaUserPlus, FaUserCheck, FaUsersViewfinder } from "react-icons/fa";
+import { FaRegBuilding, FaUser, FaUserPlus, FaUserCheck } from "react-icons/fa";
 import { PiPaperPlaneTiltFill } from "react-icons/pi";
 import { MdOutlineSubscriptions } from "react-icons/md";
 import { FaArrowUpFromBracket } from "react-icons/fa6";
+import { FaUsersViewfinder } from "react-icons/fa6";
+
 import useDarkmode from "../../Hooks/useDarkMode";
 import Icons from "../SideBar/Icons";
 
