@@ -206,7 +206,7 @@ const Login = ({ companyIdentifier }) => {
                             <div className='sm:border-2  border-gray-300 rounded-sm p-6  max-w-md mx-auto shadow-md'>
                                 <div className='flex justify-center py-6'>
                                     {/* <img src={logoWhite} alt="Instagram Logo" className='w-36' /> */}
-                                    <h2 className='text1'>{companyName}</h2>
+                                    <h2 className='text1'>{companyName || "Invalid Company"}</h2>
                                 </div>
 
                                 <div className='w-[90%]   rounded-lg flex justify-center items-center mx-auto'>
