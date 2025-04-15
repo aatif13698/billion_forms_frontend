@@ -9,6 +9,8 @@ import { FiSearch } from "react-icons/fi";
 import { TfiUser } from "react-icons/tfi";
 import { FcBusinessman } from "react-icons/fc";
 import { FcExport } from "react-icons/fc";
+import { HiMiniUserCircle } from "react-icons/hi2";
+
 
 
 
@@ -18,11 +20,14 @@ import useDarkmode from "../../Hooks/useDarkMode";
 import { FaRegUserCircle } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { logOut } from "../../store/reducer/auth/authCustomerSlice";
+import { MdDarkMode } from "react-icons/md";
+import { CiLight } from "react-icons/ci";
 
-const Header = ({ isCollapsed, setIsCollapsed, toggleSidebar }) => {
+const Header = ({ isCollapsed, toggleMobileSidebar, setIsCollapsed, toggleSidebar }) => {
+
 
     const dispatch = useDispatch();
-    const [isDark] = useDarkmode();
+    const [isDark, setDarkMode] = useDarkmode();
     const { width, breakpoints } = useWidth();
     const { clientUser } = useSelector((state) => state.authCustomerSlice);
 
@@ -99,7 +104,7 @@ const Header = ({ isCollapsed, setIsCollapsed, toggleSidebar }) => {
                                     id="menu-button"
                                     aria-expanded={isDropdownOpen}
                                     aria-haspopup="true"
-                                    onClick={toggleDropdown}
+                                    onClick={toggleMobileSidebar}
                                 >
                                     {
                                         <img
@@ -166,6 +171,16 @@ const Header = ({ isCollapsed, setIsCollapsed, toggleSidebar }) => {
                             aria-orientation="vertical"
                             aria-labelledby="menu-button"
                         >
+                            <div className="px-4 py-2 border-b flex justify-between items-center">
+                                <div className="w-auto gap-2 flex justify-center items-center ">
+                                    <span
+                                        onClick={toggleProfileDropdown}
+                                        className="">
+                                        <HiMiniUserCircle className={` text-lg ${isDark ? "text-textDark" : "text-textLight"} w-5 h-5`} />
+                                    </span>
+                                    <span className="text-textLight font-semibold dark:text-textDark">{clientUser?.firstName + " " + clientUser?.lastName}</span>
+                                </div>
+                            </div>
                             <div className="py-1" role="none">
                                 <button
                                     className="flex items-center gap-3 px-4 py-2 text-sm w-[100%] text-left hover:bg-gray-100  dark:hover:bg-gray-700 transition-all rounded-md"
@@ -173,7 +188,7 @@ const Header = ({ isCollapsed, setIsCollapsed, toggleSidebar }) => {
                                 // onClick={() => navigate("/account")} // Navigate without reload
                                 >
                                     <FcBusinessman className="h-6 w-6" />
-                                    <p>Profile</p>
+                                    <p className="text-textLight dark:text-textDark">Profile</p>
                                 </button>
                                 <button
                                     className="flex items-center gap-3 px-4 py-2 text-sm w-[100%] text-left hover:bg-red-100 dark:hover:bg-red-700 transition-all rounded-md"
@@ -181,9 +196,22 @@ const Header = ({ isCollapsed, setIsCollapsed, toggleSidebar }) => {
                                     onClick={handleLogout}
                                 >
                                     <FcExport className="text-red-500 h-6 w-6" />
-                                    <p>Logout</p>
+                                    <p className="text-textLight dark:text-textDark">Logout</p>
                                 </button>
                             </div>
+                        </div>
+
+                        <div className="flex items-center mx-3">
+                            <button
+                                onClick={() => setDarkMode(!isDark)}
+                                className={`nav-item flex   cursor-pointer   rounded-md  transition duration-500`}
+                            >
+                                <div className={`menu-link flex items-center `}>
+                                    <span className="menu-icon flex-grow-0">
+                                        {isDark ? <CiLight className={` text-lg ${isDark ? "text-white" : "text-white"} w-5 h-5`} /> : <MdDarkMode className={` text-lg ${isDark ? "text-white" : "text-white"} w-5 h-5`} />}
+                                    </span>
+                                </div>
+                            </button>
                         </div>
 
                         <div className="w-auto gap-2 flex justify-center items-center ">
@@ -192,7 +220,6 @@ const Header = ({ isCollapsed, setIsCollapsed, toggleSidebar }) => {
                                 className="">
                                 <FaUser className={` text-lg ${isDark ? "text-white" : "text-white"} w-5 h-5`} />
                             </span>
-                            <span className="text-white">{clientUser?.firstName + " " + clientUser?.lastName}</span>
                         </div>
                     </div>
                 </div>

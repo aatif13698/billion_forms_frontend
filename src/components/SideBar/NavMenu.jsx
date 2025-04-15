@@ -105,7 +105,7 @@ const NavMenu = ({ isCollapsed }) => {
                 
 
                 {/* Dark Mode Toggle */}
-                <li
+                {/* <li
                     onClick={() => setDarkMode(!isDark)}
                     className={`nav-item flex my-2  cursor-pointer ${width < breakpoints.lg || isCollapsed ? "justify-center" : "px-2"}  rounded-md hover:bg-slate-200 transition duration-500`}
                 >
@@ -117,7 +117,7 @@ const NavMenu = ({ isCollapsed }) => {
                             {isDark ? "Light" : "Dark"}
                         </div>
                     </div>
-                </li>
+                </li> */}
             </ul>
 
             {/* Logo */}

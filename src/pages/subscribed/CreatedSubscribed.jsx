@@ -265,7 +265,7 @@ function CreatedSubscribed() {
                 <div className="flex justify-end mt-3">
                     <button
                         onClick={handleSubmit}
-                        className="w-auto px-4 my-3 text-white py-2 rounded-lg transition-all duration-300 ease-in-out 
+                        className="w-auto p-2 text-sm text-white  rounded-lg transition-all duration-300 ease-in-out 
                 bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light 
                  hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark 
                  flex items-center justify-center shadow-lg"
@@ -361,7 +361,7 @@ function CreatedSubscribed() {
                 <div className="flex justify-end mt-3">
                     <button
                         onClick={handleSubmit2}
-                        className="w-auto px-4 my-3 text-white py-2 rounded-lg transition-all duration-300 ease-in-out 
+                        className="w-auto text-sm p-2 text-white  rounded-lg transition-all duration-300 ease-in-out 
                 bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light 
                  hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark 
                  flex items-center justify-center shadow-lg"

@@ -34,6 +34,10 @@ const conf = withMT({
         textGradientDarkTo : "#ffffff",
 
 
+        textLight : "#00768a",
+        textDark : "#ffffff",
+
+
 
 
         formLabelLight : "rgb(0 0 0)",

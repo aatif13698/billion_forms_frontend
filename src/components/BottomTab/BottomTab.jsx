@@ -49,10 +49,10 @@ const BottomTab = ({ show, noFade }) => {
         { title: "User", icon: FaUser, link: "/user" },
         { title: "Requests", icon: FaUserPlus, link: "/requests" },
         { title: "Clients", icon: FaUserCheck, link: "/list/clients" },
-        { title: "Companies", icon: FaUsersViewfinder, link: "/list/company" },
-        { title: "Subscription", icon: PiPaperPlaneTiltFill, link: "/list/subscription" },
-        { title: "Topup", icon: FaArrowUpFromBracket, link: "/list/topup" },
-        { title: "subscribed", icon: MdOutlineSubscriptions, link: "/list/subscribed" },
+        // { title: "Companies", icon: FaUsersViewfinder, link: "/list/company" },
+        // { title: "Subscription", icon: PiPaperPlaneTiltFill, link: "/list/subscription" },
+        // { title: "Topup", icon: FaArrowUpFromBracket, link: "/list/topup" },
+        // { title: "subscribed", icon: MdOutlineSubscriptions, link: "/list/subscribed" },
       ]);
     } else if (clientUser?.role?.id === 2) {
       setMenuItems([

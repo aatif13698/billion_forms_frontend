@@ -41,10 +41,10 @@ function CustomTable({
     }, [currentPage, rowsPerPage]);
 
     useEffect(() => {
-        if(updatedData && updatedData?.length > 0){
+        if (updatedData && updatedData?.length > 0) {
             setData(updatedData)
         }
-    },[updatedData])
+    }, [updatedData])
 
     const loadData = async () => {
         try {
@@ -75,7 +75,7 @@ function CustomTable({
     };
 
     function handleChange(e) {
-        const {value} = e.target;
+        const { value } = e.target;
         setText(value)
         debounceSearch(value);
     }
@@ -103,16 +103,19 @@ function CustomTable({
     return (
         <>
 
-            <div className='flex justify-between '>
-                <button
-                    onClick={buttonAction}
-                    className="w-auto px-4 my-3 text-white py-2 rounded-lg transition-all duration-300 ease-in-out 
+            <div className='flex justify-between md:flex-row flex-col gap-3 '>
+                <div>
+                    <button
+                        onClick={buttonAction}
+                        className="w-auto text-sm p-2 text-white py-2 rounded-lg transition-all duration-300 ease-in-out 
                 bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light 
                  hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark 
                  flex items-center justify-center shadow-lg"
-                >
-                    {buttonName}
-                </button>
+                    >
+                        {buttonName}
+                    </button>
+                </div>
+
 
                 <div className='flex justify-center items-center'>
                     <input
@@ -121,7 +124,7 @@ function CustomTable({
                         name='search'
                         value={text}
                         placeholder='Search...'
-                        className="w-[100%] bg-transparent p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-[100%] bg-transparent px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                 </div>
             </div>
@@ -228,7 +231,7 @@ function CustomTable({
                             Previous
                         </button>
                         <span className='text-[.70rem]'>
-                            Page {currentPage} of {totalPages} 
+                            Page {currentPage} of {totalPages}
                         </span>
                         <button
                             onClick={() => handlePageChange(currentPage + 1)}
@@ -242,9 +245,9 @@ function CustomTable({
 
                 <div className='flex justify-end '>
 
-                <span className='text-[.80rem] mx-4 '>
-                            Total Data - <span className='font-bold'>{totalItems} </span> 
-                        </span>
+                    <span className='text-[.80rem] mx-4 '>
+                        Total Data - <span className='font-bold'>{totalItems} </span>
+                    </span>
 
                 </div>
             </div>

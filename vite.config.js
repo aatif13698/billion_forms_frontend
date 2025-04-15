@@ -18,8 +18,8 @@ export default defineConfig({
   build: {
     chunkSizeWarningLimit: 1600,
   },
-  // server: {
-  //   host: '0.0.0.0', // Force Vite to use localhost
-  //   port: 8081,        // Keep your desired port
-  // },
+  server: {
+    host: '0.0.0.0', // Force Vite to use localhost
+    port: 8081,        // Keep your desired port
+  },
 });
