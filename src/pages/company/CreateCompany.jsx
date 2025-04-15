@@ -161,7 +161,7 @@ function CreateCompany() {
         <div className="flex flex-col md:mx-4  mx-2     mt-3 min-h-screen bg-light dark:bg-dark">
             <Hamberger text={`Company / ${company ? "Update" : "Add New"} `} />
             <div className="w-[100%]   bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-lg p-6">
-                <h2 className="text-2xl font-semibold text-formHeadingLight dark:text-formHeadingDark mb-4 text-start">{`${company ? "Update" : "Create"} Company`}</h2>
+                <h2 className="md:text-2xl text-1xl font-semibold text-formHeadingLight dark:text-formHeadingDark md:mb-4 mb-2 text-start">{`${company ? "Update" : "Create"} Company`}</h2>
 
                 <div className="h-[2px] bg-black dark:bg-white mb-4"></div>
 

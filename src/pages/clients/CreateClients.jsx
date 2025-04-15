@@ -202,7 +202,7 @@ function CreateClients() {
         <div className="flex flex-col md:mx-4  mx-2     mt-3 min-h-screen bg-light dark:bg-dark">
             <Hamberger text={`${client ? "Client / Update" : "Client / Add New"}`} />
             <div className="w-[100%] mb-20  bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-lg p-6">
-                <h2 className="md:text-2xl text-1xl font-semibold text-formHeadingLight dark:text-formHeadingDark mb-4 text-start">{`${client ? "Update Client" : "Create Client"}`}</h2>
+                <h2 className="md:text-2xl text-1xl font-semibold text-formHeadingLight dark:text-formHeadingDark md:mb-4 mb-2 text-start">{`${client ? "Update Client" : "Create Client"}`}</h2>
                 <div className="h-[1.8px] bg-black dark:bg-white mb-4"></div>
                 <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>

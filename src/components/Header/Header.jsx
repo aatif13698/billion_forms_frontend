@@ -214,10 +214,10 @@ const Header = ({ isCollapsed, toggleMobileSidebar, setIsCollapsed, toggleSideba
                             </button>
                         </div>
 
-                        <div className="w-auto gap-2 flex justify-center items-center ">
+                        <div className="w-auto  gap-2 flex justify-center items-center ">
                             <span
                                 onClick={toggleProfileDropdown}
-                                className="">
+                                className="cursor-pointer">
                                 <FaUser className={` text-lg ${isDark ? "text-white" : "text-white"} w-5 h-5`} />
                             </span>
                         </div>
