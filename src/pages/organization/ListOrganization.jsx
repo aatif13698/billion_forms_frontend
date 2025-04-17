@@ -90,8 +90,8 @@ function ListOrganization() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-2 md:p-2 mt-4">
               {organizations && organizations.length > 0 ? (
                 organizations.map((item) => {
-                  const bannerUrl = `${import.meta.env.VITE_API_URL}${item.banner}`;
-                  const logoUrl = `${import.meta.env.VITE_API_URL}${item.logo}`;
+                  const bannerUrl = `${import.meta.env.VITE_API_URL_IMG}${item.banner}`;
+                  const logoUrl = `${import.meta.env.VITE_API_URL_IMG}${item.logo}`;
                   return (
                     <div
                       onClick={() => viewOrganization(item?._id)}
