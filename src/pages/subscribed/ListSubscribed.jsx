@@ -19,27 +19,20 @@
 
 
 
-import React, { useEffect, useState, Fragment } from 'react'
+import React, { useState } from 'react'
 import CustomTable from '../../components/CustomTable/CustomTable'
 import useDarkmode from '../../Hooks/useDarkMode';
 import Hamberger from '../../components/Hamberger/Hamberger';
-import { FaRegEdit } from "react-icons/fa";
-import { FaRedoAlt } from "react-icons/fa";
 import { FaRegEye } from "react-icons/fa6";
 
 
 
-import { FaTrashAlt } from "react-icons/fa";
-import { useLocation, useNavigate } from 'react-router-dom';
-import companyService from '../../services/companyService';
-import { Dialog, Transition } from "@headlessui/react";
-import LoadingSpinner from '../../components/Loading/LoadingSpinner';
+import {  useNavigate } from 'react-router-dom';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css'; // Optional: default CSS styling
 import "../../App.css"
-import subscriptionService from '../../services/subscriptionService';
-import topupService from '../../services/topupService';
 import subscribedUserService from '../../services/subscribedUserService';
+import LoadingModel from '../../components/Loading/LoadingModel';
 
 function ListSubscribed({ noFade }) {
   const [showLoadingModal, setShowLoadingModal] = useState(false);
@@ -107,29 +100,6 @@ function ListSubscribed({ noFade }) {
         )
       }
     },
-
-
-    // {
-    //   key: 'isActive',
-    //   header: 'Status',
-    //   render: (value, row) => {
-    //     console.log("row active", row?.isActive);
-    //     return (
-    //       <Tippy
-    //         content={value ? "Click to deactivate" : "Click to activate"}
-    //         placement="top"
-    //         theme="custom"
-    //       >
-    //         <button
-    //           onClick={() => handleActiveInactive(currentPage, rowsPerPage, text, row?.isActive, row?._id)}
-    //           className={`${value ? "bg-green-500/60" : "bg-red-500/50"} shadow-lg text-[.80rem] font-bold text-black dark:text-white px-2 py-1 rounded-md`}
-    //         >
-    //           {value ? "Active" : "InActive"}
-    //         </button>
-    //       </Tippy>
-    //     )
-    //   },
-    // },
     {
       header: 'Action',
       render: (value, row) => (
@@ -175,68 +145,9 @@ function ListSubscribed({ noFade }) {
     }
   }
 
-  async function handleDelete(currentPage, rowsPerPage, text, id) {
-    try {
-      const dataObject = {
-        topupId: id,
-        keyword: text,
-        page: currentPage,
-        perPage: rowsPerPage
-      }
-      setShowLoadingModal(true)
-      const response = await topupService.softDeleteTopup(dataObject);
-      setUpdatedData(response.data?.data?.data)
-      setShowLoadingModal(false);
-    } catch (error) {
-      setShowLoadingModal(false)
-      console.log("error while deleting topup data", error);
-    }
-  }
-
-
-  async function handleRestore(currentPage, rowsPerPage, text, id) {
-    try {
-      const dataObject = {
-        topupId: id,
-        keyword: text,
-        page: currentPage,
-        perPage: rowsPerPage
-      }
-      setShowLoadingModal(true)
-      const response = await topupService.restoreTopup(dataObject);
-      setUpdatedData(response.data?.data?.data)
-      setShowLoadingModal(false);
-    } catch (error) {
-      setShowLoadingModal(false)
-      console.log("error while restroring data", error);
-    }
-  }
-
   function buttonAction() {
     navigate("/create/subscribed")
   }
-
-  async function handleActiveInactive(currentPage, rowsPerPage, text, status, id) {
-    try {
-      const dataObject = {
-        status: status ? "0" : "1",
-        topupId: id,
-        keyword: text,
-        page: currentPage,
-        perPage: rowsPerPage
-      }
-      setShowLoadingModal(true)
-      const response = await topupService.activeInactiveTopup(dataObject);
-      setUpdatedData(response.data?.data?.data)
-      setShowLoadingModal(false)
-    } catch (error) {
-      setShowLoadingModal(false)
-      console.log("error while active inactive status", error);
-    }
-  }
-
-
-
 
   return (
     <div className="flex flex-col md:mx-4  mx-2     mt-3 min-h-screen bg-light dark:bg-dark">
@@ -262,38 +173,8 @@ function ListSubscribed({ noFade }) {
           setText={setText}
         />
       </div>
-      <Transition appear show={showLoadingModal} as={Fragment}>
-        <Dialog as="div" className="relative z-[99999]" onClose={handleCloseLoadingModal}>
-          <Transition.Child
-            as={Fragment}
-            enter={noFade ? "" : "duration-300 ease-out"}
-            enterFrom={noFade ? "" : "opacity-0"}
-            enterTo={noFade ? "" : "opacity-100"}
-            leave={noFade ? "" : "duration-200 ease-in"}
-            leaveFrom={noFade ? "" : "opacity-100"}
-            leaveTo={noFade ? "" : "opacity-0"}
-          >
-            <div className="fixed inset-0 bg-slate-900/50 backdrop-filter backdrop-blur-sm" />
-          </Transition.Child>
-          <div className="fixed  inset-0 overflow-y-auto flex justify-center items-center">
-            <Transition.Child
-              as={Fragment}
-              enter={noFade ? "" : "duration-300 ease-out"}
-              enterFrom={noFade ? "" : "opacity-0 scale-95"}
-              enterTo={noFade ? "" : "opacity-100 scale-100"}
-              leave={noFade ? "" : "duration-200 ease-in"}
-              leaveFrom={noFade ? "" : "opacity-100 scale-100"}
-              leaveTo={noFade ? "" : "opacity-0 scale-95"}
-            >
-              <Dialog.Panel>
-                <div className='flex  justify-center items-center'>
-                  <LoadingSpinner />
-                </div>
-              </Dialog.Panel>
-            </Transition.Child>
-          </div>
-        </Dialog>
-      </Transition>
+      {/* loading model */}
+      <LoadingModel showLoadingModal={showLoadingModal} setShowLoadingModal={setShowLoadingModal} handleCloseLoadingModal={handleCloseLoadingModal} />
     </div>
   )
 }

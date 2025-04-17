@@ -28,7 +28,7 @@ const NavMenu = ({ isCollapsed }) => {
         if (clientUser?.role?.id === 1) {
             setMenuItems([
                 { title: "Dashboard", icon: AiOutlineDashboard, link: "/dashboard" },
-                { title: "Organisation", icon: FaRegBuilding, link: "/organisation" },
+                { title: "Organization", icon: FaRegBuilding, link: "/list/organization" },
                 { title: "User", icon: FaUser, link: "/user" },
                 { title: "Requests", icon: FaUserPlus, link: "/requests" },
                 { title: "Clients", icon: FaUserCheck, link: "/list/clients" },
@@ -37,10 +37,10 @@ const NavMenu = ({ isCollapsed }) => {
                 { title: "Topup", icon: FaArrowUpFromBracket, link: "/list/topup" },
                 { title: "subscribed", icon: MdOutlineSubscriptions, link: "/list/subscribed" },
             ]);
-        }else if(clientUser?.role?.id === 2){
+        } else if (clientUser?.role?.id === 2) {
             setMenuItems([
                 { title: "Dashboard", icon: AiOutlineDashboard, link: "/dashboard" },
-                { title: "Organisation", icon: FaRegBuilding, link: "/organisation" },
+                { title: "Organisation", icon: FaRegBuilding, link: "/organization" },
                 { title: "User", icon: FaUser, link: "/user" },
             ]);
         }
@@ -68,10 +68,11 @@ const NavMenu = ({ isCollapsed }) => {
                                 const additionalActiveRoutes = {
                                     "/list/clients": ["/list/clients", "/create/clients"],
                                     "/user": ["/user", "/edit/user", "/view/user"],
+                                    "/list/organization" : ["/list/organization", "/create/organization"],
                                     "/list/company": ["/list/company", "/create/company"],
-                                    "/list/subscription" : ["/list/subscription", "/create/subscription"],
-                                    "/list/topup" : ["/list/topup", "/create/topup"],
-                                    "/list/subscribed" : ["/list/subscribed", "/create/subscribed", "/view/subscribed"],
+                                    "/list/subscription": ["/list/subscription", "/create/subscription"],
+                                    "/list/topup": ["/list/topup", "/create/topup"],
+                                    "/list/subscribed": ["/list/subscribed", "/create/subscribed", "/view/subscribed"],
                                     // Add more mappings as needed
                                 };
 
@@ -102,7 +103,7 @@ const NavMenu = ({ isCollapsed }) => {
                     </li>
                 ))}
 
-                
+
 
                 {/* Dark Mode Toggle */}
                 {/* <li
