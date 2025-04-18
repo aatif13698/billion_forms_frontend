@@ -68,7 +68,7 @@ const NavMenu = ({ isCollapsed }) => {
                                 const additionalActiveRoutes = {
                                     "/list/clients": ["/list/clients", "/create/clients"],
                                     "/user": ["/user", "/edit/user", "/view/user"],
-                                    "/list/organization" : ["/list/organization", "/create/organization"],
+                                    "/list/organization" : ["/list/organization", "/create/organization", "/view/organization"],
                                     "/list/company": ["/list/company", "/create/company"],
                                     "/list/subscription": ["/list/subscription", "/create/subscription"],
                                     "/list/topup": ["/list/topup", "/create/topup"],

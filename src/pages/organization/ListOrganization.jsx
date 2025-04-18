@@ -46,7 +46,7 @@ function ListOrganization() {
     try {
       setShowLoadingModal(true);
       const response = await organizationService.getParticularOrganization(id);
-      navigate("/create/organization", { state: { organization: response?.data?.data?.data } })
+      navigate("/view/organization", { state: { organization: response?.data?.data?.data } })
       setShowLoadingModal(false);
     } catch (error) {
       setShowLoadingModal(false);
