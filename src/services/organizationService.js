@@ -24,6 +24,28 @@ const createOrganization = async (data) => {
 }
 
 
+const updateOrganization = async (data) => {
+    try {
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/update/organization`, data ,
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
+        return response;
+    } catch (error) {
+        if (error.response) {
+            return Promise.reject(error.response.data.message);
+        } else if (error.request) {
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+}
+
+
 
 
 const getAllOrganization = async (userId) => {
@@ -84,6 +106,7 @@ const getParticularOrganization = async (id) => {
 
 export default {
     createOrganization,
+    updateOrganization,
     getAllOrganization,
     getParticularOrganization
 }

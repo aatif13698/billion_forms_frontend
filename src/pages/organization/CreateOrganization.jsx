@@ -121,8 +121,8 @@ function CreateOrganization() {
 
             let response;
             if (client) {
-                dataObject.append("clientId", client._id);
-                response = await organizationService.createOrganization(dataObject);
+                dataObject.append("organizationId", client._id);
+                response = await organizationService.updateOrganization(dataObject);
             } else {
                 response = await organizationService.createOrganization(dataObject);
             }

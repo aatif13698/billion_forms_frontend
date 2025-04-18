@@ -5,7 +5,7 @@ import axios from "axios";
 const createCustomField = async (data) => {
     const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
     try {
-        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/auth/custom-fields`, { ...data }, {
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/custom-fields`, { ...data }, {
             headers: {
                 Authorization: `Bearer ${authToken}`,
             }
@@ -30,7 +30,7 @@ const getCustomFields = async () => {
     const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
     try {
         const response = await axios.get(
-            `${import.meta.env.VITE_API_URL}/api/superadmin/auth/custom-fields`,
+            `${import.meta.env.VITE_API_URL}/api/superadmin/administration/custom-fields`,
             {
                 headers: {
                     Authorization: `Bearer ${authToken}`,

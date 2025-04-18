@@ -5,7 +5,8 @@ import organizationService from '../../services/organizationService'
 import { useSelector } from 'react-redux'
 import { FaEnvelope, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
 import LoadingModel from '../../components/Loading/LoadingModel'
-import LoadingSpinner from '../../components/Loading/LoadingSpinner'
+import LoadingSpinner from '../../components/Loading/LoadingSpinner';
+import fallBackLogo from "../../assets/logo/aestree-logo.png"
 
 
 function ListOrganization() {
@@ -46,8 +47,10 @@ function ListOrganization() {
     try {
       setShowLoadingModal(true);
       const response = await organizationService.getParticularOrganization(id);
-      navigate("/view/organization", { state: { organization: response?.data?.data?.data } })
       setShowLoadingModal(false);
+      setTimeout(() => {
+        navigate("/view/organization", { state: { organization: response?.data?.data?.data } })
+      }, 600);
     } catch (error) {
       setShowLoadingModal(false);
       console.log("error while getting the particular organization", error);
@@ -112,9 +115,9 @@ function ListOrganization() {
                             src={logoUrl}
                             alt={`${item.name} logo`}
                             className="h-16 w-16 rounded-full object-cover border-2 border-white dark:border-gray-200 shadow-md"
-                            onError={(e) => {
-                              e.target.src = '/fallback-logo.png'; // Fallback image
-                            }}
+                          // onError={(e) => {
+                          //   e.target.src = {fallBackLogo}; // Fallback image
+                          // }}
                           />
                         </div>
                         {/* School details */}
