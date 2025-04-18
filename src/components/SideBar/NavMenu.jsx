@@ -40,7 +40,7 @@ const NavMenu = ({ isCollapsed }) => {
         } else if (clientUser?.role?.id === 2) {
             setMenuItems([
                 { title: "Dashboard", icon: AiOutlineDashboard, link: "/dashboard" },
-                { title: "Organisation", icon: FaRegBuilding, link: "/organization" },
+                { title: "Organisation", icon: FaRegBuilding, link: "/list/organization" },
                 { title: "User", icon: FaUser, link: "/user" },
             ]);
         }
