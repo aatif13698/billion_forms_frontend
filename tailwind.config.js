@@ -37,7 +37,8 @@ const conf = withMT({
         textLight : "#00768a",
         textDark : "#ffffff",
 
-
+        sessionTableBgLight : "#16414ca3",
+        sessionTableBgDark : "#16414ca3",
 
 
         formLabelLight : "rgb(0 0 0)",
@@ -58,7 +59,9 @@ const conf = withMT({
         'custom-gradient-button-dark' : "linear-gradient(to bottom, #8bf6ff, #000000, #8bf6ff)",
         'custom-gradient-header-light' : "radial-gradient(circle, rgb(14 243 214) 0%, rgb(124 255 243) 23%, rgb(159 234 255) 100%)",
         'custom-gradient-header-dark' : "radial-gradient(circle, rgb(11 131 136) 0%, rgb(52 71 70) 23%, rgb(33 37 38) 100%)",
-        'custom-gradient-bottom-light' : "linear-gradient(to bottom, #025d64, #077588, #0c4853)"
+        'custom-gradient-bottom-light' : "linear-gradient(to bottom, #025d64, #077588, #0c4853)",
+        'custom-gradient-session-light' : "linear-gradient(to bottom, #508087, #00b0cc, #4e7b82)",
+        'custom-gradient-session-dark' : "linear-gradient(to bottom, #4b6f74, #292b2d, #2d484b)",
       }
     },
   },

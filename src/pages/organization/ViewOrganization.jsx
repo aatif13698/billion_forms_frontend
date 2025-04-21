@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from "react";
 import Hamberger from "../../components/Hamberger/Hamberger";
 import { useLocation, useNavigate } from "react-router-dom";
-import { FaEnvelope, FaMapMarkerAlt, FaPhone, FaUsers, FaEdit, FaTrash, FaTrashAlt, FaRegEdit, FaRegUser, FaUser } from "react-icons/fa";
+import { FaEnvelope, FaMapMarkerAlt, FaPhone, FaUsers, FaEdit, FaTrash, FaTrashAlt, FaRegEdit, FaRegUser, FaUser, FaSpinner } from "react-icons/fa";
 import LoadingModel from "../../components/Loading/LoadingModel";
 import organizationService from "../../services/organizationService";
 import { FcBusinessman } from "react-icons/fc";
+import sessionService from "../../services/sessionService";
+import { FaCopy, FaExclamationCircle } from "react-icons/fa";
+import common from "../../helper/common";
+import { FaWpforms } from "react-icons/fa6";
+
+// import { format } from "date-fns";
+
 
 function ViewOrganization() {
 
@@ -16,6 +23,8 @@ function ViewOrganization() {
 
     const location = useLocation();
     const client = location?.state?.organization;
+    console.log("organization", client);
+
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: "",
@@ -63,8 +72,6 @@ function ViewOrganization() {
         console.log("Delete clicked");
     };
 
-
-
     // session handling
     const [formData2, setFormData2] = useState({
         session: "",
@@ -72,15 +79,18 @@ function ViewOrganization() {
         closeDate: "",
         status: false,
     });
+    const [sessions, setSessions] = useState([])
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    console.log("sessions", sessions);
+
 
     const sessionRegex = /^\d{4}-\d{2}$/; // Matches YYYY-YY
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData2({ ...formData2, [name]: value });
-
         // Clear error when user starts typing
         setErrors((prev) => ({ ...prev, [name]: "" }));
     };
@@ -110,20 +120,51 @@ function ViewOrganization() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validateForm()) return;
-
         setIsSubmitting(true);
         try {
-            // Placeholder: Replace with your API call
-            // await sessionService.createSession(formData);
-            console.log("Form submitted:", formData2);
+            const dataObject = {
+                organizationId: client?._id, name: formData2?.session, forWhom: formData2?.for, isActive: formData2?.status, closeDate: formData2?.closeDate
+            }
+            const response = await sessionService.createSession(dataObject);
+            console.log("response session", response);
             setFormData2({ session: "", for: "", closeDate: "", status: false });
             setErrors({});
         } catch (error) {
-            console.error("Error submitting form:", error);
+            console.error("Error submitting session:", error);
             setErrors({ general: "An error occurred. Please try again." });
         } finally {
             setIsSubmitting(false);
         }
+    };
+
+    useEffect(() => {
+        if (client?._id) {
+            getSessions()
+        }
+    }, [client]);
+
+    async function getSessions(params) {
+        try {
+            const response = await sessionService.getAllSession(client?.userId);
+
+            console.log("resposne fetching sessions", response);
+
+            setSessions(response?.data?.data?.data)
+
+        } catch (error) {
+            console.log("error while fetching the session", error);
+        }
+    }
+
+
+    // handle session list
+    const [copiedLink, setCopiedLink] = useState(null);
+
+    const handleCopyLink = (link) => {
+        navigator.clipboard.writeText(link).then(() => {
+            setCopiedLink(link);
+            setTimeout(() => setCopiedLink(null), 2000); // Reset after 2s
+        });
     };
 
     return (
@@ -148,9 +189,9 @@ function ViewOrganization() {
                                 src={logoPreview}
                                 alt={`${formData.name} logo`}
                                 className="h-16 w-16 rounded-full object-cover border-2 border-white dark:border-gray-200 shadow-md"
-                                // onError={(e) => {
-                                //     e.target.src = '/fallback-logo.png'; // Fallback image
-                                // }}
+                            // onError={(e) => {
+                            //     e.target.src = '/fallback-logo.png'; // Fallback image
+                            // }}
                             />
                         </div>
                         {/* School details */}
@@ -205,8 +246,180 @@ function ViewOrganization() {
                 </div>
 
 
+                {/* sessions list */}
+
+                <div className="flex flex-col p-1 md:max-w-screen-xl mx-auto">
+                    {sessions && sessions.length > 0 ? (
+                        sessions.map((item, index) => (
+                            <div
+                                key={index}
+                                className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg my-4 overflow-hidden"
+                                aria-label={`Session ${item?.name} for ${item?.for}`}
+                            >
+                                <div className="flex flex-col md:flex-row border-b border-gray-300 dark:border-gray-600">
+                                    {/* Sidebar/Header */}
+                                    <div className="bg-custom-gradient-session-light dark:bg-custom-gradient-session-dark flex flex-col justify-center items-center px-4 py-3 sm:py-4 md:w-1/4">
+                                        <p className="text-base sm:text-lg font-semibold text-white">
+                                            {item?.for}
+                                        </p>
+                                        <p className="text-xs sm:text-sm text-white">{item?.name}</p>
+                                    </div>
+                                    {/* Details Section */}
+                                    <div className="flex-1 px-3 sm:px-4 py-4 bg-white dark:bg-sessionTableBgDark  sm:py-6">
+                                        {/* Mobile: Stacked Layout */}
+                                        <div className="sm:hidden flex flex-col gap-3 text-xs text-gray-700 dark:text-gray-200">
+                                            <div className="border-b-2 pb-2">
+                                                <span className="font-bold">Shareable Link</span>
+                                                <div className="flex items-center gap-2 mt-1">
+                                                    <span className=" text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+                                                        {item?.link}
+                                                    </span>
+                                                    <button
+                                                        onClick={() => handleCopyLink(item?.link)}
+                                                        className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+                                                        aria-label="Copy shareable link"
+                                                        title="Copy link"
+                                                    >
+                                                        <FaCopy />
+                                                    </button>
+                                                    {copiedLink === item?.link && (
+                                                        <span className="text-green-500 text-xs">Copied!</span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <div className="border-b-2 pb-2">
+                                                <span className="font-bold">Form Close Date</span>
+                                                <p className="mt-1">
+                                                    {item?.closeDate
+                                                        ? common.formatDateToReadableString(item.closeDate)
+                                                        : "N/A"}
+                                                </p>
+                                            </div>
+                                            <div className="border-b-2 pb-2">
+                                                <span className="font-bold">Total Forms Received</span>
+                                                <p className="mt-1">{item?.formReceived || 0}</p>
+                                            </div>
+                                            <div className="">
+                                                <span className="font-bold">Form Fields</span>
+                                                <p className="mt-1">
+                                                    {item?.formFields?.join(", ") || "N/A"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        {/* Tablet/Desktop: Table Layout */}
+                                        <table className="hidden sm:table w-[100%] text-sm text-gray-700 dark:text-gray-200">
+                                            <tbody>
+                                                <tr className="border-b border-gray-200 dark:border-gray-700">
+                                                    <th
+                                                        scope="row"
+                                                        className="py-2 px-3 sm:px-4 font-bold text-left w-1/3"
+                                                    >
+                                                        Shareable Link
+                                                    </th>
+                                                    <td className="py-2 px-3 sm:px-4 flex items-center gap-2">
+                                                        <span className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+                                                            {item?.link}
+                                                        </span>
+                                                        <button
+                                                            onClick={() => handleCopyLink(item?.link)}
+                                                            className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+                                                            aria-label="Copy shareable link"
+                                                            title="Copy link"
+                                                        >
+                                                            <FaCopy />
+                                                        </button>
+                                                        {copiedLink === item?.link && (
+                                                            <span className="text-green-500 text-xs">
+                                                                Copied!
+                                                            </span>
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                                <tr className="border-b border-gray-200 dark:border-gray-700">
+                                                    <th
+                                                        scope="row"
+                                                        className="py-2 px-3 sm:px-4 font-bold text-left"
+                                                    >
+                                                        Form Close Date
+                                                    </th>
+                                                    <td className="py-2 px-3 sm:px-4">
+                                                        {item?.closeDate
+                                                            ? common.formatDateToReadableString(item.closeDate)
+                                                            : "N/A"}
+                                                    </td>
+                                                </tr>
+                                                <tr className="border-b border-gray-200 dark:border-gray-700">
+                                                    <th
+                                                        scope="row"
+                                                        className="py-2 px-3 sm:px-4 font-bold text-left"
+                                                    >
+                                                        Total Forms Received
+                                                    </th>
+                                                    <td className="py-2 px-3 sm:px-4">
+                                                        {item?.formReceived || 0}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th
+                                                        scope="row"
+                                                        className="py-2 px-3 sm:px-4 font-bold text-left"
+                                                    >
+                                                        Form Fields
+                                                    </th>
+                                                    <td className="py-2 px-3 sm:px-4">
+                                                        <button
+                                                            className="flex items-center gap-1 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-700 dark:from-blue-600 dark:to-blue-800 rounded-lg shadow-md hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                            aria-label={`Add/Remove Fields`}
+                                                        >
+                                                            <FaWpforms />
+                                                            Add / Remove Fields
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                {/* Footer */}
+                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center px-3 sm:px-4 py-2 sm:py-3 bg-custom-gradient-session-light dark:bg-custom-gradient-session-dark text-white dark:text-dark gap-2">
+                                    <p className="text-xs sm:text-sm text-white ">
+                                        <span className="font-bold">Created on:</span> {" "}
+                                        {item?.createdAt
+                                            ? common.formatDateToReadableString(item.createdAt)
+                                            : "N/A"}
+                                    </p>
+                                    <div className="flex gap-2">
+
+                                        <button
+                                            className="flex items-center gap-1 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-red-500 to-red-700 dark:from-red-600 dark:to-red-800 rounded-lg shadow-md hover:from-red-600 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                            aria-label={`Delete session ${item?.name}`}
+                                        >
+                                            <FaTrashAlt />
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="flex flex-col justify-center items-center py-8 sm:py-12 bg-gray-100 dark:bg-gray-900 rounded-xl shadow-md">
+                            <FaExclamationCircle className="text-3xl sm:text-4xl text-gray-400 dark:text-gray-500 mb-3 sm:mb-4" />
+                            <p className="text-base sm:text-lg font-medium text-gray-600 dark:text-gray-300 mb-3 sm:mb-4">
+                                No Sessions Found
+                            </p>
+                            {/* <button
+                                className="px-3 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-700 dark:from-blue-600 dark:to-blue-800 rounded-lg shadow-md hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                aria-label="Add a new session"
+                            >
+                                Add New Session
+                            </button> */}
+                        </div>
+                    )}
+                </div>
+
+
                 {/* Add New Session */}
-                <div className="flex flex-col items-center my-4 md:px-4 px-1">
+                <div className="flex flex-col items-center my-4 md:px-1 px-1">
                     <style>
                         {`
           input[type="date"]::-webkit-calendar-picker-indicator {
@@ -282,7 +495,7 @@ function ViewOrganization() {
                                     name="closeDate"
                                     value={formData.closeDate}
                                     onChange={handleChange}
-                                    className="w-[100%] bg-transparent border border-gray-300 dark:border-gray-600 rounded-lg p-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    className="w-[100%] bg-transparent border border-gray-300    rounded-lg p-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                     aria-describedby={errors.closeDate ? "closeDate-error" : undefined}
                                 />
                                 {errors.closeDate && (
