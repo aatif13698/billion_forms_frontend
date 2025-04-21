@@ -22,7 +22,8 @@ const CreatedSubscribed = lazy(() => import("../src/pages/subscribed/CreatedSubs
 const ViewSubscribed = lazy(() => import("../src/pages/subscribed/ViewSubscribed"));
 const ListOrganization = lazy(() => import("../src/pages/organization/ListOrganization"));
 const CreateOrganization = lazy(() => import("../src/pages/organization/CreateOrganization"));
-const ViewOrganization = lazy(() => import("../src/pages/organization/ViewOrganization"))
+const ViewOrganization = lazy(() => import("../src/pages/organization/ViewOrganization"));
+const ListFields = lazy(() => import("../src/pages/customField/CustomField"));
 
 import PublicRoute from "./routes/PublicRoute";
 import PrivateRoute from "./routes/PrivateRoute";
@@ -97,6 +98,7 @@ export default function App() {
               <Route path="create/organization" element={<CreateOrganization />} />
               <Route path="view/organization" element={<ViewOrganization />} />
               <Route path="list/organization" element={<ListOrganization />} />
+              <Route path="list/fields" element={<ListFields />} />
 
               <Route path="*" element={<NotFound />} />
             </Route>

@@ -63,24 +63,21 @@ const NavMenu = ({ isCollapsed }) => {
                             to={item.link}
                             className={({ isActive }) => {
                                 const currentPath = location.pathname;
-
                                 // Add additional active route logic here
                                 const additionalActiveRoutes = {
                                     "/list/clients": ["/list/clients", "/create/clients"],
                                     "/user": ["/user", "/edit/user", "/view/user"],
-                                    "/list/organization" : ["/list/organization", "/create/organization", "/view/organization"],
+                                    "/list/organization" : ["/list/organization", "/create/organization", "/view/organization", "/list/fields"],
                                     "/list/company": ["/list/company", "/create/company"],
                                     "/list/subscription": ["/list/subscription", "/create/subscription"],
                                     "/list/topup": ["/list/topup", "/create/topup"],
                                     "/list/subscribed": ["/list/subscribed", "/create/subscribed", "/view/subscribed"],
                                     // Add more mappings as needed
                                 };
-
                                 const activeRoutes = additionalActiveRoutes[item.link] || [item.link];
                                 const isItemActive = activeRoutes.some(route =>
                                     currentPath.startsWith(route)
                                 );
-
                                 return (
                                     getNavItemClass(isItemActive) +
                                     ` menu-link flex items-center  py-2 ${width < breakpoints.lg || isCollapsed ? "flex-col justify-center gap-1" : "gap-2"}`

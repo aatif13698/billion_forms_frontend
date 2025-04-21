@@ -23,7 +23,8 @@ function ViewOrganization() {
 
     const location = useLocation();
     const client = location?.state?.organization;
-    console.log("organization", client);
+
+    console.log("client",client);
 
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
@@ -35,6 +36,7 @@ function ViewOrganization() {
     });
     const [logoPreview, setLogoPreview] = useState("");
     const [bannerPreview, setBannerPreview] = useState("");
+    const [refreshCount, setRefreshCount] = useState(0)
 
     useEffect(() => {
         if (client) {
@@ -129,6 +131,7 @@ function ViewOrganization() {
             console.log("response session", response);
             setFormData2({ session: "", for: "", closeDate: "", status: false });
             setErrors({});
+            setRefreshCount((prev) => prev + 1);
         } catch (error) {
             console.error("Error submitting session:", error);
             setErrors({ general: "An error occurred. Please try again." });
@@ -141,16 +144,12 @@ function ViewOrganization() {
         if (client?._id) {
             getSessions()
         }
-    }, [client]);
+    }, [client, refreshCount]);
 
     async function getSessions(params) {
         try {
-            const response = await sessionService.getAllSession(client?.userId);
-
-            console.log("resposne fetching sessions", response);
-
+            const response = await sessionService.getAllSession(client?.userId, client?._id);
             setSessions(response?.data?.data?.data)
-
         } catch (error) {
             console.log("error while fetching the session", error);
         }
@@ -166,6 +165,10 @@ function ViewOrganization() {
             setTimeout(() => setCopiedLink(null), 2000); // Reset after 2s
         });
     };
+
+    function handleAddField (session) {
+        navigate("/list/fields", {state : {session: session, organization: client}})
+    }
 
     return (
         <div className="flex flex-col md:mx-4 mx-2 mt-3 min-h-screen bg-light dark:bg-dark">
@@ -245,7 +248,6 @@ function ViewOrganization() {
                     </div>
                 </div>
 
-
                 {/* sessions list */}
 
                 <div className="flex flex-col p-1 md:max-w-screen-xl mx-auto">
@@ -270,21 +272,22 @@ function ViewOrganization() {
                                         <div className="sm:hidden flex flex-col gap-3 text-xs text-gray-700 dark:text-gray-200">
                                             <div className="border-b-2 pb-2">
                                                 <span className="font-bold">Shareable Link</span>
-                                                <div className="flex items-center gap-2 mt-1">
-                                                    <span className=" text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+                                                <div className="flex flex-col items-start gap-2 mt-1">
+                                                    <p className=" text-blue-500  hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
                                                         {item?.link}
-                                                    </span>
+                                                    </p>
                                                     <button
                                                         onClick={() => handleCopyLink(item?.link)}
-                                                        className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+                                                        className="flex items-center  text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
                                                         aria-label="Copy shareable link"
                                                         title="Copy link"
                                                     >
                                                         <FaCopy />
+                                                        {copiedLink === item?.link && (
+                                                            <span className="text-green-500 text-xs">Copied!</span>
+                                                        )}
                                                     </button>
-                                                    {copiedLink === item?.link && (
-                                                        <span className="text-green-500 text-xs">Copied!</span>
-                                                    )}
+
                                                 </div>
                                             </div>
                                             <div className="border-b-2 pb-2">
@@ -301,9 +304,17 @@ function ViewOrganization() {
                                             </div>
                                             <div className="">
                                                 <span className="font-bold">Form Fields</span>
-                                                <p className="mt-1">
+                                                {/* <p className="mt-1">
                                                     {item?.formFields?.join(", ") || "N/A"}
-                                                </p>
+                                                </p> */}
+                                                <button
+                                                onClick={() => handleCopyLink(item?.link)}
+                                                    className="flex mt-2 items-center gap-1 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-700 dark:from-blue-600 dark:to-blue-800 rounded-lg shadow-md hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    aria-label={`Add/Remove Fields`}
+                                                >
+                                                    <FaWpforms />
+                                                    Add / Remove Fields
+                                                </button>
                                             </div>
                                         </div>
                                         {/* Tablet/Desktop: Table Layout */}
@@ -317,22 +328,31 @@ function ViewOrganization() {
                                                         Shareable Link
                                                     </th>
                                                     <td className="py-2 px-3 sm:px-4 flex items-center gap-2">
-                                                        <span className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
-                                                            {item?.link}
-                                                        </span>
-                                                        <button
-                                                            onClick={() => handleCopyLink(item?.link)}
-                                                            className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
-                                                            aria-label="Copy shareable link"
-                                                            title="Copy link"
-                                                        >
-                                                            <FaCopy />
-                                                        </button>
-                                                        {copiedLink === item?.link && (
-                                                            <span className="text-green-500 text-xs">
-                                                                Copied!
-                                                            </span>
-                                                        )}
+
+                                                        <div>
+                                                            <a
+                                                                href={item?.link}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                                                            >
+                                                                {item?.link}
+                                                            </a>
+                                                            <button
+                                                                onClick={() => handleCopyLink(item?.link)}
+                                                                className="text-blue-500 mx-2 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+                                                                aria-label="Copy shareable link"
+                                                                title="Copy link"
+                                                            >
+                                                                <FaCopy />
+                                                            </button>
+                                                            {copiedLink === item?.link && (
+                                                                <span className="text-green-500 text-xs">
+                                                                    Copied!
+                                                                </span>
+                                                            )}
+                                                        </div>
+
                                                     </td>
                                                 </tr>
                                                 <tr className="border-b border-gray-200 dark:border-gray-700">
@@ -368,6 +388,7 @@ function ViewOrganization() {
                                                     </th>
                                                     <td className="py-2 px-3 sm:px-4">
                                                         <button
+                                                            onClick={() => handleAddField(item)}
                                                             className="flex items-center gap-1 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-700 dark:from-blue-600 dark:to-blue-800 rounded-lg shadow-md hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                             aria-label={`Add/Remove Fields`}
                                                         >
@@ -402,22 +423,14 @@ function ViewOrganization() {
                             </div>
                         ))
                     ) : (
-                        <div className="flex flex-col justify-center items-center py-8 sm:py-12 bg-gray-100 dark:bg-gray-900 rounded-xl shadow-md">
+                        <div className="flex mt-4 flex-col justify-center items-center py-8 sm:py-12 bg-gray-100 dark:bg-gray-900 rounded-xl shadow-md">
                             <FaExclamationCircle className="text-3xl sm:text-4xl text-gray-400 dark:text-gray-500 mb-3 sm:mb-4" />
                             <p className="text-base sm:text-lg font-medium text-gray-600 dark:text-gray-300 mb-3 sm:mb-4">
                                 No Sessions Found
                             </p>
-                            {/* <button
-                                className="px-3 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-700 dark:from-blue-600 dark:to-blue-800 rounded-lg shadow-md hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                aria-label="Add a new session"
-                            >
-                                Add New Session
-                            </button> */}
                         </div>
                     )}
                 </div>
-
-
                 {/* Add New Session */}
                 <div className="flex flex-col items-center my-4 md:px-1 px-1">
                     <style>
@@ -447,7 +460,7 @@ function ViewOrganization() {
                                     type="text"
                                     id="session"
                                     name="session"
-                                    value={formData.session}
+                                    value={formData2.session}
                                     onChange={handleChange}
                                     className="w-[100%] bg-transparent border border-gray-300    rounded-lg p-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                     placeholder="YYYY-YY (e.g., 2023-24)"
@@ -470,7 +483,7 @@ function ViewOrganization() {
                                     type="text"
                                     id="for"
                                     name="for"
-                                    value={formData.for}
+                                    value={formData2.for}
                                     onChange={handleChange}
                                     className="w-[100%] bg-transparent border border-gray-300 rounded-lg p-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                     placeholder="e.g., Student"
@@ -493,7 +506,7 @@ function ViewOrganization() {
                                     type="date"
                                     id="closeDate"
                                     name="closeDate"
-                                    value={formData.closeDate}
+                                    value={formData2.closeDate}
                                     onChange={handleChange}
                                     className="w-[100%] bg-transparent border border-gray-300    rounded-lg p-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                     aria-describedby={errors.closeDate ? "closeDate-error" : undefined}
@@ -566,7 +579,6 @@ function ViewOrganization() {
                         </div>
                     </div>
                 </div>
-
             </div>
             <LoadingModel showLoadingModal={showLoadingModal} setShowLoadingModal={setShowLoadingModal} handleCloseLoadingModal={handleCloseLoadingModal} />
         </div>
