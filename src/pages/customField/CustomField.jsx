@@ -243,7 +243,7 @@ function CustomField() {
 
     // Render a field preview (simplified for display purposes)
     const renderFieldPreview = (field) => {
-        const baseStyles = "w-[100%] p-2 border border-gray-300 rounded-md";
+        const baseStyles = "w-[100%] bg-transparent  p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500";
 
         switch (field.type) {
             case 'text':
@@ -331,7 +331,7 @@ function CustomField() {
 
             <div className="w-[100%] mb-4 bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-lg p-1">
                 <div
-                    className="relative   bg-white dark:bg-gray-800  overflow-hidden transition-transform duration-300 "
+                    className="relative   bg-light dark:bg-transparent  overflow-hidden transition-transform duration-300 "
                 >
                     <div
                         className="absolute inset-0 bg-cover "
@@ -551,7 +551,7 @@ function CustomField() {
 
                         {formData.type !== 'file' && (
                             <div className="space-y-4">
-                                <h3 className="text-lg font-medium text-gray-800">Validation</h3>
+                                <h3 className="text-lg font-medium text-formHeadingLight dark:text-formHeadingDark">Validation</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Regex</label>
@@ -636,7 +636,7 @@ function CustomField() {
                                 key={index}
                                 style={{ order: field?.gridConfig?.order }}
                             >
-                                <label className="mb-1 text-gray-700 font-medium">
+                                <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">
                                     {field?.label}{field?.isRequired && <span className="text-red-500">*</span>}
                                 </label>
                                 {renderFieldPreview(field)}
