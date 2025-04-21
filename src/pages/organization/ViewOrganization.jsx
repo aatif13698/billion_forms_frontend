@@ -308,8 +308,8 @@ function ViewOrganization() {
                                                     {item?.formFields?.join(", ") || "N/A"}
                                                 </p> */}
                                                 <button
-                                                onClick={() => handleCopyLink(item?.link)}
-                                                    className="flex mt-2 items-center gap-1 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-700 dark:from-blue-600 dark:to-blue-800 rounded-lg shadow-md hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                            onClick={() => handleAddField(item)}
+                                                            className="flex mt-2 items-center gap-1 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-700 dark:from-blue-600 dark:to-blue-800 rounded-lg shadow-md hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                     aria-label={`Add/Remove Fields`}
                                                 >
                                                     <FaWpforms />
