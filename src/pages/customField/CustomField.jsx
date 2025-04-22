@@ -28,6 +28,7 @@ function CustomField() {
     const [fileTypeInput, setFileTypeInput] = useState('');
     const [createdFields, setCreatedFields] = useState([]); // Store fields created in this session
     const [existingFields, setExistingFields] = useState([]); // Store fields fetched from API
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     console.log("existingFields", existingFields);
 
@@ -91,15 +92,15 @@ function CustomField() {
     // Fetch existing fields on component mount
     useEffect(() => {
         const fetchFields = async () => {
-              try {
+            try {
                 const response = await customFieldService.getCustomForms(data?.organization?.userId, data?.session?._id);
 
                 console.log("fields", response?.data?.data?.data);
-                
-                setExistingFields(response?.data?.data?.data);     
-              } catch (error) {
+
+                setExistingFields(response?.data?.data?.data);
+            } catch (error) {
                 setErrors(['Failed to fetch existing fields']);
-              }
+            }
         };
         fetchFields();
     }, []);
@@ -182,7 +183,6 @@ function CustomField() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrors([]); // Clear previous errors
-
         const payload = {
             name: formData.name,
             label: formData.label,
@@ -202,26 +202,21 @@ function CustomField() {
                 span: Number(formData.gridConfig.span),
                 order: Number(formData.gridConfig.order)
             },
-
             userId: data?.organization?.userId,
             sessionId: data?.session?._id
         };
-
         try {
+            setIsSubmitting(true);
             const response = await customFieldService.createCustomForm(payload);
             console.log("Response:", response);
-
             const newField = response.data?.data;
             if (!newField) {
                 throw new Error("No field data returned from the server");
             }
-
             // Add the new field to the createdFields array
             setCreatedFields(prev => [...prev, newField]);
-
             // Show success toast
             toast.success('Field created successfully!');
-
             // Reset form
             setFormData({
                 name: '',
@@ -233,8 +228,9 @@ function CustomField() {
                 validation: { regex: '', min: '', max: '', maxLength: '', fileTypes: [], maxSize: '' },
                 gridConfig: { span: 12, order: 0 }
             });
-
+            setIsSubmitting(false);
         } catch (error) {
+            setIsSubmitting(false);
             console.log("Error creating field:", error);
             const errorMessage = error || 'An error occurred while creating field';
             setErrors([errorMessage]); // Optional: keep in state if you still want to display in UI
@@ -609,27 +605,48 @@ function CustomField() {
                         <div className='flex justify-end'>
 
                             <button
+                                disabled={isSubmitting}
                                 type="submit"
                                 className="w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out 
                             bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light 
                              hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark 
-                             flex items-center justify-center shadow-lg"                        >
-                                Create Field
+                             flex items-center justify-center shadow-lg">
+                                {isSubmitting ? (
+                                    <>
+                                        <svg
+                                            className="animate-spin mr-2 h-5 w-5 text-white"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <circle
+                                                className="opacity-25"
+                                                cx="12"
+                                                cy="12"
+                                                r="10"
+                                                stroke="currentColor"
+                                                strokeWidth="4"
+                                            ></circle>
+                                            <path
+                                                className="opacity-75"
+                                                fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                            ></path>
+                                        </svg>
+                                        Submitting...
+                                    </>
+                                ) : (
+                                    `Create Field`
+                                )}
                             </button>
-
-
                         </div>
-
-
                     </form>
                 </div>
             </div>
-
-
             <div className="w-[100%] mb-20 bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-lg p-6 ">
                 <h3 className="text-xl font-bold text-formHeadingLight  py-2 pb-4 dark:text-formHeadingDark">Custom Fields Preview</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 ">
-                {[...existingFields, ...createdFields]
+                    {[...existingFields, ...createdFields]
                         .sort((a, b) => a.gridConfig?.order - b.gridConfig?.order)
                         .map((field, index) => (
                             <div
@@ -644,9 +661,6 @@ function CustomField() {
                         ))}
                 </div>
             </div>
-
-
-
         </div>
     )
 }

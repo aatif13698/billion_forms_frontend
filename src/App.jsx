@@ -24,6 +24,7 @@ const ListOrganization = lazy(() => import("../src/pages/organization/ListOrgani
 const CreateOrganization = lazy(() => import("../src/pages/organization/CreateOrganization"));
 const ViewOrganization = lazy(() => import("../src/pages/organization/ViewOrganization"));
 const ListFields = lazy(() => import("../src/pages/customField/CustomField"));
+const SubmitForm = lazy(() => import("../src/pages/customField/SubmitForm"))
 
 import PublicRoute from "./routes/PublicRoute";
 import PrivateRoute from "./routes/PrivateRoute";
@@ -72,13 +73,12 @@ export default function App() {
         <Route path="/" element={<AuthLayout />}>
           {/* <Route index element={<Navigate to="/list/company" />} /> */}
 
+          <Route path="/form/:formId" element={<SubmitForm />} />
           <Route element={<PublicRoute isLoggedIn={isLoggedIn} />} >
             <Route path="/" element={<Login />} />
             <Route path="/login" element={<Login companyIdentifier={companyIdentifier} />} />
             <Route path="/signup" element={<SignUp />} />
           </Route>
-
-
 
           <Route element={<PrivateRoute isLoggedIn={isLoggedIn} />} >
             <Route path="/" element={<Layout />}>
@@ -99,15 +99,12 @@ export default function App() {
               <Route path="view/organization" element={<ViewOrganization />} />
               <Route path="list/organization" element={<ListOrganization />} />
               <Route path="list/fields" element={<ListFields />} />
-
               <Route path="*" element={<NotFound />} />
             </Route>
           </Route>
 
-
+          
         </Route>
-
-
       </Routes>
     </main>
   );
