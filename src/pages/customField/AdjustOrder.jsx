@@ -202,7 +202,8 @@ function AdjustOrder() {
                         <Droppable droppableId="fields">
                             {(provided) => (
                                 <div
-                                    className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 gap-4"
+                                    //  className="my-2"
+                                    // className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 gap-4"
                                     {...provided.droppableProps}
                                     ref={provided.innerRef}
                                 >
@@ -215,10 +216,13 @@ function AdjustOrder() {
                                                 index={index}
                                             >
                                                 {(provided, snapshot) => (
+
+                                                    
                                                     <div
+                                                    
                                                         ref={provided.innerRef}
                                                         {...provided.draggableProps}
-                                                        className={`relative p-2 bg-transparent rounded-md border border-gray-300 dark:border-gray-600  shadow-sm transition-all ${snapshot.isDragging
+                                                        className={`relative my-2 p-2 bg-transparent rounded-md border border-gray-300 dark:border-gray-600  shadow-sm transition-all ${snapshot.isDragging
                                                             ? "shadow-lg border-blue-500 dark:border-blue-400"
                                                             : "hover:shadow-md"
                                                             }`}
