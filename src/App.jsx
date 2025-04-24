@@ -25,6 +25,7 @@ const CreateOrganization = lazy(() => import("../src/pages/organization/CreateOr
 const ViewOrganization = lazy(() => import("../src/pages/organization/ViewOrganization"));
 const ListFields = lazy(() => import("../src/pages/customField/CustomField"));
 const SubmitForm = lazy(() => import("../src/pages/customField/SubmitForm"));
+const AdjustOrder = lazy(() => import("../src/pages/customField/AdjustOrder"))
 
 import PublicRoute from "./routes/PublicRoute";
 import PrivateRoute from "./routes/PrivateRoute";
@@ -99,6 +100,7 @@ export default function App() {
               <Route path="view/organization" element={<ViewOrganization />} />
               <Route path="list/organization" element={<ListOrganization />} />
               <Route path="list/fields" element={<ListFields />} />
+              <Route path="list/adjustOrder" element={<AdjustOrder />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Route>

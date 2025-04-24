@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import Hamberger from '../../components/Hamberger/Hamberger';
 import { FaEnvelope, FaExclamationCircle, FaMapMarkerAlt, FaPhone, FaRegEdit } from 'react-icons/fa';
 import Select from 'react-select';
@@ -14,8 +14,13 @@ import "../../App.css"
 
 
 function CustomField() {
+
+    const navigate = useNavigate();
     const location = useLocation();
     const data = location?.state;
+
+    console.log("aatif", data);
+
 
     // custom field handling
     const [formData, setFormData] = useState({
@@ -29,10 +34,6 @@ function CustomField() {
         gridConfig: { span: 12, order: 0 }
     });
 
-    console.log("formData",formData);
-    
-
-
     const [errors, setErrors] = useState([]);
     const [optionInput, setOptionInput] = useState('');
     const [fileTypeInput, setFileTypeInput] = useState('');
@@ -45,9 +46,6 @@ function CustomField() {
         'text', 'number', 'email', 'date', 'select', 'checkbox',
         'textarea', 'multiselect', 'datepicker', 'timepicker', 'color', 'hyperlink', 'file'
     ].map(type => ({ value: type, label: type.charAt(0).toUpperCase() + type.slice(1) }));
-
-    console.log("fieldTypes", fieldTypes);
-    
 
     const commonFileTypes = [
         { value: 'image/jpeg', label: 'JPEG Image (.jpg, .jpeg)' },
@@ -437,9 +435,25 @@ function CustomField() {
                 </div>
             </div>
 
-
             <div className="w-[100%] mb-4 bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-lg p-6 ">
-                <h3 className="text-xl font-bold text-formHeadingLight  py-2 pb-4 dark:text-formHeadingDark">Custom Fields Preview</h3>
+                <div className='flex  md:flex-row flex-col md:justify-between justify-start md:items-center  mb-4'>
+                    <h3 className="text-xl font-bold text-formHeadingLight mb-2  dark:text-formHeadingDark">Custom Fields Preview</h3>
+                    <div>
+                        <button
+                            // disabled={isSubmitting}
+                            onClick={() => navigate("/list/adjustOrder", { state: { organization: data?.organization, session: data?.session, } })}
+                            className="w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out 
+            bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light 
+             hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark 
+             flex items-center justify-center shadow-lg">
+
+                            Adjust Order
+
+                        </button>
+
+                    </div>
+
+                </div>
                 {
                     [...existingFields, ...createdFields].length > 0 ?
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 ">
@@ -484,13 +498,10 @@ function CustomField() {
             </div>
 
             {/* Field section */}
-
             <div className="w-[100%] mb-20 bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-lg p-1">
-
                 <div className="bg-cardBgLight dark:bg-cardBgDark p-6 ">
                     <h2 className="md:text-2xl text-1xl font-semibold text-formHeadingLight dark:text-formHeadingDark md:mb-4 mb-2 text-start">Create Custom Field</h2>
                     <div className="h-[1.8px] bg-black dark:bg-white mb-4"></div>
-
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
@@ -521,7 +532,7 @@ function CustomField() {
                                 <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Type</label>
                                 <Select
                                     options={fieldTypes}
-                                    value={fieldTypes.find(opt => opt.value === formData.type) ? fieldTypes.find(opt => opt.value === formData.type) : null }
+                                    value={fieldTypes.find(opt => opt.value === formData.type) ? fieldTypes.find(opt => opt.value === formData.type) : null}
                                     onChange={(selected) => handleSelectChange('type', selected)}
                                     className="basic-single "
                                     classNamePrefix="select"

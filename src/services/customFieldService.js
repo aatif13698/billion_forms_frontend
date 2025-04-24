@@ -16,11 +16,11 @@ const createCustomField = async (data) => {
 
         if (error.response) {
             return Promise.reject(error.response.data.error || "Invalid credentials");
-          } else if (error.request) {
+        } else if (error.request) {
             return Promise.reject("Network error. Please try again.");
-          } else {
+        } else {
             return Promise.reject("An error occurred. Please try again later.");
-          }
+        }
     }
 }
 
@@ -140,11 +140,35 @@ const deleteCustomField = async (userId, sessionId, fieldId) => {
 
         if (error.response) {
             return Promise.reject(error.response.data.error || "Invalid credentials");
-          } else if (error.request) {
+        } else if (error.request) {
             return Promise.reject("Network error. Please try again.");
-          } else {
+        } else {
             return Promise.reject("An error occurred. Please try again later.");
-          }
+        }
+    }
+}
+
+
+
+const updateOrder = async (userId, sessionId, data) => {
+    const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+    try {
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/update/order/field/${userId}/${sessionId}`, { fields: data }, {
+            headers: {
+                Authorization: `Bearer ${authToken}`,
+                "Content-Type": "application/json",
+            }
+        });
+        return response;
+    } catch (error) {
+
+        if (error.response) {
+            return Promise.reject(error.response.data.error || "Invalid credentials");
+        } else if (error.request) {
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            return Promise.reject("An error occurred. Please try again later.");
+        }
     }
 }
 
@@ -155,5 +179,6 @@ export default {
     createCustomForm,
     getCustomForms,
     getCustomFormsBySession,
-    deleteCustomField
+    deleteCustomField,
+    updateOrder
 }

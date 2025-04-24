@@ -6,6 +6,7 @@ import Hamberger from '../../components/Hamberger/Hamberger';
 import { div } from 'framer-motion/client';
 import { FaEnvelope } from 'react-icons/fa';
 import LoadingSpinner from '../../components/Loading/LoadingSpinner';
+import images from '../../constant/images';
 
 
 // Secret key for decryption (same as used for encryption)
@@ -39,8 +40,8 @@ function SubmitForm() {
     // form handling
     const [customizationValues, setCustomizationValues] = useState({});
 
-    console.log("customizationValues",customizationValues);
-    
+    console.log("customizationValues", customizationValues);
+
 
 
     // handle input
@@ -85,7 +86,7 @@ function SubmitForm() {
         const baseStyles = "w-[100%] bg-transparent  p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500";
         const fieldName = field.name;
         // console.log("field",field);
-        
+
         switch (field.type) {
             case 'text':
             case 'number':
@@ -170,11 +171,11 @@ function SubmitForm() {
         }
     };
 
-    async function handleFormSubmit () {
+    async function handleFormSubmit() {
         try {
 
 
-            
+
         } catch (error) {
             console.log("error while submitting dynamic form", error);
         }
@@ -200,7 +201,7 @@ function SubmitForm() {
                                     src={logoPreview}
                                     alt={`${organizationData?.name} logo`}
                                     className="h-12 sm:h-16 w-12 sm:w-16 rounded-full object-cover border-2 border-white dark:border-gray-200 shadow-md"
-                                    // onError={(e) => (e.target.src = "/fallback-logo.png")}
+                                // onError={(e) => (e.target.src = "/fallback-logo.png")}
                                 />
                             </div>
                             {/* Overlay and Text */}
@@ -244,7 +245,10 @@ function SubmitForm() {
                                         {renderFieldPreview(field)}
                                     </div>
                                 ))}
-                            <div className="flex justify-end mt-4 col-span-1 sm:col-span-2 md:col-span-3">
+                           
+                        </form>
+
+                        <div className="flex justify-end mt-4 col-span-1 sm:col-span-2 md:col-span-3">
                                 <button
                                     onClick={handleFormSubmit}
                                     disabled={isSubmitting}
@@ -283,8 +287,18 @@ function SubmitForm() {
                                     )}
                                 </button>
                             </div>
-                        </form>
                     </div>
+
+                    {/* footer */}
+                    <div className="w-[100%] mt-2 flex justify-center items-center gap-2 bg-cardBgLight shadow-lg rounded-md p-2 sm:p-2">
+                    <span>
+                             <img src={images?.treeLogo} className='w-8 h-8' alt="" />
+                            </span>
+                        <h4 className="text-xs text-textLight sm:text-sm md:text-base font-medium  drop-shadow-lg">
+                            Powered By Aestree Webnet Pvt. Ltd.
+                        </h4>
+                    </div>
+
                 </div>
             )}
         </div>
