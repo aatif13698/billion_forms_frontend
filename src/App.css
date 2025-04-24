@@ -11,3 +11,25 @@
   .tippy-box[data-theme~='custom'] > .tippy-arrow::before {
     color: #25dbeb;
   }
+
+
+
+/* In your CSS or a global style file  for swal*/
+.my-toast-size {
+  width: 300px !important;
+  font-size: 14px;
+  padding: 10px;
+}
+
+.my-toast-size {
+  width: 300px !important;
+  font-size: 14px;
+  padding: 10px;
+}
+
+
+.my-delete-alert{
+  font-size: 0.80rem;
+  padding: 10px;
+  box-shadow: 12px 12px 30px ;
+}

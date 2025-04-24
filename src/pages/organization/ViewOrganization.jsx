@@ -24,7 +24,7 @@ function ViewOrganization() {
     const location = useLocation();
     const client = location?.state?.organization;
 
-    console.log("client",client);
+    console.log("client", client);
 
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
@@ -166,8 +166,8 @@ function ViewOrganization() {
         });
     };
 
-    function handleAddField (session) {
-        navigate("/list/fields", {state : {session: session, organization: client}})
+    function handleAddField(session) {
+        navigate("/list/fields", { state: { session: session, organization: client } })
     }
 
     return (
@@ -308,8 +308,8 @@ function ViewOrganization() {
                                                     {item?.formFields?.join(", ") || "N/A"}
                                                 </p> */}
                                                 <button
-                                                            onClick={() => handleAddField(item)}
-                                                            className="flex mt-2 items-center gap-1 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-700 dark:from-blue-600 dark:to-blue-800 rounded-lg shadow-md hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    onClick={() => handleAddField(item)}
+                                                    className="flex mt-2 items-center gap-1 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-700 dark:from-blue-600 dark:to-blue-800 rounded-lg shadow-md hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                     aria-label={`Add/Remove Fields`}
                                                 >
                                                     <FaWpforms />
@@ -318,51 +318,45 @@ function ViewOrganization() {
                                             </div>
                                         </div>
                                         {/* Tablet/Desktop: Table Layout */}
-                                        <table className="hidden sm:table w-[100%] text-sm text-gray-700 dark:text-gray-200">
+                                        <table className="hidden sm:table w-[100%] text-xs sm:text-sm text-gray-700 dark:text-gray-200">
                                             <tbody>
-                                                <tr className="border-b border-gray-200 dark:border-gray-700">
+                                                <tr className="border-b w-[100%]  border-gray-200 dark:border-gray-700">
                                                     <th
                                                         scope="row"
-                                                        className="py-2 px-3 sm:px-4 font-bold text-left w-1/3"
+                                                        className="py-2 px-3 sm:px-4 font-bold text-left  w-[40%]"
                                                     >
                                                         Shareable Link
                                                     </th>
-                                                    <td className="py-2 px-3 sm:px-4 flex items-center gap-2">
-
-                                                        <div>
-                                                            <a
-                                                                href={item?.link}
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-                                                            >
-                                                                {item?.link}
-                                                            </a>
-                                                            <button
-                                                                onClick={() => handleCopyLink(item?.link)}
-                                                                className="text-blue-500 mx-2 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
-                                                                aria-label="Copy shareable link"
-                                                                title="Copy link"
-                                                            >
-                                                                <FaCopy />
-                                                            </button>
-                                                            {copiedLink === item?.link && (
-                                                                <span className="text-green-500 text-xs">
-                                                                    Copied!
-                                                                </span>
-                                                            )}
-                                                        </div>
-
+                                                    <td className="py-2 px-3 sm:px-4 w-[60%]  flex items-center gap-2">
+                                                        <a
+                                                            href={item?.link}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 truncate max-w-[300px]"
+                                                        >
+                                                            {item?.link}
+                                                        </a>
+                                                        <button
+                                                            onClick={() => handleCopyLink(item?.link)}
+                                                            className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+                                                            aria-label="Copy shareable link"
+                                                            title="Copy link"
+                                                        >
+                                                            <FaCopy />
+                                                        </button>
+                                                        {copiedLink === item?.link && (
+                                                            <span className="text-green-500 text-xs">Copied!</span>
+                                                        )}
                                                     </td>
                                                 </tr>
                                                 <tr className="border-b border-gray-200 dark:border-gray-700">
                                                     <th
                                                         scope="row"
-                                                        className="py-2 px-3 sm:px-4 font-bold text-left"
+                                                        className="py-2 px-3 sm:px-4 font-bold text-left w-[40%]"
                                                     >
                                                         Form Close Date
                                                     </th>
-                                                    <td className="py-2 px-3 sm:px-4">
+                                                    <td className="py-2 px-3 sm:px-4 w-[60%]">
                                                         {item?.closeDate
                                                             ? common.formatDateToReadableString(item.closeDate)
                                                             : "N/A"}
@@ -371,26 +365,26 @@ function ViewOrganization() {
                                                 <tr className="border-b border-gray-200 dark:border-gray-700">
                                                     <th
                                                         scope="row"
-                                                        className="py-2 px-3 sm:px-4 font-bold text-left"
+                                                        className="py-2 px-3 sm:px-4 font-bold text-left w-[40%]"
                                                     >
                                                         Total Forms Received
                                                     </th>
-                                                    <td className="py-2 px-3 sm:px-4">
+                                                    <td className="py-2 px-3 sm:px-4 w-[60%]">
                                                         {item?.formReceived || 0}
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <th
                                                         scope="row"
-                                                        className="py-2 px-3 sm:px-4 font-bold text-left"
+                                                        className="py-2 px-3 sm:px-4 font-bold text-left w-[40%]"
                                                     >
                                                         Form Fields
                                                     </th>
-                                                    <td className="py-2 px-3 sm:px-4">
+                                                    <td className="py-2 px-3 sm:px-4 w-[60%]">
                                                         <button
                                                             onClick={() => handleAddField(item)}
-                                                            className="flex items-center gap-1 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-700 dark:from-blue-600 dark:to-blue-800 rounded-lg shadow-md hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                            aria-label={`Add/Remove Fields`}
+                                                            className="flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-700 dark:from-blue-600 dark:to-blue-800 rounded-lg shadow-md hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                            aria-label={`Add or remove fields for ${item?.name}`}
                                                         >
                                                             <FaWpforms />
                                                             Add / Remove Fields

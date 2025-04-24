@@ -233,7 +233,7 @@ function SubmitForm() {
                                     <div
                                         key={index}
                                         style={{ order: field?.gridConfig?.order }}
-                                        className="min-w-0"
+                                        className={`min-w-0 ${field?.type == "checkbox" ? "flex items-center gap-2" : ""}`}
                                     >
                                         <label className="block text-xs sm:text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">
                                             {field?.label}

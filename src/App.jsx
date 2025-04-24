@@ -24,7 +24,7 @@ const ListOrganization = lazy(() => import("../src/pages/organization/ListOrgani
 const CreateOrganization = lazy(() => import("../src/pages/organization/CreateOrganization"));
 const ViewOrganization = lazy(() => import("../src/pages/organization/ViewOrganization"));
 const ListFields = lazy(() => import("../src/pages/customField/CustomField"));
-const SubmitForm = lazy(() => import("../src/pages/customField/SubmitForm"))
+const SubmitForm = lazy(() => import("../src/pages/customField/SubmitForm"));
 
 import PublicRoute from "./routes/PublicRoute";
 import PrivateRoute from "./routes/PrivateRoute";

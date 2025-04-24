@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import Hamberger from '../../components/Hamberger/Hamberger';
-import { FaEnvelope, FaMapMarkerAlt, FaPhone, FaRegEdit } from 'react-icons/fa';
+import { FaEnvelope, FaExclamationCircle, FaMapMarkerAlt, FaPhone, FaRegEdit } from 'react-icons/fa';
 import Select from 'react-select';
 import customFieldService from '../../services/customFieldService';
 import toast from 'react-hot-toast';
+import { RxCross2 } from "react-icons/rx";
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css'; // Optional: default CSS styling
+import Swal from 'sweetalert2/dist/sweetalert2.js'
+import 'sweetalert2/src/sweetalert2.scss'
+import "../../App.css"
+
 
 function CustomField() {
     const location = useLocation();
     const data = location?.state;
-
-    console.log("data", data);
 
     // custom field handling
     const [formData, setFormData] = useState({
@@ -23,20 +28,26 @@ function CustomField() {
         validation: { regex: '', min: '', max: '', maxLength: '', fileTypes: [], maxSize: '' },
         gridConfig: { span: 12, order: 0 }
     });
+
+    console.log("formData",formData);
+    
+
+
     const [errors, setErrors] = useState([]);
     const [optionInput, setOptionInput] = useState('');
     const [fileTypeInput, setFileTypeInput] = useState('');
     const [createdFields, setCreatedFields] = useState([]); // Store fields created in this session
     const [existingFields, setExistingFields] = useState([]); // Store fields fetched from API
     const [isSubmitting, setIsSubmitting] = useState(false);
-
-    console.log("existingFields", existingFields);
-
+    const [refreshCount, setRefreshCount] = useState(0)
 
     const fieldTypes = [
         'text', 'number', 'email', 'date', 'select', 'checkbox',
         'textarea', 'multiselect', 'datepicker', 'timepicker', 'color', 'hyperlink', 'file'
     ].map(type => ({ value: type, label: type.charAt(0).toUpperCase() + type.slice(1) }));
+
+    console.log("fieldTypes", fieldTypes);
+    
 
     const commonFileTypes = [
         { value: 'image/jpeg', label: 'JPEG Image (.jpg, .jpeg)' },
@@ -94,16 +105,14 @@ function CustomField() {
         const fetchFields = async () => {
             try {
                 const response = await customFieldService.getCustomForms(data?.organization?.userId, data?.session?._id);
-
-                console.log("fields", response?.data?.data?.data);
-
                 setExistingFields(response?.data?.data?.data);
+                setCreatedFields([])
             } catch (error) {
                 setErrors(['Failed to fetch existing fields']);
             }
         };
         fetchFields();
-    }, []);
+    }, [refreshCount]);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -229,6 +238,17 @@ function CustomField() {
                 gridConfig: { span: 12, order: 0 }
             });
             setIsSubmitting(false);
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Field Created Successfully",
+                showConfirmButton: false,
+                timer: 1500,
+                toast: true,
+                customClass: {
+                    popup: 'my-toast-size'
+                }
+            });
         } catch (error) {
             setIsSubmitting(false);
             console.log("Error creating field:", error);
@@ -239,7 +259,7 @@ function CustomField() {
 
     // Render a field preview (simplified for display purposes)
     const renderFieldPreview = (field) => {
-        const baseStyles = "w-[100%] bg-transparent  p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500";
+        const baseStyles = "w-[100%] bg-transparent   p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500";
 
         switch (field.type) {
             case 'text':
@@ -248,6 +268,7 @@ function CustomField() {
             case 'hyperlink':
                 return (
                     <input
+                        disabled={true}
                         type={field?.type}
                         placeholder={field?.placeholder}
 
@@ -257,6 +278,8 @@ function CustomField() {
             case 'textarea':
                 return (
                     <textarea
+                        disabled={true}
+
                         placeholder={field?.placeholder}
 
                         className={`${baseStyles} min-h-[100px]`}
@@ -265,7 +288,10 @@ function CustomField() {
             case 'select':
             case 'multiselect':
                 return (
-                    <select className={baseStyles}>
+                    <select
+                        disabled={true}
+
+                        className={baseStyles}>
                         <option value="">{field?.placeholder || 'Select an option'}</option>
                         {field?.options?.map((opt, idx) => (
                             <option key={idx} value={opt}>{opt}</option>
@@ -275,6 +301,8 @@ function CustomField() {
             case 'checkbox':
                 return (
                     <input
+                        disabled={true}
+
                         type="checkbox"
 
                         className="h-5 w-5 text-blue-600"
@@ -284,6 +312,7 @@ function CustomField() {
                 return (
                     <input
                         type="file"
+                        disabled={true}
 
                         accept={field?.validation?.fileTypes?.join(',')}
                         className={baseStyles}
@@ -293,6 +322,8 @@ function CustomField() {
                 return (
                     <input
                         type="date"
+                        disabled={true}
+
                         placeholder={field?.placeholder || 'Select a date'}
 
                         className={baseStyles}
@@ -302,6 +333,8 @@ function CustomField() {
                 return (
                     <input
                         type="time"
+                        disabled={true}
+
                         placeholder={field?.placeholder || 'Select a time'}
 
                         className={baseStyles}
@@ -311,6 +344,8 @@ function CustomField() {
                 return (
                     <input
                         type="color"
+                        disabled={true}
+
 
                         className={`${baseStyles} h-10 cursor-not-allowed`}
                     />
@@ -319,6 +354,58 @@ function CustomField() {
                 return <div className={baseStyles}>{field?.type} (Preview not available)</div>;
         }
     };
+
+    async function handleDeleteField(id) {
+        try {
+            Swal.fire({
+                title: "Are you sure you want to delete this field?",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "Yes",
+                denyButtonText: `Cancel`,
+                customClass: {
+                    popup: 'my-delete-alert'
+                }
+            }
+            ).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    finalDeleteField(id)
+                }
+            });
+
+        } catch (error) {
+            console.log("error while deleting the field", error);
+        }
+    }
+
+    async function finalDeleteField(id) {
+        try {
+
+            const userId = data?.session?.clientId;
+            const sessionId = data?.session?._id;
+            const fieldId = id;
+
+            const response = await customFieldService.deleteCustomField(userId, sessionId, fieldId);
+            console.log("response", response);
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Deleted Successfully",
+                showConfirmButton: false,
+                timer: 1500,
+                toast: true,
+                customClass: {
+                    popup: 'my-toast-size'
+                }
+            });
+            setRefreshCount((prev) => prev + 1);
+
+        } catch (error) {
+            console.log("error while deleting the field", error);
+
+        }
+    }
 
 
     return (
@@ -350,9 +437,55 @@ function CustomField() {
                 </div>
             </div>
 
+
+            <div className="w-[100%] mb-4 bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-lg p-6 ">
+                <h3 className="text-xl font-bold text-formHeadingLight  py-2 pb-4 dark:text-formHeadingDark">Custom Fields Preview</h3>
+                {
+                    [...existingFields, ...createdFields].length > 0 ?
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 ">
+                            {[...existingFields, ...createdFields]
+                                .sort((a, b) => a.gridConfig?.order - b.gridConfig?.order)
+                                .map((field, index) => {
+                                    return (
+                                        <div
+                                            className='relative'
+                                            key={index}
+                                            style={{ order: field?.gridConfig?.order }}
+                                        >
+                                            <Tippy
+                                                content={"delete"}
+                                                placement="top"
+                                            >
+                                                <button
+                                                    onClick={() => handleDeleteField(field?._id)}
+                                                    className={`bg-red-400/20 absolute right-0 text-[.90rem] font-bold text-black dark:text-white px-1 py-1 rounded-md`}
+                                                >
+                                                    <RxCross2 className='text-red-600' />
+                                                </button>
+                                            </Tippy>
+                                            <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">
+                                                {field?.label}{field?.isRequired && <span className="text-red-500">*</span>}
+                                            </label>
+                                            {renderFieldPreview(field)}
+                                        </div>
+                                    )
+                                }
+                                )
+                            }
+                        </div>
+                        :
+                        <div className="flex mt-4 flex-col justify-center items-center py-8 sm:py-12 bg-gray-100 dark:bg-gray-900 rounded-xl shadow-md">
+                            <FaExclamationCircle className="text-3xl sm:text-4xl text-gray-400 dark:text-gray-500 mb-3 sm:mb-4" />
+                            <p className="text-base sm:text-lg font-medium text-gray-600 dark:text-gray-300 mb-3 sm:mb-4">
+                                No Fields Found
+                            </p>
+                        </div>
+                }
+            </div>
+
             {/* Field section */}
 
-            <div className="w-[100%] mb-4 bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-lg p-1">
+            <div className="w-[100%] mb-20 bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-lg p-1">
 
                 <div className="bg-cardBgLight dark:bg-cardBgDark p-6 ">
                     <h2 className="md:text-2xl text-1xl font-semibold text-formHeadingLight dark:text-formHeadingDark md:mb-4 mb-2 text-start">Create Custom Field</h2>
@@ -388,7 +521,7 @@ function CustomField() {
                                 <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Type</label>
                                 <Select
                                     options={fieldTypes}
-                                    value={fieldTypes.find(opt => opt.value === formData.type)}
+                                    value={fieldTypes.find(opt => opt.value === formData.type) ? fieldTypes.find(opt => opt.value === formData.type) : null }
                                     onChange={(selected) => handleSelectChange('type', selected)}
                                     className="basic-single "
                                     classNamePrefix="select"
@@ -608,9 +741,9 @@ function CustomField() {
                                 disabled={isSubmitting}
                                 type="submit"
                                 className="w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out 
-                            bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light 
-                             hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark 
-                             flex items-center justify-center shadow-lg">
+            bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light 
+             hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark 
+             flex items-center justify-center shadow-lg">
                                 {isSubmitting ? (
                                     <>
                                         <svg
@@ -641,24 +774,6 @@ function CustomField() {
                             </button>
                         </div>
                     </form>
-                </div>
-            </div>
-            <div className="w-[100%] mb-20 bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-lg p-6 ">
-                <h3 className="text-xl font-bold text-formHeadingLight  py-2 pb-4 dark:text-formHeadingDark">Custom Fields Preview</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 ">
-                    {[...existingFields, ...createdFields]
-                        .sort((a, b) => a.gridConfig?.order - b.gridConfig?.order)
-                        .map((field, index) => (
-                            <div
-                                key={index}
-                                style={{ order: field?.gridConfig?.order }}
-                            >
-                                <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">
-                                    {field?.label}{field?.isRequired && <span className="text-red-500">*</span>}
-                                </label>
-                                {renderFieldPreview(field)}
-                            </div>
-                        ))}
                 </div>
             </div>
         </div>
