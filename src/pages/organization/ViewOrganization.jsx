@@ -273,9 +273,14 @@ function ViewOrganization() {
                                             <div className="border-b-2 pb-2">
                                                 <span className="font-bold">Shareable Link</span>
                                                 <div className="flex flex-col items-start gap-2 mt-1">
-                                                    <p className=" text-blue-500  hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
-                                                        {item?.link}
-                                                    </p>
+                                                <a
+                                                            href={item?.link}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 truncate max-w-[300px]"
+                                                        >
+                                                            {item?.link}
+                                                        </a>
                                                     <button
                                                         onClick={() => handleCopyLink(item?.link)}
                                                         className="flex items-center  text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"

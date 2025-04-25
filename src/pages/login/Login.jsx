@@ -11,6 +11,7 @@ import authSrvice from '../../services/authSrvice';
 import { setClientUser } from '../../store/reducer/auth/authCustomerSlice';
 import { useDispatch } from 'react-redux';
 import toast from 'react-hot-toast';
+import LoadingSpinner from '../../components/Loading/LoadingSpinner';
 
 
 const SignUpLink = memo(() => {
@@ -31,13 +32,11 @@ const Login = ({ companyIdentifier }) => {
 
     const [companyName, setCompanyName] = useState("");
     console.log("companyName", companyName);
-
-
+    const [dataLoading, setDataLoading] = useState(true);
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [errors, setErrors] = useState([]);
-
 
     const { width, breakpoints } = useWidth();
     const [isDark] = useDarkmode();
@@ -156,104 +155,111 @@ const Login = ({ companyIdentifier }) => {
 
 
     useEffect(() => {
-
         getCompanyDetail()
-
     }, [])
 
-    async function getCompanyDetail(params) {
-
+    async function getCompanyDetail() {
         try {
-
+            setDataLoading(true)
             const response = await authSrvice.getCompanyData();
-
-            setCompanyName(response?.data?.data?.name)
-
-
-
+            setCompanyName(response?.data?.data?.name);
+            setDataLoading(false)
         } catch (error) {
-
+            setDataLoading(false)
+            console.log("error while getting the company detail", error);
         }
-
     }
 
 
 
     return (
-        <div className=' min-h-screen w-full flex justify-center '>
-            <div className='w-ful h-fulll sm:w-[100%] md:w-[60%] '>
-                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 '>
-                    {/* image div */}
-                    {
-                        width < breakpoints?.md ? "" :
-                            <div className=' h-full flex items-center justify-center relative'>
-                                <div className='relative'>
-                                    <img
-                                        src={logoWhite}
-                                        alt="loginImg2"
-                                        className='relative z-10 w-[80%] sm:w-[60%] md:w-[90%] lg:w-[90%]'
-                                    />
-                                </div>
-                            </div>
 
-                    }
+        <>
+            {
+                dataLoading ?
 
-                    {/* form div */}
-                    <div className='  h-full w-[100%] flex flex-col justify-center items-center   '>
+                    <div className='min-h-screen w-full flex justify-center'>
+                        <LoadingSpinner />
+                    </div > :
 
-                        <div className='w-[100%] mb-3'>
-
-                            <div className='sm:border-2  border-gray-300 rounded-sm p-6  max-w-md mx-auto shadow-md'>
-                                <div className='flex justify-center py-6'>
-                                    {/* <img src={logoWhite} alt="Instagram Logo" className='w-36' /> */}
-                                    <h2 className='text1'>{companyName || "Invalid Company"}</h2>
-                                </div>
-
-                                <div className='w-[90%]   rounded-lg flex justify-center items-center mx-auto'>
-                                    <div className='w-[100%] space-y-4'>
-
-                                        {errors.length > 0 && (
-                                            <div className="p-4 bg-red-100 rounded-md">
-                                                {errors.map((error, index) => (
-                                                    <p key={index} className="text-red-700 text-sm">{error}</p>
-                                                ))}
-                                            </div>
-                                        )}
-                                        <div>
-                                            <input
-                                                name='identifier'
-                                                type="text"
-                                                placeholder='Enter Email or Phone No'
-                                                onChange={handleChange}
-
-                                                className="w-[100%] bg-transparent p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    <div className=' min-h-screen w-full flex justify-center '>
+                        <div className='w-ful h-fulll sm:w-[100%] md:w-[60%] '>
+                            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 '>
+                                {/* image div */}
+                                {
+                                    width < breakpoints?.md ? "" :
+                                        <div className=' h-full flex items-center justify-center relative'>
+                                            <div className='relative'>
+                                                <img
+                                                    src={logoWhite}
+                                                    alt="loginImg2"
+                                                    className='relative z-10 w-[80%] sm:w-[60%] md:w-[90%] lg:w-[90%]'
                                                 />
-                                            <span className='text-deep-orange-400 text-sm mt-4 pb-0 mb-0'>{formDataError?.identifier}</span>
+                                            </div>
                                         </div>
 
-                                        <div>
-                                            <input
-                                                name='password'
-                                                type="password"
-                                                placeholder='Password'
-                                                className="w-[100%] bg-transparent p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                onChange={handleChange}
-                                            />
-                                            <span className='text-deep-orange-400 text-sm mt-4 pb-0 mb-0'>{formDataError?.password}</span>
-                                        </div>
+                                }
 
-                                        <button onClick={handleSubmit} className='dark:bg-darkButton bg-lightButton dark:text-darkText  text-white w-[100%] py-2 rounded dark:hover:bg-lightButton/50 hover:bg-darkButton/50 hover:text-darkText transition duration-200'>
-                                            Log in
-                                        </button>
+                                {/* form div */}
+                                <div className='  h-full w-[100%] flex flex-col justify-center items-center   '>
+
+                                    <div className='w-[100%] mb-3'>
+
+                                        <div className='sm:border-2  border-gray-300 rounded-sm p-6  max-w-md mx-auto shadow-md'>
+                                            <div className='flex justify-center py-6'>
+                                                {/* <img src={logoWhite} alt="Instagram Logo" className='w-36' /> */}
+                                                <h2 className='text1'>{companyName || "Invalid Company"}</h2>
+                                            </div>
+
+                                            <div className='w-[90%]   rounded-lg flex justify-center items-center mx-auto'>
+                                                <div className='w-[100%] space-y-4'>
+
+                                                    {errors.length > 0 && (
+                                                        <div className="p-4 bg-red-100 rounded-md">
+                                                            {errors.map((error, index) => (
+                                                                <p key={index} className="text-red-700 text-sm">{error}</p>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                    <div>
+                                                        <input
+                                                            name='identifier'
+                                                            type="text"
+                                                            placeholder='Enter Email or Phone No'
+                                                            onChange={handleChange}
+
+                                                            className="w-[100%] bg-transparent p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                        />
+                                                        <span className='text-deep-orange-400 text-sm mt-4 pb-0 mb-0'>{formDataError?.identifier}</span>
+                                                    </div>
+
+                                                    <div>
+                                                        <input
+                                                            name='password'
+                                                            type="password"
+                                                            placeholder='Password'
+                                                            className="w-[100%] bg-transparent p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                            onChange={handleChange}
+                                                        />
+                                                        <span className='text-deep-orange-400 text-sm mt-4 pb-0 mb-0'>{formDataError?.password}</span>
+                                                    </div>
+
+                                                    <button onClick={handleSubmit} className='dark:bg-darkButton bg-lightButton dark:text-darkText  text-white w-[100%] py-2 rounded dark:hover:bg-lightButton/50 hover:bg-darkButton/50 hover:text-darkText transition duration-200'>
+                                                        Log in
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
+                                    {/* <SignUpLink /> */}
                                 </div>
                             </div>
                         </div>
-                        {/* <SignUpLink /> */}
                     </div>
-                </div>
-            </div>
-        </div>
+            }
+        </>
+
+
     );
 };
 
