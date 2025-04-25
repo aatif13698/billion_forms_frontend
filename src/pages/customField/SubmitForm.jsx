@@ -224,76 +224,90 @@ function SubmitForm() {
 
                     {/* Form */}
                     <div className="w-[100%] bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-b-md p-4 sm:p-6">
-                        <form
-                            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
-                            aria-label="Session form preview"
-                        >
-                            {[...existingFields]
-                                .sort((a, b) => a.gridConfig?.order - b.gridConfig?.order)
-                                .map((field, index) => (
-                                    <div
-                                        key={index}
-                                        style={{ order: field?.gridConfig?.order }}
-                                        className={`min-w-0 ${field?.type == "checkbox" ? "flex items-center gap-2" : ""}`}
-                                    >
-                                        <label className="block text-xs sm:text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">
-                                            {field?.label}
-                                            {field?.isRequired && (
-                                                <span className="text-red-500">*</span>
-                                            )}
-                                        </label>
-                                        {renderFieldPreview(field)}
-                                    </div>
-                                ))}
-                           
-                        </form>
+
+                        {
+                            [...existingFields]?.length > 0 ?
+                                <form
+                                    className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+                                    aria-label="Session form preview"
+                                >
+                                    {
+                                        [...existingFields]
+                                            .sort((a, b) => a.gridConfig?.order - b.gridConfig?.order)
+                                            .map((field, index) => (
+                                                <div
+                                                    key={index}
+                                                    style={{ order: field?.gridConfig?.order }}
+                                                    className={`min-w-0 ${field?.type == "checkbox" ? "flex items-center gap-2" : ""}`}
+                                                >
+                                                    <label className="block text-xs sm:text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">
+                                                        {field?.label}
+                                                        {field?.isRequired && (
+                                                            <span className="text-red-500">*</span>
+                                                        )}
+                                                    </label>
+                                                    {renderFieldPreview(field)}
+                                                </div>
+                                            ))
+                                    }
+
+                                </form>
+                                :
+
+                                <div className=' flex justify-center items-center'>
+                                    <h2 className="text-lg sm:text-2xl md:text-4xl font-bold mb-2 drop-shadow-md">
+                                        No Fields Have Been Added
+                                    </h2>
+                                </div>
+                        }
+
 
                         <div className="flex justify-end mt-4 col-span-1 sm:col-span-2 md:col-span-3">
-                                <button
-                                    onClick={handleFormSubmit}
-                                    disabled={isSubmitting}
-                                    className="w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out 
+                            <button
+                                onClick={handleFormSubmit}
+                                disabled={isSubmitting}
+                                className="w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out 
                   bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light 
                    hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark 
                    flex items-center justify-center shadow-lg"
-                                    aria-label="Submit session form"
-                                >
-                                    {isSubmitting ? (
-                                        <>
-                                            <svg
-                                                className="animate-spin mr-2 h-4 sm:h-5 w-4 sm:w-5 text-white"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <circle
-                                                    className="opacity-25"
-                                                    cx="12"
-                                                    cy="12"
-                                                    r="10"
-                                                    stroke="currentColor"
-                                                    strokeWidth="4"
-                                                ></circle>
-                                                <path
-                                                    className="opacity-75"
-                                                    fill="currentColor"
-                                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                                ></path>
-                                            </svg>
-                                            Submitting...
-                                        </>
-                                    ) : (
-                                        "Submit Form"
-                                    )}
-                                </button>
-                            </div>
+                                aria-label="Submit session form"
+                            >
+                                {isSubmitting ? (
+                                    <>
+                                        <svg
+                                            className="animate-spin mr-2 h-4 sm:h-5 w-4 sm:w-5 text-white"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <circle
+                                                className="opacity-25"
+                                                cx="12"
+                                                cy="12"
+                                                r="10"
+                                                stroke="currentColor"
+                                                strokeWidth="4"
+                                            ></circle>
+                                            <path
+                                                className="opacity-75"
+                                                fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                            ></path>
+                                        </svg>
+                                        Submitting...
+                                    </>
+                                ) : (
+                                    "Submit Form"
+                                )}
+                            </button>
+                        </div>
                     </div>
 
                     {/* footer */}
                     <div className="w-[100%] mt-2 flex justify-center items-center gap-2 bg-cardBgLight shadow-lg rounded-md p-2 sm:p-2">
-                    <span>
-                             <img src={images?.treeLogo} className='w-8 h-8' alt="" />
-                            </span>
+                        <span>
+                            <img src={images?.treeLogo} className='w-8 h-8' alt="" />
+                        </span>
                         <h4 className="text-xs text-textLight sm:text-sm md:text-base font-medium  drop-shadow-lg">
                             Powered By Aestree Webnet Pvt. Ltd.
                         </h4>

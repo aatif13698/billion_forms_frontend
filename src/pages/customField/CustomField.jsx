@@ -472,9 +472,9 @@ function CustomField() {
                                             >
                                                 <button
                                                     onClick={() => handleDeleteField(field?._id)}
-                                                    className={`bg-red-400/20 absolute right-0 text-[.90rem] font-bold text-black dark:text-white px-1 py-1 rounded-md`}
+                                                    className={`bg-red-400/20 dark:bg-red-600 absolute right-0 text-[.90rem] font-bold text-black dark:text-white px-1 py-1 rounded-md`}
                                                 >
-                                                    <RxCross2 className='text-red-600' />
+                                                    <RxCross2 className='text-red-600 dark:text-red-200' />
                                                 </button>
                                             </Tippy>
                                             <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">
