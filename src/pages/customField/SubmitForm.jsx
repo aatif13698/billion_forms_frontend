@@ -324,11 +324,9 @@ function SubmitForm() {
                 if (value !== undefined && value !== null) {
                     if (field.type === "file" && value instanceof File) {
                         formData.append(fieldName, value);
-                    } else if (fieldName === "phone" || fieldName === "firstName" || fieldName === "email") {
-                        formData.append(fieldName, value);
                     } else {
-                        formData.append(`otherThanFiles.${fieldName}`, value);
-                    }
+                        formData.append(fieldName, value);
+                    } 
                 }
             });
 

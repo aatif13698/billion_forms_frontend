@@ -173,6 +173,29 @@ const updateOrder = async (userId, sessionId, data) => {
 }
 
 
+const submitFormData = async (data) => {
+    const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+    try {
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/create/form`, data, {
+            headers: {
+                Authorization: `Bearer ${authToken}`,
+                "Content-Type": "application/json",
+            }
+        });
+        return response;
+    } catch (error) {
+
+        if (error.response) {
+            return Promise.reject(error.response.data.error || "Invalid credentials");
+        } else if (error.request) {
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+}
+
+
 export default {
     createCustomField,
     getCustomFields,
@@ -180,5 +203,6 @@ export default {
     getCustomForms,
     getCustomFormsBySession,
     deleteCustomField,
-    updateOrder
+    updateOrder,
+    submitFormData
 }
