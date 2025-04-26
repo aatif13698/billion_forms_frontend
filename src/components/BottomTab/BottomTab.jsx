@@ -45,7 +45,7 @@ const BottomTab = ({ show, noFade }) => {
     if (clientUser?.role?.id === 1) {
       setMenuItems([
         { title: "Dashboard", icon: AiOutlineDashboard, link: "/dashboard" },
-        { title: "Organisation", icon: FaRegBuilding, link: "/organisation" },
+        { title: "Organisation", icon: FaRegBuilding, link: "/list/organization" },
         { title: "User", icon: FaUser, link: "/user" },
         { title: "Requests", icon: FaUserPlus, link: "/requests" },
         { title: "Clients", icon: FaUserCheck, link: "/list/clients" },
@@ -57,7 +57,7 @@ const BottomTab = ({ show, noFade }) => {
     } else if (clientUser?.role?.id === 2) {
       setMenuItems([
         { title: "Dashboard", icon: AiOutlineDashboard, link: "/dashboard" },
-        { title: "Organisation", icon: FaRegBuilding, link: "/organisation" },
+        { title: "Organisation", icon: FaRegBuilding, link: "/list/organization" },
         { title: "User", icon: FaUser, link: "/user" },
       ]);
     }
