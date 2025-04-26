@@ -249,7 +249,6 @@ function ViewOrganization() {
                 </div>
 
                 {/* sessions list */}
-
                 <div className="flex flex-col p-1 md:max-w-screen-xl mx-auto">
                     {sessions && sessions.length > 0 ? (
                         sessions.map((item, index) => (

@@ -6,6 +6,7 @@ import Select from 'react-select';
 import customFieldService from '../../services/customFieldService';
 import toast from 'react-hot-toast';
 import { RxCross2 } from "react-icons/rx";
+import { RxValueNone } from "react-icons/rx";
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css'; // Optional: default CSS styling
 import Swal from 'sweetalert2/dist/sweetalert2.js'
@@ -466,17 +467,28 @@ function CustomField() {
                                             key={index}
                                             style={{ order: field?.gridConfig?.order }}
                                         >
-                                            <Tippy
-                                                content={"delete"}
-                                                placement="top"
-                                            >
-                                                <button
-                                                    onClick={() => handleDeleteField(field?._id)}
-                                                    className={`bg-red-400/20 dark:bg-red-600 absolute right-0 text-[.90rem] font-bold text-black dark:text-white px-1 py-1 rounded-md`}
-                                                >
-                                                    <RxCross2 className='text-red-600 dark:text-red-200' />
-                                                </button>
-                                            </Tippy>
+
+                                            {
+                                                field?.isDeleteAble ?
+                                                    <Tippy
+                                                        content={"delete"}
+                                                        placement="top"
+                                                    >
+                                                        <button
+                                                            onClick={() => handleDeleteField(field?._id)}
+                                                            className={`bg-red-400/20 dark:bg-red-600 absolute right-0 text-[.90rem] font-bold text-black dark:text-white px-1 py-1 rounded-md`}
+                                                        >
+                                                            <RxCross2 className='text-red-600 dark:text-red-200' />
+                                                        </button>
+                                                    </Tippy> :
+
+                                                    <span className=' absolute right-0'>
+                                                        <RxValueNone className='text-green-900 dark:text-green-200' />
+                                                    </span>
+
+
+                                            }
+
                                             <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">
                                                 {field?.label}{field?.isRequired && <span className="text-red-500">*</span>}
                                             </label>
@@ -500,7 +512,7 @@ function CustomField() {
             {/* Field section */}
             <div className="w-[100%] mb-20 bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-lg p-1">
                 <div className="bg-cardBgLight dark:bg-cardBgDark p-6 ">
-                    <h2 className="md:text-2xl text-1xl font-semibold text-formHeadingLight dark:text-formHeadingDark md:mb-4 mb-2 text-start">Create Custom Field</h2>
+                    <h2 className="md:text-2xl text-1xl font-semibold text-formHeadingLight dark:text-formHeadingDark md:mb-4 mb-2 text-start">Add Custom Field</h2>
                     <div className="h-[1.8px] bg-black dark:bg-white mb-4"></div>
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
