@@ -36,7 +36,8 @@ function ViewOrganization() {
     });
     const [logoPreview, setLogoPreview] = useState("");
     const [bannerPreview, setBannerPreview] = useState("");
-    const [refreshCount, setRefreshCount] = useState(0)
+    const [refreshCount, setRefreshCount] = useState(0);
+    const [isDataLoading, setIsDataLoading] = useState(true)
 
     useEffect(() => {
         if (client) {
@@ -148,9 +149,13 @@ function ViewOrganization() {
 
     async function getSessions(params) {
         try {
+            setIsDataLoading(true);
             const response = await sessionService.getAllSession(client?.userId, client?._id);
-            setSessions(response?.data?.data?.data)
+            setSessions(response?.data?.data?.data);
+            setIsDataLoading(false);
+
         } catch (error) {
+            setIsDataLoading(false);
             console.log("error while fetching the session", error);
         }
     }
@@ -249,186 +254,220 @@ function ViewOrganization() {
                 </div>
 
                 {/* sessions list */}
-                <div className="flex flex-col p-1 md:max-w-screen-xl mx-auto">
-                    {sessions && sessions.length > 0 ? (
-                        sessions.map((item, index) => (
-                            <div
-                                key={index}
-                                className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg my-4 overflow-hidden"
-                                aria-label={`Session ${item?.name} for ${item?.for}`}
+
+                {
+                    isDataLoading ? 
+                    <>
+                        <div className="w-[100%] h-60 flex justify-center items-center mb-4 bg-cardBgLight dark:bg-cardBgDark  p-6 ">
+                            <svg
+                                className={`animate-spin mr-2 h-10 w-10  text-black dark:text-white`}
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
                             >
-                                <div className="flex flex-col md:flex-row border-b border-gray-300 dark:border-gray-600">
-                                    {/* Sidebar/Header */}
-                                    <div className="bg-custom-gradient-session-light dark:bg-custom-gradient-session-dark flex flex-col justify-center items-center px-4 py-3 sm:py-4 md:w-1/4">
-                                        <p className="text-base sm:text-lg font-semibold text-white">
-                                            {item?.for}
-                                        </p>
-                                        <p className="text-xs sm:text-sm text-white">{item?.name}</p>
-                                    </div>
-                                    {/* Details Section */}
-                                    <div className="flex-1 px-3 sm:px-4 py-4 bg-white dark:bg-sessionTableBgDark  sm:py-6">
-                                        {/* Mobile: Stacked Layout */}
-                                        <div className="sm:hidden flex flex-col gap-3 text-xs text-gray-700 dark:text-gray-200">
-                                            <div className="border-b-2 pb-2">
-                                                <span className="font-bold">Shareable Link</span>
-                                                <div className="flex flex-col items-start gap-2 mt-1">
-                                                <a
-                                                            href={item?.link}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 truncate max-w-[300px]"
-                                                        >
-                                                            {item?.link}
-                                                        </a>
-                                                    <button
-                                                        onClick={() => handleCopyLink(item?.link)}
-                                                        className="flex items-center  text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
-                                                        aria-label="Copy shareable link"
-                                                        title="Copy link"
-                                                    >
-                                                        <FaCopy />
-                                                        {copiedLink === item?.link && (
-                                                            <span className="text-green-500 text-xs">Copied!</span>
-                                                        )}
-                                                    </button>
-
-                                                </div>
-                                            </div>
-                                            <div className="border-b-2 pb-2">
-                                                <span className="font-bold">Form Close Date</span>
-                                                <p className="mt-1">
-                                                    {item?.closeDate
-                                                        ? common.formatDateToReadableString(item.closeDate)
-                                                        : "N/A"}
-                                                </p>
-                                            </div>
-                                            <div className="border-b-2 pb-2">
-                                                <span className="font-bold">Total Forms Received</span>
-                                                <p className="mt-1">{item?.formReceived || 0}</p>
-                                            </div>
-                                            <div className="">
-                                                <span className="font-bold">Form Fields</span>
-                                                {/* <p className="mt-1">
-                                                    {item?.formFields?.join(", ") || "N/A"}
-                                                </p> */}
-                                                <button
-                                                    onClick={() => handleAddField(item)}
-                                                    className="flex mt-2 items-center gap-1 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-700 dark:from-blue-600 dark:to-blue-800 rounded-lg shadow-md hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                    aria-label={`Add/Remove Fields`}
-                                                >
-                                                    <FaWpforms />
-                                                    Add / Remove Fields
-                                                </button>
-                                            </div>
-                                        </div>
-                                        {/* Tablet/Desktop: Table Layout */}
-                                        <table className="hidden sm:table w-[100%] text-xs sm:text-sm text-gray-700 dark:text-gray-200">
-                                            <tbody>
-                                                <tr className="border-b w-[100%]  border-gray-200 dark:border-gray-700">
-                                                    <th
-                                                        scope="row"
-                                                        className="py-2 px-3 sm:px-4 font-bold text-left  w-[40%]"
-                                                    >
-                                                        Shareable Link
-                                                    </th>
-                                                    <td className="py-2 px-3 sm:px-4 w-[60%]  flex items-center gap-2">
-                                                        <a
-                                                            href={item?.link}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 truncate max-w-[300px]"
-                                                        >
-                                                            {item?.link}
-                                                        </a>
-                                                        <button
-                                                            onClick={() => handleCopyLink(item?.link)}
-                                                            className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
-                                                            aria-label="Copy shareable link"
-                                                            title="Copy link"
-                                                        >
-                                                            <FaCopy />
-                                                        </button>
-                                                        {copiedLink === item?.link && (
-                                                            <span className="text-green-500 text-xs">Copied!</span>
-                                                        )}
-                                                    </td>
-                                                </tr>
-                                                <tr className="border-b border-gray-200 dark:border-gray-700">
-                                                    <th
-                                                        scope="row"
-                                                        className="py-2 px-3 sm:px-4 font-bold text-left w-[40%]"
-                                                    >
-                                                        Form Close Date
-                                                    </th>
-                                                    <td className="py-2 px-3 sm:px-4 w-[60%]">
-                                                        {item?.closeDate
-                                                            ? common.formatDateToReadableString(item.closeDate)
-                                                            : "N/A"}
-                                                    </td>
-                                                </tr>
-                                                <tr className="border-b border-gray-200 dark:border-gray-700">
-                                                    <th
-                                                        scope="row"
-                                                        className="py-2 px-3 sm:px-4 font-bold text-left w-[40%]"
-                                                    >
-                                                        Total Forms Received
-                                                    </th>
-                                                    <td className="py-2 px-3 sm:px-4 w-[60%]">
-                                                        {item?.formReceived || 0}
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <th
-                                                        scope="row"
-                                                        className="py-2 px-3 sm:px-4 font-bold text-left w-[40%]"
-                                                    >
-                                                        Form Fields
-                                                    </th>
-                                                    <td className="py-2 px-3 sm:px-4 w-[60%]">
-                                                        <button
-                                                            onClick={() => handleAddField(item)}
-                                                            className="flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-700 dark:from-blue-600 dark:to-blue-800 rounded-lg shadow-md hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                            aria-label={`Add or remove fields for ${item?.name}`}
-                                                        >
-                                                            <FaWpforms />
-                                                            Add / Remove Fields
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                {/* Footer */}
-                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center px-3 sm:px-4 py-2 sm:py-3 bg-custom-gradient-session-light dark:bg-custom-gradient-session-dark text-white dark:text-dark gap-2">
-                                    <p className="text-xs sm:text-sm text-white ">
-                                        <span className="font-bold">Created on:</span> {" "}
-                                        {item?.createdAt
-                                            ? common.formatDateToReadableString(item.createdAt)
-                                            : "N/A"}
-                                    </p>
-                                    <div className="flex gap-2">
-
-                                        <button
-                                            className="flex items-center gap-1 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-red-500 to-red-700 dark:from-red-600 dark:to-red-800 rounded-lg shadow-md hover:from-red-600 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-red-500"
-                                            aria-label={`Delete session ${item?.name}`}
-                                        >
-                                            <FaTrashAlt />
-                                            Delete
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        ))
-                    ) : (
-                        <div className="flex mt-4 flex-col justify-center items-center py-8 sm:py-12 bg-gray-100 dark:bg-gray-900 rounded-xl shadow-md">
-                            <FaExclamationCircle className="text-3xl sm:text-4xl text-gray-400 dark:text-gray-500 mb-3 sm:mb-4" />
-                            <p className="text-base sm:text-lg font-medium text-gray-600 dark:text-gray-300 mb-3 sm:mb-4">
-                                No Sessions Found
-                            </p>
+                                <circle
+                                    className="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                ></circle>
+                                <path
+                                    className="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                ></path>
+                            </svg>
+                            <span>Loading</span>
                         </div>
-                    )}
-                </div>
+                    </> 
+                     :
+
+                     <div className="flex flex-col p-1 md:max-w-screen-xl mx-auto">
+                     {sessions && sessions.length > 0 ? (
+                         sessions.map((item, index) => (
+                             <div
+                                 key={index}
+                                 className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg my-4 overflow-hidden"
+                                 aria-label={`Session ${item?.name} for ${item?.for}`}
+                             >
+                                 <div className="flex flex-col md:flex-row border-b border-gray-300 dark:border-gray-600">
+                                     {/* Sidebar/Header */}
+                                     <div className="bg-custom-gradient-session-light dark:bg-custom-gradient-session-dark flex flex-col justify-center items-center px-4 py-3 sm:py-4 md:w-1/4">
+                                         <p className="text-base sm:text-lg font-semibold text-white">
+                                             {item?.for}
+                                         </p>
+                                         <p className="text-xs sm:text-sm text-white">{item?.name}</p>
+                                     </div>
+                                     {/* Details Section */}
+                                     <div className="flex-1 px-3 sm:px-4 py-4 bg-white dark:bg-sessionTableBgDark  sm:py-6">
+                                         {/* Mobile: Stacked Layout */}
+                                         <div className="sm:hidden flex flex-col gap-3 text-xs text-gray-700 dark:text-gray-200">
+                                             <div className="border-b-2 pb-2">
+                                                 <span className="font-bold">Shareable Link</span>
+                                                 <div className="flex flex-col items-start gap-2 mt-1">
+                                                 <a
+                                                             href={item?.link}
+                                                             target="_blank"
+                                                             rel="noopener noreferrer"
+                                                             className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 truncate max-w-[300px]"
+                                                         >
+                                                             {item?.link}
+                                                         </a>
+                                                     <button
+                                                         onClick={() => handleCopyLink(item?.link)}
+                                                         className="flex items-center  text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+                                                         aria-label="Copy shareable link"
+                                                         title="Copy link"
+                                                     >
+                                                         <FaCopy />
+                                                         {copiedLink === item?.link && (
+                                                             <span className="text-green-500 text-xs">Copied!</span>
+                                                         )}
+                                                     </button>
+ 
+                                                 </div>
+                                             </div>
+                                             <div className="border-b-2 pb-2">
+                                                 <span className="font-bold">Form Close Date</span>
+                                                 <p className="mt-1">
+                                                     {item?.closeDate
+                                                         ? common.formatDateToReadableString(item.closeDate)
+                                                         : "N/A"}
+                                                 </p>
+                                             </div>
+                                             <div className="border-b-2 pb-2">
+                                                 <span className="font-bold">Total Forms Received</span>
+                                                 <p className="mt-1">{item?.formReceived || 0}</p>
+                                             </div>
+                                             <div className="">
+                                                 <span className="font-bold">Form Fields</span>
+                                                 {/* <p className="mt-1">
+                                                     {item?.formFields?.join(", ") || "N/A"}
+                                                 </p> */}
+                                                 <button
+                                                     onClick={() => handleAddField(item)}
+                                                     className="flex mt-2 items-center gap-1 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-700 dark:from-blue-600 dark:to-blue-800 rounded-lg shadow-md hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                     aria-label={`Add/Remove Fields`}
+                                                 >
+                                                     <FaWpforms />
+                                                     Add / Remove Fields
+                                                 </button>
+                                             </div>
+                                         </div>
+                                         {/* Tablet/Desktop: Table Layout */}
+                                         <table className="hidden sm:table w-[100%] text-xs sm:text-sm text-gray-700 dark:text-gray-200">
+                                             <tbody>
+                                                 <tr className="border-b w-[100%]  border-gray-200 dark:border-gray-700">
+                                                     <th
+                                                         scope="row"
+                                                         className="py-2 px-3 sm:px-4 font-bold text-left  w-[40%]"
+                                                     >
+                                                         Shareable Link
+                                                     </th>
+                                                     <td className="py-2 px-3 sm:px-4 w-[60%]  flex items-center gap-2">
+                                                         <a
+                                                             href={item?.link}
+                                                             target="_blank"
+                                                             rel="noopener noreferrer"
+                                                             className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 truncate max-w-[300px]"
+                                                         >
+                                                             {item?.link}
+                                                         </a>
+                                                         <button
+                                                             onClick={() => handleCopyLink(item?.link)}
+                                                             className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+                                                             aria-label="Copy shareable link"
+                                                             title="Copy link"
+                                                         >
+                                                             <FaCopy />
+                                                         </button>
+                                                         {copiedLink === item?.link && (
+                                                             <span className="text-green-500 text-xs">Copied!</span>
+                                                         )}
+                                                     </td>
+                                                 </tr>
+                                                 <tr className="border-b border-gray-200 dark:border-gray-700">
+                                                     <th
+                                                         scope="row"
+                                                         className="py-2 px-3 sm:px-4 font-bold text-left w-[40%]"
+                                                     >
+                                                         Form Close Date
+                                                     </th>
+                                                     <td className="py-2 px-3 sm:px-4 w-[60%]">
+                                                         {item?.closeDate
+                                                             ? common.formatDateToReadableString(item.closeDate)
+                                                             : "N/A"}
+                                                     </td>
+                                                 </tr>
+                                                 <tr className="border-b border-gray-200 dark:border-gray-700">
+                                                     <th
+                                                         scope="row"
+                                                         className="py-2 px-3 sm:px-4 font-bold text-left w-[40%]"
+                                                     >
+                                                         Total Forms Received
+                                                     </th>
+                                                     <td className="py-2 px-3 sm:px-4 w-[60%]">
+                                                         {item?.formReceived || 0}
+                                                     </td>
+                                                 </tr>
+                                                 <tr>
+                                                     <th
+                                                         scope="row"
+                                                         className="py-2 px-3 sm:px-4 font-bold text-left w-[40%]"
+                                                     >
+                                                         Form Fields
+                                                     </th>
+                                                     <td className="py-2 px-3 sm:px-4 w-[60%]">
+                                                         <button
+                                                             onClick={() => handleAddField(item)}
+                                                             className="flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-700 dark:from-blue-600 dark:to-blue-800 rounded-lg shadow-md hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                             aria-label={`Add or remove fields for ${item?.name}`}
+                                                         >
+                                                             <FaWpforms />
+                                                             Add / Remove Fields
+                                                         </button>
+                                                     </td>
+                                                 </tr>
+                                             </tbody>
+                                         </table>
+                                     </div>
+                                 </div>
+                                 {/* Footer */}
+                                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center px-3 sm:px-4 py-2 sm:py-3 bg-custom-gradient-session-light dark:bg-custom-gradient-session-dark text-white dark:text-dark gap-2">
+                                     <p className="text-xs sm:text-sm text-white ">
+                                         <span className="font-bold">Created on:</span> {" "}
+                                         {item?.createdAt
+                                             ? common.formatDateToReadableString(item.createdAt)
+                                             : "N/A"}
+                                     </p>
+                                     <div className="flex gap-2">
+ 
+                                         <button
+                                             className="flex items-center gap-1 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-red-500 to-red-700 dark:from-red-600 dark:to-red-800 rounded-lg shadow-md hover:from-red-600 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                             aria-label={`Delete session ${item?.name}`}
+                                         >
+                                             <FaTrashAlt />
+                                             Delete
+                                         </button>
+                                     </div>
+                                 </div>
+                             </div>
+                         ))
+                     ) : (
+                         <div className="flex mt-4 flex-col justify-center items-center py-8 sm:py-12 bg-gray-100 dark:bg-gray-900 rounded-xl shadow-md">
+                             <FaExclamationCircle className="text-3xl sm:text-4xl text-gray-400 dark:text-gray-500 mb-3 sm:mb-4" />
+                             <p className="text-base sm:text-lg font-medium text-gray-600 dark:text-gray-300 mb-3 sm:mb-4">
+                                 No Sessions Found
+                             </p>
+                         </div>
+                     )}
+                 </div>
+
+                }
+
+               
                 {/* Add New Session */}
                 <div className="flex flex-col items-center my-4 md:px-1 px-1">
                     <style>

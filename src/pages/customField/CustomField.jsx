@@ -12,6 +12,9 @@ import 'tippy.js/dist/tippy.css'; // Optional: default CSS styling
 import Swal from 'sweetalert2/dist/sweetalert2.js'
 import 'sweetalert2/src/sweetalert2.scss'
 import "../../App.css"
+import { FiPlus } from "react-icons/fi";
+import LoadingSpinner from '../../components/Loading/LoadingSpinner';
+
 
 
 function CustomField() {
@@ -41,6 +44,7 @@ function CustomField() {
     const [createdFields, setCreatedFields] = useState([]); // Store fields created in this session
     const [existingFields, setExistingFields] = useState([]); // Store fields fetched from API
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isDataLoading, setIsDataLoading] = useState(true);
     const [refreshCount, setRefreshCount] = useState(0)
 
     const fieldTypes = [
@@ -103,10 +107,13 @@ function CustomField() {
     useEffect(() => {
         const fetchFields = async () => {
             try {
+                setIsDataLoading(true);
                 const response = await customFieldService.getCustomForms(data?.organization?.userId, data?.session?._id);
                 setExistingFields(response?.data?.data?.data);
-                setCreatedFields([])
+                setCreatedFields([]);
+                setIsDataLoading(false);
             } catch (error) {
+                setIsDataLoading(false);
                 setErrors(['Failed to fetch existing fields']);
             }
         };
@@ -202,6 +209,7 @@ function CustomField() {
                 regex: formData.validation.regex || undefined,
                 min: formData.validation.min ? Number(formData.validation.min) : undefined,
                 max: formData.validation.max ? Number(formData.validation.max) : undefined,
+                minLength: formData.validation.minLength ? Number(formData.validation.minLength) : undefined,
                 maxLength: formData.validation.maxLength ? Number(formData.validation.maxLength) : undefined,
                 fileTypes: formData.validation.fileTypes.length > 0 ? formData.validation.fileTypes : undefined,
                 maxSize: formData.validation.maxSize ? Number(formData.validation.maxSize) : undefined
@@ -233,7 +241,7 @@ function CustomField() {
                 options: [],
                 isRequired: false,
                 placeholder: '',
-                validation: { regex: '', min: '', max: '', maxLength: '', fileTypes: [], maxSize: '' },
+                validation: { regex: '', min: '', max: '', maxLength: '', minLength: "", fileTypes: [], maxSize: '' },
                 gridConfig: { span: 12, order: 0 }
             });
             setIsSubmitting(false);
@@ -436,78 +444,114 @@ function CustomField() {
                 </div>
             </div>
 
-            <div className="w-[100%] mb-4 bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-lg p-6 ">
-                <div className='flex  md:flex-row flex-col md:justify-between justify-start md:items-center  mb-4'>
-                    <h3 className="text-xl font-bold text-formHeadingLight mb-2  dark:text-formHeadingDark">Custom Fields Preview</h3>
-                    <div>
-                        <button
-                            // disabled={isSubmitting}
-                            onClick={() => navigate("/list/adjustOrder", { state: { organization: data?.organization, session: data?.session, } })}
-                            className="w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out 
-            bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light 
-             hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark 
-             flex items-center justify-center shadow-lg">
+            {
+                isDataLoading ?
+                    <>
+                        <div className="w-[100%] h-60 flex justify-center items-center mb-4 bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-lg p-6 ">
+                            <svg
+                                className={`animate-spin mr-2 h-10 w-10  text-black dark:text-white`}
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                            >
+                                <circle
+                                    className="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                ></circle>
+                                <path
+                                    className="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                ></path>
+                            </svg>
+                            <span>Loading</span>
+                        </div>
+                    </> :
 
-                            Adjust Order
+                    <div className="w-[100%] mb-4 bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-lg p-6 ">
+                        <div className='flex  md:flex-row flex-col md:justify-between justify-start md:items-center  mb-4'>
+                            <h3 className="text-xl font-bold text-formHeadingLight mb-2  dark:text-formHeadingDark">Custom Fields Preview</h3>
+                            <div>
+                                <button
+                                    // disabled={isSubmitting}
+                                    onClick={() => navigate("/list/adjustOrder", { state: { organization: data?.organization, session: data?.session, } })}
+                                    className="w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out 
+bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light 
+hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark 
+flex items-center justify-center shadow-lg">
 
-                        </button>
+                                    Adjust Order
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        {
+                            [...existingFields, ...createdFields].length > 0 ?
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 ">
+                                    {[...existingFields, ...createdFields]
+                                        .sort((a, b) => a.gridConfig?.order - b.gridConfig?.order)
+                                        .map((field, index) => {
+                                            return (
+                                                <div
+                                                    className='relative'
+                                                    key={index}
+                                                    style={{ order: field?.gridConfig?.order }}
+                                                >
+
+                                                    {
+                                                        field?.isDeleteAble ?
+                                                            <Tippy
+                                                                content={"delete"}
+                                                                placement="top"
+                                                            >
+                                                                <button
+                                                                    onClick={() => handleDeleteField(field?._id)}
+                                                                    className={`bg-red-400/20 dark:bg-red-600 absolute right-0 text-[.90rem] font-bold text-black dark:text-white px-1 py-1 rounded-md`}
+                                                                >
+                                                                    <RxCross2 className='text-red-600 dark:text-red-200' />
+                                                                </button>
+                                                            </Tippy> :
+
+                                                            <span className=' absolute right-0'>
+                                                                <RxValueNone className='text-green-900 dark:text-green-200' />
+                                                            </span>
+
+
+                                                    }
+
+                                                    <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">
+                                                        {field?.label}{field?.isRequired && <span className="text-red-500">*</span>}
+                                                    </label>
+                                                    {renderFieldPreview(field)}
+                                                </div>
+                                            )
+                                        }
+                                        )
+                                    }
+                                </div>
+                                :
+                                <div className="flex mt-4 flex-col justify-center items-center py-8 sm:py-12 bg-gray-100 dark:bg-gray-900 rounded-xl shadow-md">
+                                    <FaExclamationCircle className="text-3xl sm:text-4xl text-gray-400 dark:text-gray-500 mb-3 sm:mb-4" />
+                                    <p className="text-base sm:text-lg font-medium text-gray-600 dark:text-gray-300 mb-3 sm:mb-4">
+                                        No Fields Found
+                                    </p>
+                                </div>
+                        }
+
 
                     </div>
 
-                </div>
-                {
-                    [...existingFields, ...createdFields].length > 0 ?
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 ">
-                            {[...existingFields, ...createdFields]
-                                .sort((a, b) => a.gridConfig?.order - b.gridConfig?.order)
-                                .map((field, index) => {
-                                    return (
-                                        <div
-                                            className='relative'
-                                            key={index}
-                                            style={{ order: field?.gridConfig?.order }}
-                                        >
-
-                                            {
-                                                field?.isDeleteAble ?
-                                                    <Tippy
-                                                        content={"delete"}
-                                                        placement="top"
-                                                    >
-                                                        <button
-                                                            onClick={() => handleDeleteField(field?._id)}
-                                                            className={`bg-red-400/20 dark:bg-red-600 absolute right-0 text-[.90rem] font-bold text-black dark:text-white px-1 py-1 rounded-md`}
-                                                        >
-                                                            <RxCross2 className='text-red-600 dark:text-red-200' />
-                                                        </button>
-                                                    </Tippy> :
-
-                                                    <span className=' absolute right-0'>
-                                                        <RxValueNone className='text-green-900 dark:text-green-200' />
-                                                    </span>
+            }
 
 
-                                            }
-
-                                            <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">
-                                                {field?.label}{field?.isRequired && <span className="text-red-500">*</span>}
-                                            </label>
-                                            {renderFieldPreview(field)}
-                                        </div>
-                                    )
-                                }
-                                )
-                            }
-                        </div>
-                        :
-                        <div className="flex mt-4 flex-col justify-center items-center py-8 sm:py-12 bg-gray-100 dark:bg-gray-900 rounded-xl shadow-md">
-                            <FaExclamationCircle className="text-3xl sm:text-4xl text-gray-400 dark:text-gray-500 mb-3 sm:mb-4" />
-                            <p className="text-base sm:text-lg font-medium text-gray-600 dark:text-gray-300 mb-3 sm:mb-4">
-                                No Fields Found
-                            </p>
-                        </div>
-                }
-            </div>
 
             {/* Field section */}
             <div className="w-[100%] mb-20 bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-lg p-1">
@@ -581,9 +625,11 @@ function CustomField() {
                                     <button
                                         type="button"
                                         onClick={handleAddOption}
-                                        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                                        className="w-auto p-2 gap-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark flex items-center justify-center shadow-lg"
                                     >
-                                        Add
+                                        <span><FiPlus /> </span>
+                                        <span>Add</span>
+
                                     </button>
                                 </div>
                                 <div className="space-y-2">
@@ -628,9 +674,10 @@ function CustomField() {
                                         <button
                                             type="button"
                                             onClick={handleAddFileType}
-                                            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                                            className="w-auto p-2 gap-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark flex items-center justify-center shadow-lg"
                                         >
-                                            Add
+                                            <span><FiPlus /> </span>
+                                            <span>Add</span>
                                         </button>
                                     </div>
                                 </div>
@@ -701,54 +748,85 @@ function CustomField() {
                             </div>
                         </div> */}
 
-                        {formData.type !== 'file' && (
-                            <div className="space-y-4">
-                                <h3 className="text-lg font-medium text-formHeadingLight dark:text-formHeadingDark">Validation</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Regex</label>
-                                        <input
-                                            type="text"
-                                            name="validation.regex"
-                                            value={formData.validation.regex}
-                                            onChange={handleChange}
-                                            className="w-[100%] bg-transparent p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            placeholder="e.g., ^[0-9]{10}$"
-                                        />
+                        {/* 'text', 'number', 'email', 'date', 'select', 'checkbox',
+'textarea', 'multiselect', 'datepicker', 'timepicker', 'color', 'hyperlink', 'file' */}
+
+                        {
+                            (formData.type == 'file' || formData.type == "date" || formData.type == "select" || formData.type == "multiselect" || formData.type == "datepicker" || formData.type == "timepicker" || formData.type == "color" || formData.type == "checkbox") ? ""
+                                :
+                                (
+                                    <div className="space-y-4">
+                                        <h3 className="text-lg font-medium text-formHeadingLight dark:text-formHeadingDark">Validation</h3>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Regex</label>
+                                                <input
+                                                    type="text"
+                                                    name="validation.regex"
+                                                    value={formData.validation.regex}
+                                                    onChange={handleChange}
+                                                    className="w-[100%] bg-transparent p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    placeholder="e.g., ^[0-9]{10}$"
+                                                />
+                                            </div>
+
+                                            {
+                                                (formData.type == 'text' || formData.type == 'textarea' || formData.type == 'hyperlink') ?
+                                                    <>
+                                                        <div>
+                                                            <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Min Length</label>
+                                                            <input
+                                                                type="number"
+                                                                name="validation.minLength"
+                                                                value={formData.validation.minLength}
+                                                                onChange={handleChange}
+                                                                className="w-[100%] bg-transparent p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Max Length</label>
+                                                            <input
+                                                                type="number"
+                                                                name="validation.maxLength"
+                                                                value={formData.validation.maxLength}
+                                                                onChange={handleChange}
+                                                                className="w-[100%] bg-transparent p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                            />
+                                                        </div>
+                                                    </>
+                                                    :
+                                                    ""
+                                            }
+                                            {
+                                                formData.type == 'number' ?
+                                                    <>
+                                                        <div>
+                                                            <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Min Value</label>
+                                                            <input
+                                                                type="number"
+                                                                name="validation.min"
+                                                                value={formData.validation.min}
+                                                                onChange={handleChange}
+                                                                className="w-[100%] bg-transparent p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Max Value</label>
+                                                            <input
+                                                                type="number"
+                                                                name="validation.max"
+                                                                value={formData.validation.max}
+                                                                onChange={handleChange}
+                                                                className="w-[100%] bg-transparent p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                            />
+                                                        </div>
+
+                                                    </> : ""
+                                            }
+                                        </div>
                                     </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Max Length</label>
-                                        <input
-                                            type="number"
-                                            name="validation.maxLength"
-                                            value={formData.validation.maxLength}
-                                            onChange={handleChange}
-                                            className="w-[100%] bg-transparent p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Min Value</label>
-                                        <input
-                                            type="number"
-                                            name="validation.min"
-                                            value={formData.validation.min}
-                                            onChange={handleChange}
-                                            className="w-[100%] bg-transparent p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Max Value</label>
-                                        <input
-                                            type="number"
-                                            name="validation.max"
-                                            value={formData.validation.max}
-                                            onChange={handleChange}
-                                            className="w-[100%] bg-transparent p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        )}
+                                )
+                        }
 
                         {errors.length > 0 && (
                             <div className="p-4 bg-red-100 rounded-md">
