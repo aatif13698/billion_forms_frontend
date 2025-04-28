@@ -35,7 +35,9 @@ function SubmitForm() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [customizationValues, setCustomizationValues] = useState({});
 
-    console.log("errors", errors);
+    console.log("customizationValues", customizationValues);
+    console.log("existingFields",existingFields);
+    
 
 
     // Handle input changes and validate
@@ -316,16 +318,19 @@ function SubmitForm() {
             formData.append("sessionId", decryptedId);
             formData.append("userId", sessionData?.userId || organizationData?.userId);
             formData.append("organizationId", organizationData?._id);
+            formData.append("phone", customizationValues?.phone);
+            formData.append("firstName", customizationValues?.firstName);   
 
             // Map fields to formData
             existingFields.forEach((field) => {
                 const fieldName = field.name;
+                const label = field.label
                 const value = customizationValues[fieldName];
                 if (value !== undefined && value !== null) {
                     if (field.type === "file" && value instanceof File) {
-                        formData.append(fieldName, value);
+                        formData.append(label, value);
                     } else {
-                        formData.append(fieldName, value);
+                        formData.append(label, value);
                     } 
                 }
             });
@@ -343,17 +348,21 @@ function SubmitForm() {
             // Reset form
             setCustomizationValues({});
             setErrors({});
+
+            setTimeout(() => {
+                window.location.reload();
+              }, 700);
         } catch (error) {
             console.error("Error submitting form:", error);
             Swal.fire({
                 icon: "error",
                 title: "Error",
                 text:
-                    error.message === "A form with this phone, first name, and session already exists"
+                    error === "A form with this phone, first name, and session already exists"
                         ? "This form has already been submitted with the same phone, first name, and session."
-                        : error.message === "Invalid email format"
+                        : error === "Invalid email format"
                             ? "Please enter a valid email address"
-                            : error.message || "Failed to submit form",
+                            : error || "Failed to submit form",
             });
         } finally {
             setIsSubmitting(false);

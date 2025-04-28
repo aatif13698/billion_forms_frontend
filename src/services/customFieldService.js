@@ -179,14 +179,17 @@ const submitFormData = async (data) => {
         const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/create/form`, data, {
             headers: {
                 Authorization: `Bearer ${authToken}`,
-                "Content-Type": "application/json",
+                "Content-Type": "multipart/form-data",
             }
         });
         return response;
     } catch (error) {
 
+        console.log("error form",error);
+        
+
         if (error.response) {
-            return Promise.reject(error.response.data.error || "Invalid credentials");
+            return Promise.reject(error.response.data.message || "Invalid credentials");
         } else if (error.request) {
             return Promise.reject("Network error. Please try again.");
         } else {
