@@ -3,7 +3,7 @@ import CryptoJS from "crypto-js";
 import { useParams } from "react-router-dom";
 import customFieldService from "../../services/customFieldService";
 import Hamberger from "../../components/Hamberger/Hamberger";
-import { FaEnvelope } from "react-icons/fa";
+import { FaEnvelope, FaSpinner } from "react-icons/fa";
 import LoadingSpinner from "../../components/Loading/LoadingSpinner";
 import images from "../../constant/images";
 import Swal from "sweetalert2";
@@ -24,6 +24,9 @@ const decryptId = (encryptedId) => {
 
 function SubmitForm() {
     const { formId: encryptedId } = useParams();
+    const [password, setPassword] = useState("");
+    const [isSubmittingPassword, setIsSubmittingPassword] = useState(false);
+    const [navigateToForm, setNavigateToForm] = useState(false);
     const [logoPreview, setLogoPreview] = useState("");
     const [bannerPreview, setBannerPreview] = useState("");
     const [decryptedId, setDecryptedId] = useState("");
@@ -36,8 +39,8 @@ function SubmitForm() {
     const [customizationValues, setCustomizationValues] = useState({});
 
     console.log("customizationValues", customizationValues);
-    console.log("existingFields",existingFields);
-    
+    console.log("sessionData", sessionData);
+
 
 
     // Handle input changes and validate
@@ -71,6 +74,8 @@ function SubmitForm() {
             try {
                 // Convert string regex to RegExp object
                 const regex = new RegExp(validation.regex);
+                console.log("regex",regex);
+                
 
                 if (typeof value === "string" && !regex.test(value.trim())) {
                     newErrors[fieldName] = `Please enter a valid ${field?.label}`;
@@ -125,6 +130,7 @@ function SubmitForm() {
         try {
             setIsPageLoading(true);
             const response = await customFieldService.getCustomFormsBySession(decryptedId);
+
             const fields = response?.data?.data?.data || [];
             setExistingFields(fields);
             setOrganizationData(fields[0]?.sessionId?.organizationId);
@@ -135,7 +141,14 @@ function SubmitForm() {
             setLogoPreview(
                 `${import.meta.env.VITE_API_URL_IMG}${fields[0]?.sessionId?.organizationId?.logo || ""}`
             );
+
+            if (fields[0]?.sessionId?.isPasswordRequired) {
+                setNavigateToForm(false)
+            } else {
+                setNavigateToForm(true)
+            }
             setIsPageLoading(false);
+
         } catch (error) {
             console.error("Error fetching fields:", error);
             setIsPageLoading(false);
@@ -319,7 +332,7 @@ function SubmitForm() {
             formData.append("userId", sessionData?.userId || organizationData?.userId);
             formData.append("organizationId", organizationData?._id);
             formData.append("phone", customizationValues?.phone);
-            formData.append("firstName", customizationValues?.firstName);   
+            formData.append("firstName", customizationValues?.firstName);
 
             // Map fields to formData
             existingFields.forEach((field) => {
@@ -331,7 +344,7 @@ function SubmitForm() {
                         formData.append(label, value);
                     } else {
                         formData.append(label, value);
-                    } 
+                    }
                 }
             });
 
@@ -351,7 +364,7 @@ function SubmitForm() {
 
             setTimeout(() => {
                 window.location.reload();
-              }, 700);
+            }, 700);
         } catch (error) {
             console.error("Error submitting form:", error);
             Swal.fire({
@@ -369,118 +382,282 @@ function SubmitForm() {
         }
     };
 
+    async function handleSubmitPassword(e) {
+        e.preventDefault();
+        setIsSubmittingPassword(true);
+        if (!password) {
+            Swal.fire({
+                icon: "warning",
+                title: "Validation Password",
+                text: "Please enter password.",
+            });
+
+            setIsSubmittingPassword(false);
+            return
+        }
+        try {
+            const dataObject = {
+                password: password,
+                sessionId: sessionData?._id
+            }
+            const response = await customFieldService.submitPassword(dataObject);
+            if (response?.data?.success) {
+                setNavigateToForm(true);
+            }
+            setIsSubmittingPassword(false);
+        } catch (error) {
+            setIsSubmittingPassword(false);
+            console.log("error in submitting password", error);
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text:
+                    error
+                        ? error
+                        : "Failed to submit password.",
+            });
+        }
+    }
+
     return (
-        <div className="flex justify-center h-full overflow-auto bg-light dark:bg-dark">
+        <div className={`flex ${navigateToForm ? "" : "flex-col justify-center items-center"}  justify-center h-full overflow-auto bg-light dark:bg-dark`}>
             {isPageLoading ? (
                 <LoadingSpinner />
             ) : errors.general ? (
                 <div className="text-red-500 text-center p-4">{errors.general}</div>
             ) : (
-                <div className="w-full max-w-4xl mx-auto flex flex-col p-2 sm:p-4 mt-2 sm:mt-3">
-                    <div className="w-[100%] bg-cardBgLight dark:bg-cardBgDark rounded-t-md shadow-lg">
-                        <div className="relative border-2 hover:border-subscriptionCardBgLightFrom bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden transition-transform duration-300 hover:shadow-xl">
-                            <div
-                                className="absolute inset-0 bg-cover bg-center"
-                                style={{ backgroundImage: `url(${bannerPreview})` }}
-                            />
-                            <div className="absolute z-20 top-2 sm:top-4 right-2 sm:right-4">
-                                <img
-                                    src={logoPreview}
-                                    alt={`${organizationData?.name} logo`}
-                                    className="h-12 sm:h-16 w-12 sm:w-16 rounded-full object-cover border-2 border-white dark:border-gray-200 shadow-md"
-                                />
-                            </div>
-                            <div className="relative z-10 bg-black bg-opacity-50 hover:bg-opacity-40 flex flex-col justify-between py-4 sm:py-6 px-3 sm:px-4">
-                                <div className="text-left text-white w-full">
-                                    <h2 className="text-lg sm:text-2xl md:text-4xl font-bold mb-2 drop-shadow-md">
-                                        {organizationData?.name || "Organization Name"}
-                                    </h2>
-                                    <h4 className="text-xs sm:text-sm md:text-base font-medium mb-1 drop-shadow-sm">
-                                        {organizationData?.captionText || "Caption Text"}
-                                    </h4>
-                                    <h2 className="text-base sm:text-xl md:text-3xl font-bold mb-2 drop-shadow-md">
-                                        {`${sessionData?.for || "Session"} (${sessionData?.name || "Name"})`}
-                                    </h2>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="w-[100%] bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-b-md p-4 sm:p-6">
-                        {existingFields?.length > 0 ? (
-                            <form
-                                onSubmit={handleFormSubmit}
-                                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
-                                aria-label="Session form preview"
-                            >
-                                {[...existingFields]
-                                    .sort((a, b) => a.gridConfig?.order - b.gridConfig?.order)
-                                    .map((field, index) => (
-                                        <div
-                                            key={index}
-                                            style={{ order: field?.gridConfig?.order }}
-                                            className={`min-w-0 ${field?.type === "checkbox" ? "flex items-center gap-2" : ""}`}
-                                        >
-                                            <label className="block text-xs sm:text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">
-                                                {field?.label}
-                                                {field?.isRequired && <span className="text-red-500">*</span>}
-                                            </label>
-                                            {renderFieldPreview(field)}
+
+                <>
+
+                    {
+                        !navigateToForm ?
+
+                            <>
+
+                                <div className="w-full max-w-4xl mx-auto flex flex-col  ">
+
+                                    <div className="flex flex-col items-center mt-4 mb-0 md:px-1 px-1">
+                                        <style>
+                                            {`
+                                      input[type="date"]::-webkit-calendar-picker-indicator {
+                                        filter: invert(0%); /* Black (#000000) */
+                                        cursor: pointer;
+                                      }
+                                      .dark input[type="date"]::-webkit-calendar-picker-indicator {
+                                        filter: invert(100%); /* White (#FFFFFF) */
+                                        cursor: pointer;
+                                      }
+                                    `}
+                                        </style>
+                                        <div className="w-[100%]  max-w-2xl bg-white dark:bg-cardBgDark rounded-lg shadow-lg">
+                                            <div className="relative  bg-white dark:bg-gray-800 rounded-lg   overflow-hidden ">
+                                                <div
+                                                    className="absolute inset-0 bg-cover bg-center"
+                                                    // style={{ backgroundImage: `url(${bannerPreview})` }}
+                                                />
+                                                <div className="absolute z-20 top-2 sm:top-4 right-2 sm:right-4">
+                                                    {/* <img
+                                                        src={logoPreview}
+                                                        alt={`${organizationData?.name} logo`}
+                                                        className="h-12 sm:h-16 w-12 sm:w-16 rounded-full object-cover border-2 border-white dark:border-gray-200 shadow-md"
+                                                    /> */}
+                                                </div>
+                                                <div className="relative z-10 bg-opacity-50 hover:bg-opacity-40 flex flex-col justify-between py-4 sm:py-6 px-3 sm:px-4">
+                                                    <div className="text-left text-textLight dark:text-dark w-full">
+                                                        <h2 className="text-lg sm:text-2xl md:text-4xl font-bold mb-2 drop-shadow-md">
+                                                            {organizationData?.name || "Organization Name"}
+                                                        </h2>
+                                                        {/* <h4 className="text-xs sm:text-sm md:text-base font-medium mb-1 drop-shadow-sm">
+                                                            {organizationData?.captionText || "Caption Text"}
+                                                        </h4> */}
+                                                        <h2 className="text-base sm:text-xl md:text-3xl font-bold mb-2 drop-shadow-md">
+                                                            {`${sessionData?.for || "Session"} (${sessionData?.name || "Name"})`}
+                                                        </h2>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                    ))}
-                                <div className="flex justify-end mt-4 col-span-1 sm:col-span-2 md:col-span-3">
-                                    <button
-                                        type="submit"
-                                        disabled={isSubmitting}
-                                        className="w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark flex items-center justify-center shadow-lg"
-                                        aria-label="Submit session form"
-                                    >
-                                        {isSubmitting ? (
-                                            <>
-                                                <svg
-                                                    className="animate-spin mr-2 h-4 sm:h-5 w-4 sm:w-5 text-white"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
+                                        <div className="w-[100%] my-3 max-w-2xl border-subscriptionCardBgLightFrom border-2 dark:border-white bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-lg p-6">
+                                            <h2 className="md:text-2xl text-1xl font-semibold text-formHeadingLight dark:text-formHeadingDark md:mb-2 mb-2 text-start">Continue With The Password</h2>
+                                            <div className="h-[1.8px] bg-black dark:bg-white mb-4"></div>
+                                            <form
+                                                // onSubmit={handleSubmit}
+                                                className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                                                <div>
+                                                    <label
+                                                        htmlFor="password"
+                                                        className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1"
+                                                    >
+                                                        Password
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        id="password"
+                                                        name="password"
+                                                        value={password}
+                                                        onChange={(e) => setPassword(e.target.value)}
+                                                        className="w-[100%] bg-transparent border border-gray-300 rounded-lg p-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                        placeholder="Enter Password"
+                                                        aria-describedby={errors.password ? "for-error" : undefined}
+                                                    />
+                                                    {errors.password && (
+                                                        <p id="for-error" className="text-red-500 text-sm mt-1">
+                                                            {errors.password}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </form>
+
+                                            <div className="flex justify-end mt-6">
+                                                <button
+                                                    type="submit"
+                                                    onClick={handleSubmitPassword}
+                                                    disabled={isSubmittingPassword}
+                                                    className="w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out 
+                                            bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light 
+                                             hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark 
+                                             flex items-center justify-center shadow-lg"
+                                                // className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-700 dark:from-blue-600 dark:to-blue-800 rounded-lg shadow-md hover:from-blue-600 hover:to-blue-800 dark:hover:from-blue-700 dark:hover:to-blue-900 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                                                 >
-                                                    <circle
-                                                        className="opacity-25"
-                                                        cx="12"
-                                                        cy="12"
-                                                        r="10"
-                                                        stroke="currentColor"
-                                                        strokeWidth="4"
-                                                    ></circle>
-                                                    <path
-                                                        className="opacity-75"
-                                                        fill="currentColor"
-                                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                                    ></path>
-                                                </svg>
-                                                Submitting...
-                                            </>
-                                        ) : (
-                                            "Submit Form"
-                                        )}
-                                    </button>
+                                                    {isSubmittingPassword ? (
+                                                        <>
+                                                            <FaSpinner className="animate-spin" />
+                                                            Submitting...
+                                                        </>
+                                                    ) : (
+                                                        "Submit"
+                                                    )}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </form>
-                        ) : (
-                            <div className="flex justify-center items-center">
-                                <h2 className="text-lg sm:text-2xl md:text-4xl font-bold mb-2 drop-shadow-md">
-                                    No Fields Have Been Added
-                                </h2>
+
+                                <div className=" w-[100%] max-w-2xl p-2  mt-0   flex justify-center items-center gap-2 bg-cardBgLight shadow-lg rounded-md  sm:p-2">
+                                    <span>
+                                        <img src={images?.treeLogo} className="w-8 h-8" alt="" />
+                                    </span>
+                                    <h4 className="text-xs text-textLight sm:text-sm md:text-base font-medium drop-shadow-lg">
+                                        Powered By Aestree Webnet Pvt. Ltd.
+                                    </h4>
+                                </div>
+                            </>
+
+
+
+
+
+                            :
+                            <div className="w-full max-w-4xl mx-auto flex flex-col p-2 sm:p-4 mt-2 sm:mt-3">
+                                <div className="w-[100%] bg-cardBgLight dark:bg-cardBgDark rounded-t-md shadow-lg">
+                                    <div className="relative border-2 hover:border-subscriptionCardBgLightFrom bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden transition-transform duration-300 hover:shadow-xl">
+                                        <div
+                                            className="absolute inset-0 bg-cover bg-center"
+                                            style={{ backgroundImage: `url(${bannerPreview})` }}
+                                        />
+                                        <div className="absolute z-20 top-2 sm:top-4 right-2 sm:right-4">
+                                            <img
+                                                src={logoPreview}
+                                                alt={`${organizationData?.name} logo`}
+                                                className="h-12 sm:h-16 w-12 sm:w-16 rounded-full object-cover border-2 border-white dark:border-gray-200 shadow-md"
+                                            />
+                                        </div>
+                                        <div className="relative z-10 bg-black bg-opacity-50 hover:bg-opacity-40 flex flex-col justify-between py-4 sm:py-6 px-3 sm:px-4">
+                                            <div className="text-left text-white w-full">
+                                                <h2 className="text-lg sm:text-2xl md:text-4xl font-bold mb-2 drop-shadow-md">
+                                                    {organizationData?.name || "Organization Name"}
+                                                </h2>
+                                                <h4 className="text-xs sm:text-sm md:text-base font-medium mb-1 drop-shadow-sm">
+                                                    {organizationData?.captionText || "Caption Text"}
+                                                </h4>
+                                                <h2 className="text-base sm:text-xl md:text-3xl font-bold mb-2 drop-shadow-md">
+                                                    {`${sessionData?.for || "Session"} (${sessionData?.name || "Name"})`}
+                                                </h2>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="w-[100%] bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-b-md p-4 sm:p-6">
+                                    {existingFields?.length > 0 ? (
+                                        <form
+                                            onSubmit={handleFormSubmit}
+                                            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+                                            aria-label="Session form preview"
+                                        >
+                                            {[...existingFields]
+                                                .sort((a, b) => a.gridConfig?.order - b.gridConfig?.order)
+                                                .map((field, index) => (
+                                                    <div
+                                                        key={index}
+                                                        style={{ order: field?.gridConfig?.order }}
+                                                        className={`min-w-0 ${field?.type === "checkbox" ? "flex items-center gap-2" : ""}`}
+                                                    >
+                                                        <label className="block text-xs sm:text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">
+                                                            {field?.label}
+                                                            {field?.isRequired && <span className="text-red-500">*</span>}
+                                                        </label>
+                                                        {renderFieldPreview(field)}
+                                                    </div>
+                                                ))}
+                                            <div className="flex justify-end mt-4 col-span-1 sm:col-span-2 md:col-span-3">
+                                                <button
+                                                    type="submit"
+                                                    disabled={isSubmitting}
+                                                    className="w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark flex items-center justify-center shadow-lg"
+                                                    aria-label="Submit session form"
+                                                >
+                                                    {isSubmitting ? (
+                                                        <>
+                                                            <svg
+                                                                className="animate-spin mr-2 h-4 sm:h-5 w-4 sm:w-5 text-white"
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                fill="none"
+                                                                viewBox="0 0 24 24"
+                                                            >
+                                                                <circle
+                                                                    className="opacity-25"
+                                                                    cx="12"
+                                                                    cy="12"
+                                                                    r="10"
+                                                                    stroke="currentColor"
+                                                                    strokeWidth="4"
+                                                                ></circle>
+                                                                <path
+                                                                    className="opacity-75"
+                                                                    fill="currentColor"
+                                                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                                ></path>
+                                                            </svg>
+                                                            Submitting...
+                                                        </>
+                                                    ) : (
+                                                        "Submit Form"
+                                                    )}
+                                                </button>
+                                            </div>
+                                        </form>
+                                    ) : (
+                                        <div className="flex justify-center items-center">
+                                            <h2 className="text-lg sm:text-2xl md:text-4xl font-bold mb-2 drop-shadow-md">
+                                                No Fields Have Been Added
+                                            </h2>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="w-[100%] mt-2 flex justify-center items-center gap-2 bg-cardBgLight shadow-lg rounded-md p-2 sm:p-2">
+                                    <span>
+                                        <img src={images?.treeLogo} className="w-8 h-8" alt="" />
+                                    </span>
+                                    <h4 className="text-xs text-textLight sm:text-sm md:text-base font-medium drop-shadow-lg">
+                                        Powered By Aestree Webnet Pvt. Ltd.
+                                    </h4>
+                                </div>
                             </div>
-                        )}
-                    </div>
-                    <div className="w-[100%] mt-2 flex justify-center items-center gap-2 bg-cardBgLight shadow-lg rounded-md p-2 sm:p-2">
-                        <span>
-                            <img src={images?.treeLogo} className="w-8 h-8" alt="" />
-                        </span>
-                        <h4 className="text-xs text-textLight sm:text-sm md:text-base font-medium drop-shadow-lg">
-                            Powered By Aestree Webnet Pvt. Ltd.
-                        </h4>
-                    </div>
-                </div>
+
+                    }
+
+                </>
+
             )}
         </div>
     );

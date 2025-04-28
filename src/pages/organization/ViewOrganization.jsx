@@ -81,12 +81,14 @@ function ViewOrganization() {
         for: "",
         closeDate: "",
         status: false,
+        isPasswordRequired: false,
+        password: ""
     });
     const [sessions, setSessions] = useState([])
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    console.log("sessions", sessions);
+    console.log("formData2", formData2);
 
 
     const sessionRegex = /^\d{4}-\d{2}$/; // Matches YYYY-YY
@@ -103,6 +105,11 @@ function ViewOrganization() {
         setErrors((prev) => ({ ...prev, status: "" }));
     };
 
+    const handleToggle2 = () => {
+        setFormData2((prev) => ({ ...prev, isPasswordRequired: !prev.isPasswordRequired }));
+        setErrors((prev) => ({ ...prev, isPasswordRequired: "" }));
+    };
+
     const validateForm = () => {
         const newErrors = {};
         if (!formData2.session.trim()) {
@@ -112,6 +119,9 @@ function ViewOrganization() {
         }
         if (!formData2.for.trim()) {
             newErrors.for = "For field is required";
+        }
+        if (!formData2.password.trim()) {
+            newErrors.password = "Password is required";
         }
         if (!formData2.closeDate) {
             newErrors.closeDate = "Close date is required";
@@ -126,11 +136,11 @@ function ViewOrganization() {
         setIsSubmitting(true);
         try {
             const dataObject = {
-                organizationId: client?._id, name: formData2?.session, forWhom: formData2?.for, isActive: formData2?.status, closeDate: formData2?.closeDate
+                organizationId: client?._id, name: formData2?.session, forWhom: formData2?.for, isActive: formData2?.status, closeDate: formData2?.closeDate, isPasswordRequired : formData2?.isPasswordRequired, password : formData2?.password
             }
             const response = await sessionService.createSession(dataObject);
             console.log("response session", response);
-            setFormData2({ session: "", for: "", closeDate: "", status: false });
+            setFormData2({ session: "", for: "", closeDate: "", status: false, password: "", isPasswordRequired : false });
             setErrors({});
             setRefreshCount((prev) => prev + 1);
         } catch (error) {
@@ -587,6 +597,63 @@ function ViewOrganization() {
                                     </span>
                                 </div>
                             </div>
+                            <div>
+                                <label
+                                    htmlFor="password"
+                                    className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1"
+                                >
+                                    Password
+                                </label>
+                                <input
+                                    type="text"
+                                    id="password"
+                                    name="password"
+                                    value={formData2.password}
+                                    onChange={handleChange}
+                                    className="w-[100%] bg-transparent border border-gray-300 rounded-lg p-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="Enter Password"
+                                    aria-describedby={errors.password ? "for-error" : undefined}
+                                />
+                                {errors.password && (
+                                    <p id="for-error" className="text-red-500 text-sm mt-1">
+                                        {errors.password}
+                                    </p>
+                                )}
+                            </div>
+                            <div>
+                                <label
+                                    htmlFor="isPasswordRequired"
+                                    className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1"
+                                >
+                                    Password Required
+                                </label>
+                                <div className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        id="isPasswordRequired"
+                                        checked={formData2.isPasswordRequired}
+                                        onChange={handleToggle2}
+                                        className="sr-only"
+                                        aria-label="Toggle session isPasswordRequired"
+                                    />
+                                    <div
+                                        onClick={handleToggle2}
+                                        className={`relative inline-flex items-center h-6 w-11 rounded-full cursor-pointer transition-colors duration-200 ${formData2.isPasswordRequired
+                                            ? "bg-blue-500 dark:bg-blue-600"
+                                            : "bg-gray-300 dark:bg-gray-600"
+                                            }`}
+                                    >
+                                        <span
+                                            className={`inline-block h-4 w-4 rounded-full bg-white transform transition-transform duration-200 ${formData2.isPasswordRequired ? "translate-x-6" : "translate-x-1"
+                                                }`}
+                                        />
+                                    </div>
+                                    <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                                        {formData2.isPasswordRequired ? "Yes" : "No"}
+                                    </span>
+                                </div>
+                            </div>
+                            
                         </form>
                         {errors.general && (
                             <p className="text-red-500 text-sm mt-4 text-center">
