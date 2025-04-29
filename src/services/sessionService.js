@@ -27,6 +27,32 @@ const createSession = async (data) => {
 
 
 
+const updateSession = async (data) => {
+    try {
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/update/session`, data ,
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
+        return response;
+    } catch (error) {
+        if (error.response) {
+            return Promise.reject(error.response.data.message);
+        } else if (error.request) {
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+}
+
+
+
+
+
+
 const getAllSession = async (userId, organizationId) => {
     const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
     try {
@@ -58,5 +84,6 @@ const getAllSession = async (userId, organizationId) => {
 
 export default {
     createSession,
+    updateSession,
     getAllSession
 }

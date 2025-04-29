@@ -480,7 +480,7 @@ function SubmitForm() {
                                         <div className="w-[100%] my-3 max-w-2xl border-subscriptionCardBgLightFrom border-2 dark:border-white bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-lg p-6">
                                             <h2 className="md:text-2xl text-1xl font-semibold text-formHeadingLight dark:text-formHeadingDark md:mb-2 mb-2 text-start">Continue With The Password</h2>
                                             <div className="h-[1.8px] bg-black dark:bg-white mb-4"></div>
-                                            <form
+                                            <div
                                                 // onSubmit={handleSubmit}
                                                 className="grid grid-cols-1 md:grid-cols-1 gap-4">
                                                 <div>
@@ -506,11 +506,11 @@ function SubmitForm() {
                                                         </p>
                                                     )}
                                                 </div>
-                                            </form>
+                                            </div>
 
                                             <div className="flex justify-end mt-6">
                                                 <button
-                                                    type="submit"
+                                                    // type="submit"
                                                     onClick={handleSubmitPassword}
                                                     disabled={isSubmittingPassword}
                                                     className="w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out 
@@ -579,8 +579,8 @@ function SubmitForm() {
                                 </div>
                                 <div className="w-[100%] bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-b-md p-4 sm:p-6">
                                     {existingFields?.length > 0 ? (
-                                        <form
-                                            onSubmit={handleFormSubmit}
+                                        <div
+                                            // onSubmit={handleFormSubmit}
                                             className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
                                             aria-label="Session form preview"
                                         >
@@ -601,7 +601,8 @@ function SubmitForm() {
                                                 ))}
                                             <div className="flex justify-end mt-4 col-span-1 sm:col-span-2 md:col-span-3">
                                                 <button
-                                                    type="submit"
+                                                    // type="submit"
+                                                    onClick={handleFormSubmit}
                                                     disabled={isSubmitting}
                                                     className="w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark flex items-center justify-center shadow-lg"
                                                     aria-label="Submit session form"
@@ -635,7 +636,7 @@ function SubmitForm() {
                                                     )}
                                                 </button>
                                             </div>
-                                        </form>
+                                        </div>
                                     ) : (
                                         <div className="flex justify-center items-center">
                                             <h2 className="text-lg sm:text-2xl md:text-4xl font-bold mb-2 drop-shadow-md">
