@@ -34,16 +34,9 @@ const FormPassword = ({ companyIdentifier }) => {
     const { formId: encryptedId } = useParams();
     const [decryptedId, setDecryptedId] = useState("");
     const [logoPreview, setLogoPreview] = useState("");
-    const [bannerPreview, setBannerPreview] = useState("");
     const [organizationData, setOrganizationData] = useState(null);
     const [sessionData, setSessionData] = useState(null);
-    const [existingFields, setExistingFields] = useState([]);
     const [isPageLoading, setIsPageLoading] = useState(true);
-    const [customizationValues, setCustomizationValues] = useState({});
-
-
-    console.log("organizationData",organizationData);
-    
 
     useEffect(() => {
         if (encryptedId) {
@@ -62,12 +55,8 @@ const FormPassword = ({ companyIdentifier }) => {
             setIsPageLoading(true);
             const response = await customFieldService.getCustomFormsBySession(decryptedId);
             const fields = response?.data?.data?.data || [];
-            setExistingFields(fields);
             setOrganizationData(fields[0]?.sessionId?.organizationId);
             setSessionData(fields[0]?.sessionId);
-            setBannerPreview(
-                `${import.meta.env.VITE_API_URL_IMG}${fields[0]?.sessionId?.organizationId?.banner || ""}`
-            );
             setLogoPreview(
                 `${import.meta.env.VITE_API_URL_IMG}${fields[0]?.sessionId?.organizationId?.logo || ""}`
             );
@@ -79,22 +68,19 @@ const FormPassword = ({ companyIdentifier }) => {
         }
     };
 
-
-
     const [companyName, setCompanyName] = useState("");
     const [dataLoading, setDataLoading] = useState(true);
 
     const navigate = useNavigate();
-    const dispatch = useDispatch();
     const [errors, setErrors] = useState([]);
 
     const { width, breakpoints } = useWidth();
-    const [isDark] = useDarkmode();
-
     const [formData, setFormData] = useState({
-        identifier: '',
+        serialNumber: '',
         password: '',
     });
+
+    console.log("formData", formData);
 
     const [formDataError, setFormDataError] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -102,11 +88,11 @@ const FormPassword = ({ companyIdentifier }) => {
     const handleValidation = (name, value) => {
         const errors = {};
         switch (name) {
-            case 'identifier':
+            case 'serialNumber':
                 if (!value) {
-                    errors.identifier = 'Email or Phone is required.';
+                    errors.serialNumber = 'ID is required.';
                 } else {
-                    errors.identifier = '';
+                    errors.serialNumber = '';
                 }
                 break;
             case 'password':
@@ -122,6 +108,12 @@ const FormPassword = ({ companyIdentifier }) => {
         }
         return errors;
     };
+
+    const encryptId = (id) => {
+            const encrypted = CryptoJS.AES.encrypt(id.toString(), SECRET_KEY).toString();
+            // URL-safe encoding
+            return encodeURIComponent(encrypted);
+        };
 
 
     function handleChange(e) {
@@ -159,37 +151,26 @@ const FormPassword = ({ companyIdentifier }) => {
             return;
         }
         const dataObject = {
-            identifier: formData?.identifier,
+            serialNumber: formData?.serialNumber,
             password: formData?.password
         };
-
-        // Optional: Add loading toast
-        // const loadingToast = toast.loading('Logging in...');
-
         try {
-            const response = await authSrvice.login(dataObject);
-            const data = response?.data?.data;
+            const response = await customFieldService.submitFormPassword(dataObject);
+            const data = response?.data;
+            console.log("data form login", data);
 
-            localStorage.setItem("SAAS_BILLION_FORMS_customer_token", data?.token?.accessToken);
-            localStorage.setItem(
-                "SAAS_BILLION_FORMS_customerInfo",
-                JSON.stringify(data?.user)
-            );
-            localStorage.setItem("SAAS_BILLION_FORMS_expiryTime", data?.token?.expiresIn);
-            dispatch(setClientUser(data?.user));
+            if (data.success) {
+                navigate(`/editform/${encryptId(decryptedId)}/${encryptId(data?.data?._id)}`)
+            }
 
-            // Update loading toast to success
-            toast.success('Login successful!');
+            setIsSubmitting(false);
 
-            navigate("/dashboard");
 
         } catch (error) {
-
+            setIsSubmitting(false);
             console.error('Login error:', error);
-
             const errorMessage = error || 'Login failed. Please try again.';
             setErrors([errorMessage]); // Optional: keep in state if you still want to display in UI
-
         } finally {
             setIsSubmitting(false);
         }
@@ -213,49 +194,56 @@ const FormPassword = ({ companyIdentifier }) => {
     }
 
 
-
     return (
 
         <>
             {
                 dataLoading ?
-
                     <div className='min-h-screen w-full flex justify-center'>
                         <LoadingSpinner />
                     </div > :
-
                     <div className=' min-h-screen w-full flex justify-center bg-custom-gradient-sidebar dark:bg-custom-gradient-sidebar-dark '>
                         <div className='w-[100%] mx-3 h-fulll sm:w-[100%] md:w-[60%] '>
                             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 '>
-                                {/* image div */}
                                 {
                                     width < breakpoints?.md ? "" :
-                                        <div className=' h-full flex items-center justify-center relative'>
-                                            <div className='relative'>
-                                                <img
-                                                    src={logoWhite}
-                                                    alt="loginImg2"
-                                                    className='relative z-10 w-[80%] sm:w-[60%] md:w-[90%] lg:w-[90%]'
-                                                />
-                                            </div>
+                                        <div className=' text-white h-full flex flex-col gap-3  items-center justify-center relative'>
+                                            <img
+                                                src={logoPreview}
+                                                alt="org-logo"
+                                                className=' rounded-full  w-[15%] '
+                                            />
+                                            <h2 className="text-xl md:text-4xl font-bold mb-2 drop-shadow-md">
+                                                {organizationData?.name}
+                                            </h2>
+                                            <h2 className="text-base sm:text-xl md:text-3xl font-bold mb-2 drop-shadow-md">
+                                                {`${sessionData?.for || "Session"} (${sessionData?.name || "Name"})`}
+                                            </h2>
                                         </div>
-
                                 }
-
                                 {/* form div */}
                                 <div className='  h-full w-[100%] flex flex-col justify-center items-center   '>
-
                                     <div className='w-[100%] mb-3'>
-
                                         <div className='sm:border-2 border-2  border-light rounded-sm p-6  max-w-md mx-auto shadow-md'>
-                                            <div className='flex justify-center py-6'>
-                                                {/* <img src={logoWhite} alt="Instagram Logo" className='w-36' /> */}
-                                                <h2 className='text1 text-white'>{companyName || "Invalid Company"}</h2>
+                                            <div className='flex flex-col items-center justify-center py-2'>
+                                                <h2
+                                                    className="text-xl font-semibold bg-gradient-to-r from-textGradientLightFrom to-textGradientLightkTo dark:from-textGradientDarktFrom dark:to-textGradientDarkTo bg-clip-text text-transparent   pb-1"
+                                                >{companyName || "Invalid Company"}</h2>
+                                                {
+                                                    width < breakpoints?.md ?
+                                                        <>
+                                                            <h2 className="text-xl md:text-4xl text-white font-bold mb-1 drop-shadow-md">
+                                                                {organizationData?.name}
+                                                            </h2>
+                                                            <h2 className="text-base sm:text-xl text-white md:text-3xl font-bold mb-1 drop-shadow-md">
+                                                                {`${sessionData?.for || "Session"} (${sessionData?.name || "Name"})`}
+                                                            </h2>
+                                                        </>
+                                                        : ""
+                                                }
                                             </div>
-
                                             <div className='w-[90%]   rounded-lg flex justify-center items-center mx-auto'>
                                                 <div className='w-[100%] space-y-4'>
-
                                                     {errors.length > 0 && (
                                                         <div className="p-4 bg-red-100 rounded-md">
                                                             {errors.map((error, index) => (
@@ -265,16 +253,14 @@ const FormPassword = ({ companyIdentifier }) => {
                                                     )}
                                                     <div>
                                                         <input
-                                                            name='identifier'
+                                                            name='serialNumber'
                                                             type="text"
                                                             placeholder='Enter ID'
                                                             onChange={handleChange}
-
                                                             className="w-[100%] bg-transparent p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                         />
-                                                        <span className='text-deep-orange-400 text-sm mt-4 pb-0 mb-0'>{formDataError?.identifier}</span>
+                                                        <span className='text-deep-orange-400 text-sm mt-4 pb-0 mb-0'>{formDataError?.serialNumber}</span>
                                                     </div>
-
                                                     <div>
                                                         <input
                                                             name='password'
@@ -285,17 +271,43 @@ const FormPassword = ({ companyIdentifier }) => {
                                                         />
                                                         <span className='text-deep-orange-400 text-sm mt-4 pb-0 mb-0'>{formDataError?.password}</span>
                                                     </div>
-
-                                                    <button onClick={handleSubmit}
+                                                    <button
+                                                        onClick={handleSubmit}
+                                                        disabled={isSubmitting}
                                                         className="w-[100%] p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark flex items-center justify-center shadow-lg"
                                                     >
-                                                        Continue
+                                                        {isSubmitting ? (
+                                                            <>
+                                                                <svg
+                                                                    className="animate-spin mr-2 h-4 sm:h-5 w-4 sm:w-5 text-white"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    fill="none"
+                                                                    viewBox="0 0 24 24"
+                                                                >
+                                                                    <circle
+                                                                        className="opacity-25"
+                                                                        cx="12"
+                                                                        cy="12"
+                                                                        r="10"
+                                                                        stroke="currentColor"
+                                                                        strokeWidth="4"
+                                                                    ></circle>
+                                                                    <path
+                                                                        className="opacity-75"
+                                                                        fill="currentColor"
+                                                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                                    ></path>
+                                                                </svg>
+                                                                Submitting...
+                                                            </>
+                                                        ) : (
+                                                            "Submit"
+                                                        )}
                                                     </button>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    {/* <SignUpLink /> */}
                                 </div>
                             </div>
                         </div>

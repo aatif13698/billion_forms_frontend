@@ -202,15 +202,12 @@ const Login = ({ companyIdentifier }) => {
 
                                 {/* form div */}
                                 <div className='  h-full w-[100%] flex flex-col justify-center items-center   '>
-
                                     <div className='w-[100%] mb-3'>
-
                                         <div className='sm:border-2 border-2  border-light rounded-sm p-6  max-w-md mx-auto shadow-md'>
                                             <div className='flex justify-center py-6'>
                                                 {/* <img src={logoWhite} alt="Instagram Logo" className='w-36' /> */}
-                                                <h2 className='text1 text-white'>{companyName || "Invalid Company"}</h2>
+                                                <h2 className='text1 text-xl text-white'>{companyName || "Invalid Company"}</h2>
                                             </div>
-
                                             <div className='w-[90%]   rounded-lg flex justify-center items-center mx-auto'>
                                                 <div className='w-[100%] space-y-4'>
 
@@ -232,7 +229,6 @@ const Login = ({ companyIdentifier }) => {
                                                         />
                                                         <span className='text-deep-orange-400 text-sm mt-4 pb-0 mb-0'>{formDataError?.identifier}</span>
                                                     </div>
-
                                                     <div>
                                                         <input
                                                             name='password'
@@ -253,7 +249,6 @@ const Login = ({ companyIdentifier }) => {
                                             </div>
                                         </div>
                                     </div>
-                                    {/* <SignUpLink /> */}
                                 </div>
                             </div>
                         </div>

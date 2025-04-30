@@ -26,7 +26,8 @@ const ViewOrganization = lazy(() => import("../src/pages/organization/ViewOrgani
 const ListFields = lazy(() => import("../src/pages/customField/CustomField"));
 const SubmitForm = lazy(() => import("../src/pages/customField/SubmitForm"));
 const AdjustOrder = lazy(() => import("../src/pages/customField/AdjustOrder"));
-const FormPassword = lazy(() => import("../src/pages/customField/FormPassword"))
+const FormPassword = lazy(() => import("../src/pages/customField/FormPassword"));
+const EditForm = lazy(() => import("../src/pages/customField/EditForm"))
 
 import PublicRoute from "./routes/PublicRoute";
 import PrivateRoute from "./routes/PrivateRoute";
@@ -77,6 +78,7 @@ export default function App() {
           {/* <Route index element={<Navigate to="/list/company" />} /> */}
 
           <Route path="/form/:formId" element={<SubmitForm />} />
+          <Route path="/editform/:formId/:id" element={<EditForm />} />
           <Route path="/passwordForm/auth/:formId" element={<FormPassword />} />
           <Route element={<PublicRoute isLoggedIn={isLoggedIn} />} >
             <Route path="/" element={<Login />} />
