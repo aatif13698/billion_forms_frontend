@@ -1,37 +1,87 @@
 import React, { memo, useEffect, useState } from 'react';
-import images from '../../constant/images';
 import logoWhite from "../../assets/logo/logo.png"
 import "../../App.css"
 
 
 import useWidth from '../../Hooks/useWidth';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useParams } from 'react-router-dom';
 import useDarkmode from '../../Hooks/useDarkMode';
 import authSrvice from '../../services/authSrvice';
 import { setClientUser } from '../../store/reducer/auth/authCustomerSlice';
 import { useDispatch } from 'react-redux';
 import toast from 'react-hot-toast';
 import LoadingSpinner from '../../components/Loading/LoadingSpinner';
+import CryptoJS from "crypto-js";
+import customFieldService from '../../services/customFieldService';
 
 
-const SignUpLink = memo(() => {
-    return (
-        <div className='w-[100%]'>
-            <div className='sm:border-2 border-gray-300 rounded-sm p-6 max-w-md mx-auto'>
-                <div className='rounded-lg flex flex-col'>
-                    {/* <h2 className='text-base'>Don't have an account? <Link to={"/signup"} className='text-blue-500 font-bold'>Sign up</Link></h2> */}
-                    {/* <h2 className='text-base'>Back to home<Link to={"/home"} className='text-blue-500 font-bold'>Go To Product Page</Link></h2> */}
-                </div>
-            </div>
-        </div>
-    );
-});
 
-const Login = ({ companyIdentifier }) => {
+// Secret key for decryption
+const SECRET_KEY = import.meta.env.VITE_ENCRYPTION_KEY || "my-secret-key";
+
+const decryptId = (encryptedId) => {
+    try {
+        const decoded = decodeURIComponent(encryptedId);
+        const bytes = CryptoJS.AES.decrypt(decoded, SECRET_KEY);
+        return bytes.toString(CryptoJS.enc.Utf8);
+    } catch (error) {
+        console.error("Decryption failed:", error);
+        return null;
+    }
+};
+
+const FormPassword = ({ companyIdentifier }) => {
+    const { formId: encryptedId } = useParams();
+    const [decryptedId, setDecryptedId] = useState("");
+    const [logoPreview, setLogoPreview] = useState("");
+    const [bannerPreview, setBannerPreview] = useState("");
+    const [organizationData, setOrganizationData] = useState(null);
+    const [sessionData, setSessionData] = useState(null);
+    const [existingFields, setExistingFields] = useState([]);
+    const [isPageLoading, setIsPageLoading] = useState(true);
+    const [customizationValues, setCustomizationValues] = useState({});
+
+
+    console.log("organizationData",organizationData);
+    
+
+    useEffect(() => {
+        if (encryptedId) {
+            const decryptedId = decryptId(encryptedId);
+            if (decryptedId) {
+                setDecryptedId(decryptedId);
+                fetchFields(decryptedId);
+            } else {
+                setErrors({ general: "Invalid or corrupted form ID" });
+            }
+        }
+    }, [encryptedId]);
+
+    const fetchFields = async (decryptedId) => {
+        try {
+            setIsPageLoading(true);
+            const response = await customFieldService.getCustomFormsBySession(decryptedId);
+            const fields = response?.data?.data?.data || [];
+            setExistingFields(fields);
+            setOrganizationData(fields[0]?.sessionId?.organizationId);
+            setSessionData(fields[0]?.sessionId);
+            setBannerPreview(
+                `${import.meta.env.VITE_API_URL_IMG}${fields[0]?.sessionId?.organizationId?.banner || ""}`
+            );
+            setLogoPreview(
+                `${import.meta.env.VITE_API_URL_IMG}${fields[0]?.sessionId?.organizationId?.logo || ""}`
+            );
+            setIsPageLoading(false);
+        } catch (error) {
+            console.error("Error fetching fields:", error);
+            setIsPageLoading(false);
+            setErrors({ general: "Failed to fetch form fields" });
+        }
+    };
+
 
 
     const [companyName, setCompanyName] = useState("");
-    console.log("companyName", companyName);
     const [dataLoading, setDataLoading] = useState(true);
 
     const navigate = useNavigate();
@@ -50,9 +100,7 @@ const Login = ({ companyIdentifier }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleValidation = (name, value) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const errors = {};
-
         switch (name) {
             case 'identifier':
                 if (!value) {
@@ -78,12 +126,8 @@ const Login = ({ companyIdentifier }) => {
 
     function handleChange(e) {
         const { name, value } = e.target;
-
-        // Validate input field
         const error = handleValidation(name, value);
         setFormDataError((prev) => ({ ...prev, ...error }));
-
-        // Update form data
         setFormData((prev) => ({ ...prev, [name]: value }));
     }
 
@@ -110,12 +154,10 @@ const Login = ({ companyIdentifier }) => {
     async function handleSubmit(e) {
         e.preventDefault();
         setIsSubmitting(true);
-
         if (validateFormData()) {
             setIsSubmitting(false);
             return;
         }
-
         const dataObject = {
             identifier: formData?.identifier,
             password: formData?.password
@@ -183,7 +225,7 @@ const Login = ({ companyIdentifier }) => {
                     </div > :
 
                     <div className=' min-h-screen w-full flex justify-center bg-custom-gradient-sidebar dark:bg-custom-gradient-sidebar-dark '>
-                        <div className='w-ful h-fulll sm:w-[100%] md:w-[60%] '>
+                        <div className='w-[100%] mx-3 h-fulll sm:w-[100%] md:w-[60%] '>
                             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 '>
                                 {/* image div */}
                                 {
@@ -225,7 +267,7 @@ const Login = ({ companyIdentifier }) => {
                                                         <input
                                                             name='identifier'
                                                             type="text"
-                                                            placeholder='Enter Email or Phone No'
+                                                            placeholder='Enter ID'
                                                             onChange={handleChange}
 
                                                             className="w-[100%] bg-transparent p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -245,9 +287,9 @@ const Login = ({ companyIdentifier }) => {
                                                     </div>
 
                                                     <button onClick={handleSubmit}
-                                                    className="w-[100%] p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark flex items-center justify-center shadow-lg"
+                                                        className="w-[100%] p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark flex items-center justify-center shadow-lg"
                                                     >
-                                                        Log in
+                                                        Continue
                                                     </button>
                                                 </div>
                                             </div>
@@ -265,4 +307,4 @@ const Login = ({ companyIdentifier }) => {
     );
 };
 
-export default Login;
+export default FormPassword;

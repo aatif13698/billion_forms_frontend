@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import CryptoJS from "crypto-js";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import customFieldService from "../../services/customFieldService";
-import Hamberger from "../../components/Hamberger/Hamberger";
-import { FaEnvelope, FaSpinner } from "react-icons/fa";
+import {  FaSpinner } from "react-icons/fa";
 import LoadingSpinner from "../../components/Loading/LoadingSpinner";
 import images from "../../constant/images";
 import Swal from "sweetalert2";
+import "../../App.css"
+
 
 // Secret key for decryption
 const SECRET_KEY = import.meta.env.VITE_ENCRYPTION_KEY || "my-secret-key";
@@ -23,6 +24,7 @@ const decryptId = (encryptedId) => {
 };
 
 function SubmitForm() {
+    const navigate = useNavigate();
     const { formId: encryptedId } = useParams();
     const [password, setPassword] = useState("");
     const [isSubmittingPassword, setIsSubmittingPassword] = useState(false);
@@ -38,11 +40,6 @@ function SubmitForm() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [customizationValues, setCustomizationValues] = useState({});
 
-    console.log("customizationValues", customizationValues);
-    console.log("sessionData", sessionData);
-
-
-
     // Handle input changes and validate
     const handleInputChange = (fieldName, value, field) => {
         setCustomizationValues((prev) => ({
@@ -52,7 +49,6 @@ function SubmitForm() {
 
         let newErrors = { ...errors };
         const validation = field.validation;
-
         // Required field validation
         if (field?.isRequired) {
             if (typeof value === "string" && !value.trim()) {
@@ -68,14 +64,13 @@ function SubmitForm() {
                 delete newErrors[fieldName];
             }
         }
-
         // Regex validation
         if (validation?.regex && value) {
             try {
                 // Convert string regex to RegExp object
                 const regex = new RegExp(validation.regex);
-                console.log("regex",regex);
-                
+                console.log("regex", regex);
+
 
                 if (typeof value === "string" && !regex.test(value.trim())) {
                     newErrors[fieldName] = `Please enter a valid ${field?.label}`;
@@ -98,7 +93,6 @@ function SubmitForm() {
                 delete newErrors[fieldName];
             }
         }
-
         // min value and max value
         if (validation?.min && value) {
             if (value < validation?.min) {
@@ -109,7 +103,6 @@ function SubmitForm() {
                 delete newErrors[fieldName];
             }
         }
-
         setErrors(newErrors);
     };
 
@@ -130,7 +123,6 @@ function SubmitForm() {
         try {
             setIsPageLoading(true);
             const response = await customFieldService.getCustomFormsBySession(decryptedId);
-
             const fields = response?.data?.data?.data || [];
             setExistingFields(fields);
             setOrganizationData(fields[0]?.sessionId?.organizationId);
@@ -284,7 +276,6 @@ function SubmitForm() {
     const handleFormSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
-
         try {
             // Validate required fields
             const newErrors = {};
@@ -314,7 +305,6 @@ function SubmitForm() {
                     }
                 }
             });
-
             if (Object.keys(newErrors).length > 0) {
                 setErrors(newErrors);
                 setIsSubmitting(false);
@@ -325,7 +315,6 @@ function SubmitForm() {
                 });
                 return;
             }
-
             // Prepare form data
             const formData = new FormData();
             formData.append("sessionId", decryptedId);
@@ -333,7 +322,6 @@ function SubmitForm() {
             formData.append("organizationId", organizationData?._id);
             formData.append("phone", customizationValues?.phone);
             formData.append("firstName", customizationValues?.firstName);
-
             // Map fields to formData
             existingFields.forEach((field) => {
                 const fieldName = field.name;
@@ -347,23 +335,36 @@ function SubmitForm() {
                     }
                 }
             });
-
             // Submit to backend
-            await customFieldService.submitFormData(formData);
+            const response = await customFieldService.submitFormData(formData);
             Swal.fire({
+                position: "top-end",
                 icon: "success",
-                title: "Success",
-                text: "Form submitted successfully!",
-                timer: 1500,
+                title: "Form Submitted Successfully",
                 showConfirmButton: false,
+                timer: 1500,
+                toast: true,
+                customClass: {
+                    popup: 'my-toast-size'
+                }
             });
-
             // Reset form
             setCustomizationValues({});
             setErrors({});
-
             setTimeout(() => {
-                window.location.reload();
+                Swal.fire({
+                    title: "Please Note",
+                    html: `
+                    <p>If you need to edit the form, you can use this credential.</p>
+                    <p><strong>ID:</strong> ${response?.data?.data?.data?.serialNumber}</p>
+                    <p><strong>Password:</strong> ${response?.data?.data?.data?.password}</p>
+                  `,
+                    icon: "info"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.reload()
+                    }
+                });
             }, 700);
         } catch (error) {
             console.error("Error submitting form:", error);
@@ -419,23 +420,25 @@ function SubmitForm() {
         }
     }
 
+
+    const encryptId = (id) => {
+        const encrypted = CryptoJS.AES.encrypt(id.toString(), SECRET_KEY).toString();
+        // URL-safe encoding
+        return encodeURIComponent(encrypted);
+    };
+
     return (
-        <div className={`flex ${navigateToForm ? "" : "flex-col justify-center items-center"}  justify-center h-full overflow-auto bg-light dark:bg-dark`}>
+        <div className={`flex ${navigateToForm ? "" : "flex-col justify-center items-center"}  justify-center h-full overflow-auto bg-custom-gradient-sidebar dark:bg-dark`}>
             {isPageLoading ? (
                 <LoadingSpinner />
             ) : errors.general ? (
                 <div className="text-red-500 text-center p-4">{errors.general}</div>
             ) : (
-
                 <>
-
                     {
                         !navigateToForm ?
-
                             <>
-
                                 <div className="w-full max-w-4xl mx-auto flex flex-col  ">
-
                                     <div className="flex flex-col items-center mt-4 mb-0 md:px-1 px-1">
                                         <style>
                                             {`
@@ -453,7 +456,7 @@ function SubmitForm() {
                                             <div className="relative  bg-white dark:bg-gray-800 rounded-lg   overflow-hidden ">
                                                 <div
                                                     className="absolute inset-0 bg-cover bg-center"
-                                                    // style={{ backgroundImage: `url(${bannerPreview})` }}
+                                                // style={{ backgroundImage: `url(${bannerPreview})` }}
                                                 />
                                                 <div className="absolute z-20 top-2 sm:top-4 right-2 sm:right-4">
                                                     {/* <img
@@ -579,26 +582,40 @@ function SubmitForm() {
                                 </div>
                                 <div className="w-[100%] bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-b-md p-4 sm:p-6">
                                     {existingFields?.length > 0 ? (
-                                        <div
-                                            // onSubmit={handleFormSubmit}
-                                            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
-                                            aria-label="Session form preview"
-                                        >
-                                            {[...existingFields]
-                                                .sort((a, b) => a.gridConfig?.order - b.gridConfig?.order)
-                                                .map((field, index) => (
-                                                    <div
-                                                        key={index}
-                                                        style={{ order: field?.gridConfig?.order }}
-                                                        className={`min-w-0 ${field?.type === "checkbox" ? "flex items-center gap-2" : ""}`}
+
+                                        <>
+                                            <div
+                                                // onSubmit={handleFormSubmit}
+                                                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+                                            >
+
+                                                <div className="flex justify-center items-center gap-2 mt-4 col-span-1 sm:col-span-2 md:col-span-3 my-2">
+                                                    <span className="">Already submitted and want to modify the details:</span>
+                                                    <button
+                                                        onClick={() => navigate(`/passwordForm/auth/${encryptId(decryptedId) }`)}
+                                                        className="flex items-center gap-1 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-red-500 to-red-700 dark:from-red-600 dark:to-red-800 rounded-lg shadow-md hover:from-red-600 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-red-500"
                                                     >
-                                                        <label className="block text-xs sm:text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">
-                                                            {field?.label}
-                                                            {field?.isRequired && <span className="text-red-500">*</span>}
-                                                        </label>
-                                                        {renderFieldPreview(field)}
-                                                    </div>
-                                                ))}
+                                                        Click Here
+                                                    </button>
+                                                </div>
+
+                                                {[...existingFields]
+                                                    .sort((a, b) => a.gridConfig?.order - b.gridConfig?.order)
+                                                    .map((field, index) => (
+                                                        <div
+                                                            key={index}
+                                                            style={{ order: field?.gridConfig?.order }}
+                                                            className={`min-w-0 ${field?.type === "checkbox" ? "flex items-center gap-2" : ""}`}
+                                                        >
+                                                            <label className="block text-xs sm:text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">
+                                                                {field?.label}
+                                                                {field?.isRequired && <span className="text-red-500">*</span>}
+                                                            </label>
+                                                            {renderFieldPreview(field)}
+                                                        </div>
+                                                    ))}
+
+                                            </div>
                                             <div className="flex justify-end mt-4 col-span-1 sm:col-span-2 md:col-span-3">
                                                 <button
                                                     // type="submit"
@@ -636,7 +653,10 @@ function SubmitForm() {
                                                     )}
                                                 </button>
                                             </div>
-                                        </div>
+                                        </>
+
+
+
                                     ) : (
                                         <div className="flex justify-center items-center">
                                             <h2 className="text-lg sm:text-2xl md:text-4xl font-bold mb-2 drop-shadow-md">

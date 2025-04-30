@@ -173,7 +173,7 @@ function ViewOrganization({ noFade }) {
                     icon: "success",
                     title: response?.data?.message,
                     showConfirmButton: false,
-                    timer: 1500,
+                    timer: 2000,
                     toast: true,
                     customClass: {
                         popup: 'my-toast-size'
@@ -621,7 +621,7 @@ function ViewOrganization({ noFade }) {
                             <div className="fixed inset-0 bg-slate-900/50 backdrop-filter backdrop-blur-sm" />
                         </Transition.Child>
 
-                        <div className="fixed  w-[100%] inset-0 overflow-y-auto flex justify-center  items-center my-2">
+                        <div className="fixed shadow-lg  w-[100%] inset-0 overflow-y-auto flex justify-center  items-center my-2">
                             <Transition.Child
                                 as={Fragment}
                                 enter={noFade ? "" : "duration-300 ease-out"}
@@ -632,7 +632,7 @@ function ViewOrganization({ noFade }) {
                                 leaveTo={noFade ? "" : "opacity-0 scale-95"}
                             >
                                 <Dialog.Panel>
-                                    <div className={`flex flex-col ${width > breakpoints.sm ? "w-full/2" : "w-full"}   mx-3  bg-white px-3 rounded-md `}>
+                                    <div className={`flex flex-col ${width > breakpoints.sm ? "w-full/2" : "w-full"}   mx-3  bg-white dark:bg-dark px-3 rounded-md `}>
                                         <div className="flex justify-end mt-5">
                                             <button onClick={() => handleCloseSessionModal()}>
                                                 <RxCross2 size={20} className="text-red-700" />

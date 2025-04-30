@@ -25,7 +25,8 @@ const CreateOrganization = lazy(() => import("../src/pages/organization/CreateOr
 const ViewOrganization = lazy(() => import("../src/pages/organization/ViewOrganization"));
 const ListFields = lazy(() => import("../src/pages/customField/CustomField"));
 const SubmitForm = lazy(() => import("../src/pages/customField/SubmitForm"));
-const AdjustOrder = lazy(() => import("../src/pages/customField/AdjustOrder"))
+const AdjustOrder = lazy(() => import("../src/pages/customField/AdjustOrder"));
+const FormPassword = lazy(() => import("../src/pages/customField/FormPassword"))
 
 import PublicRoute from "./routes/PublicRoute";
 import PrivateRoute from "./routes/PrivateRoute";
@@ -34,6 +35,7 @@ import PrivateRoute from "./routes/PrivateRoute";
 // import Home from "./pages/home/Home";
 import useDarkmode from "./Hooks/useDarkMode";
 import { useSelector } from "react-redux";
+// import FormPassword from "./pages/customField/formPassword";
 
 export default function App() {
 
@@ -75,6 +77,7 @@ export default function App() {
           {/* <Route index element={<Navigate to="/list/company" />} /> */}
 
           <Route path="/form/:formId" element={<SubmitForm />} />
+          <Route path="/passwordForm/auth/:formId" element={<FormPassword />} />
           <Route element={<PublicRoute isLoggedIn={isLoggedIn} />} >
             <Route path="/" element={<Login />} />
             <Route path="/login" element={<Login companyIdentifier={companyIdentifier} />} />
