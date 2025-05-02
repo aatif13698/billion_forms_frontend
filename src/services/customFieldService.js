@@ -227,6 +227,29 @@ const submitFormData = async (data) => {
 }
 
 
+const editFormData = async (data, id) => {
+    const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+    try {
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/update/form/${id}`, data, {
+            headers: {
+                Authorization: `Bearer ${authToken}`,
+                "Content-Type": "multipart/form-data",
+            }
+        });
+        return response;
+    } catch (error) {
+        console.log("error form",error);
+        if (error.response) {
+            return Promise.reject(error.response.data.message || "Invalid credentials");
+        } else if (error.request) {
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+}
+
+
 
 const submitPassword = async (data) => {
     const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
@@ -283,7 +306,8 @@ export default {
     deleteCustomField,
     updateOrder,
     submitFormData,
+    editFormData,
     submitPassword,
     submitFormPassword,
-    getFormData
+    getFormData,
 }

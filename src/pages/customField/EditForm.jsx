@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import CryptoJS from "crypto-js";
 import { useNavigate, useParams } from "react-router-dom";
 import customFieldService from "../../services/customFieldService";
-import {  FaSpinner } from "react-icons/fa";
+import { FaSpinner } from "react-icons/fa";
 import LoadingSpinner from "../../components/Loading/LoadingSpinner";
 import images from "../../constant/images";
 import Swal from "sweetalert2";
@@ -40,6 +40,14 @@ function EditForm() {
     const [isPageLoading, setIsPageLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [customizationValues, setCustomizationValues] = useState({});
+    const [customData, setCustomData] = useState(null);
+    const fileInputRefs = useRef({}); // Store refs for file inputs
+
+
+    console.log("existingFields", existingFields);
+    console.log("customizationValues", customizationValues);
+    console.log("customData", customData);
+
 
     // Handle input changes and validate
     const handleInputChange = (fieldName, value, field) => {
@@ -144,7 +152,6 @@ function EditForm() {
                 setNavigateToForm(true)
             }
             setIsPageLoading(false);
-
         } catch (error) {
             console.error("Error fetching fields:", error);
             setIsPageLoading(false);
@@ -156,35 +163,77 @@ function EditForm() {
         try {
             setIsPageLoading(true);
             const response = await customFieldService.getFormData(decryptedFormId);
-            
             const fieldsData = response?.data?.data?.data || null;
-            console.log("aatif", fieldsData);
-
-            // setExistingFields(fields);
-            // setOrganizationData(fields[0]?.sessionId?.organizationId);
-            // setSessionData(fields[0]?.sessionId);
-            // setBannerPreview(
-            //     `${import.meta.env.VITE_API_URL_IMG}${fields[0]?.sessionId?.organizationId?.banner || ""}`
-            // );
-            // setLogoPreview(
-            //     `${import.meta.env.VITE_API_URL_IMG}${fields[0]?.sessionId?.organizationId?.logo || ""}`
-            // );
-
-            // if (fields[0]?.sessionId?.isPasswordRequired) {
-            //     setNavigateToForm(false)
-            // } else {
-            //     setNavigateToForm(true)
-            // }
+            const otherThanFile = fieldsData?.otherThanFiles;
+            const files = fieldsData?.files;
+            const fieldArray = Object.entries(otherThanFile).map(([key, value]) => ({
+                key,
+                value
+            }));
+            const fileArray = files.map((item) => {
+                return {
+                    key: item?.fieldName,
+                    value: item?.fileUrl
+                }
+            });
+            const resultantDataArray = [...fieldArray, ...fileArray]
+            setCustomData(resultantDataArray);
             setIsPageLoading(false);
-
         } catch (error) {
-            console.error("Error fetching fields:", error);
+            console.error("Error fetching form data:", error);
             setIsPageLoading(false);
-            setErrors({ general: "Failed to fetch form fields" });
+            setErrors({ general: "Failed to fetch form data" });
         }
     };
 
+
+    useEffect(() => {
+        if (existingFields && customData) {
+
+            console.log("existingFields", existingFields);
+            console.log("customData", customData);
+
+            let dataObject = {};
+
+            for (let index = 0; index < existingFields.length; index++) {
+                const element = existingFields[index];
+                const filedLabel = element?.label;
+                const fieldName = element?.name;
+
+                for (let j = 0; j < customData.length; j++) {
+                    const data = customData[j];
+                    if (data?.key == filedLabel) {
+                        dataObject[fieldName] = data?.value
+                    }
+                }
+
+            }
+
+            console.log("dataObject", dataObject);
+
+            setCustomizationValues(dataObject)
+
+
+        }
+    }, [existingFields, customData]);
+
+    function removeCustomFormPath(str) {
+        if (typeof str === "string") {
+            return str.replace("/customForm/", "");
+        } else {
+            return null;
+        }
+
+    }
+    function truncateText(str, maxLength) {
+        if (typeof str !== "string") return "";
+        return str.length > maxLength ? str.slice(0, maxLength) + "..." : str;
+    }
+
+
+
     const renderFieldPreview = (field) => {
+
         const baseStyles =
             "w-[100%] bg-transparent p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500";
         const fieldName = field.name;
@@ -257,7 +306,17 @@ function EditForm() {
                             accept={field?.validation?.fileTypes?.join(",")}
                             onChange={(e) => handleInputChange(fieldName, e.target.files[0], field)}
                             className={baseStyles}
+                            ref={(el) => (fileInputRefs.current[fieldName] = el)} // Store ref
                         />
+                        {customizationValues[fieldName] && (
+                            <p className="text-sm text-gray-600 mt-1 max-w-[300px]">
+                                {
+                                    customizationValues[fieldName]
+                                        ? truncateText(removeCustomFormPath(customizationValues[fieldName]), 30)
+                                        : ""
+                                }
+                            </p>
+                        )}
                         {errors[fieldName] && <p className="text-red-500 text-sm mt-1">{errors[fieldName]}</p>}
                     </>
                 );
@@ -372,11 +431,11 @@ function EditForm() {
                 }
             });
             // Submit to backend
-            const response = await customFieldService.submitFormData(formData);
+            const response = await customFieldService.editFormData(formData, decryptedFormId);
             Swal.fire({
                 position: "top-end",
                 icon: "success",
-                title: "Form Submitted Successfully",
+                title: "Form Updated Successfully",
                 showConfirmButton: false,
                 timer: 1500,
                 toast: true,
@@ -455,6 +514,12 @@ function EditForm() {
             });
         }
     }
+
+    const encryptId = (id) => {
+        const encrypted = CryptoJS.AES.encrypt(id.toString(), SECRET_KEY).toString();
+        // URL-safe encoding
+        return encodeURIComponent(encrypted);
+    };
 
     return (
         <div className={`flex ${navigateToForm ? "" : "flex-col justify-center items-center"}  justify-center h-full overflow-auto bg-custom-gradient-sidebar dark:bg-dark`}>
@@ -618,9 +683,15 @@ function EditForm() {
                                                 className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
                                             >
 
-                                                <div className="flex justify-center items-center gap-2 mt-4 col-span-1 sm:col-span-2 md:col-span-3 my-2">
+                                                <div className="flex justify-between items-center gap-2 mt-4 col-span-1 sm:col-span-2 md:col-span-3 my-2">
                                                     <span className="text-lg font-bold text-textLight">Edit Your Form Data</span>
-                                                   
+                                                    <button
+                                                        onClick={() => navigate(`/form/${encryptId(decryptedId)}`)}
+                                                        className="flex items-center gap-1 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-green-500 to-green-700 dark:from-green-600 dark:to-green-800 rounded-lg shadow-md hover:from-green-600 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                                    >
+                                                        Submit New
+                                                    </button>
+
                                                 </div>
 
                                                 {[...existingFields]
