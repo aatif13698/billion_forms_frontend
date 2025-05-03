@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import CryptoJS from "crypto-js";
 import { useNavigate, useParams } from "react-router-dom";
 import customFieldService from "../../services/customFieldService";
-import {  FaSpinner } from "react-icons/fa";
+import { FaSpinner } from "react-icons/fa";
 import LoadingSpinner from "../../components/Loading/LoadingSpinner";
 import images from "../../constant/images";
 import Swal from "sweetalert2";
 import "../../App.css"
+import Select from 'react-select';
+
 
 
 // Secret key for decryption
@@ -39,6 +41,9 @@ function SubmitForm() {
     const [isPageLoading, setIsPageLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [customizationValues, setCustomizationValues] = useState({});
+
+    // console.log("customizationValues", customizationValues);
+
 
     // Handle input changes and validate
     const handleInputChange = (fieldName, value, field) => {
@@ -149,6 +154,8 @@ function SubmitForm() {
     };
 
     const renderFieldPreview = (field) => {
+        const options = field?.options ? field?.options?.map((item) => ({ value: item, label: item })) : [];
+
         const baseStyles =
             "w-[100%] bg-transparent p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500";
         const fieldName = field.name;
@@ -183,10 +190,25 @@ function SubmitForm() {
                     </>
                 );
             case "select":
+                return (
+                    <>
+                        <Select
+                            name="select"
+                            options={options}
+                            // className="basic-multi-select"
+                            classNamePrefix="select"
+                            onChange={(e) => {
+                                console.log("123", e);
+                                handleInputChange(fieldName, e, field)
+                            }}
+                        />
+                        {errors[fieldName] && <p className="text-red-500 text-sm mt-1">{errors[fieldName]}</p>}
+                    </>
+                );
             case "multiselect":
                 return (
                     <>
-                        <select
+                        {/* <select
                             className={baseStyles}
                             value={customizationValues[fieldName] || ""}
                             onChange={(e) => handleInputChange(fieldName, e.target.value, field)}
@@ -197,7 +219,19 @@ function SubmitForm() {
                                     {opt}
                                 </option>
                             ))}
-                        </select>
+                        </select> */}
+
+                        <Select
+                            isMulti
+                            name="colors"
+                            options={options}
+                            className="basic-multi-select"
+                            classNamePrefix="select"
+                            onChange={(e) => {
+                                console.log("123", e);
+                                handleInputChange(fieldName, e, field)
+                            }}
+                        />
                         {errors[fieldName] && <p className="text-red-500 text-sm mt-1">{errors[fieldName]}</p>}
                     </>
                 );
@@ -330,6 +364,9 @@ function SubmitForm() {
                 if (value !== undefined && value !== null) {
                     if (field.type === "file" && value instanceof File) {
                         formData.append(label, value);
+                    } else if (field.type === "multiselect" || field.type === "select") {
+                        const stringData = JSON.stringify(value)
+                        formData.append(label, stringData);
                     } else {
                         formData.append(label, value);
                     }
@@ -367,6 +404,7 @@ function SubmitForm() {
                 });
             }, 700);
         } catch (error) {
+            setIsSubmitting(false);
             console.error("Error submitting form:", error);
             Swal.fire({
                 icon: "error",
@@ -592,7 +630,7 @@ function SubmitForm() {
                                                 <div className="flex justify-center items-center gap-2 mt-4 col-span-1 sm:col-span-2 md:col-span-3 my-2">
                                                     <span className="">Already submitted and want to modify the details:</span>
                                                     <button
-                                                        onClick={() => navigate(`/passwordForm/auth/${encryptId(decryptedId) }`)}
+                                                        onClick={() => navigate(`/passwordForm/auth/${encryptId(decryptedId)}`)}
                                                         className="flex items-center gap-1 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-red-500 to-red-700 dark:from-red-600 dark:to-red-800 rounded-lg shadow-md hover:from-red-600 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-red-500"
                                                     >
                                                         Click Here

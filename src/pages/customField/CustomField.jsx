@@ -13,7 +13,10 @@ import Swal from 'sweetalert2/dist/sweetalert2.js'
 import 'sweetalert2/src/sweetalert2.scss'
 import "../../App.css"
 import { FiPlus } from "react-icons/fi";
-import LoadingSpinner from '../../components/Loading/LoadingSpinner';
+
+
+
+
 
 
 
@@ -48,8 +51,8 @@ function CustomField() {
     const [refreshCount, setRefreshCount] = useState(0)
 
     const fieldTypes = [
-        'text', 'number', 'email', 'date', 'select', 'checkbox',
-        'textarea', 'multiselect', 'datepicker', 'timepicker', 'color', 'hyperlink', 'file'
+        'text', 'number', 'email', 'date', 'timepicker', 'select', 'checkbox',
+        'textarea', 'multiselect', 'color', 'hyperlink', 'file'
     ].map(type => ({ value: type, label: type.charAt(0).toUpperCase() + type.slice(1) }));
 
     const commonFileTypes = [
@@ -266,6 +269,10 @@ function CustomField() {
 
     // Render a field preview (simplified for display purposes)
     const renderFieldPreview = (field) => {
+        const options = field?.options ? field?.options?.map((item) => ({ value: item, label: item })) : [];
+
+        // console.log("options", options);
+
         const baseStyles = "w-[100%] bg-transparent   p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500";
 
         switch (field.type) {
@@ -278,7 +285,6 @@ function CustomField() {
                         disabled={true}
                         type={field?.type}
                         placeholder={field?.placeholder}
-
                         className={baseStyles}
                     />
                 );
@@ -286,32 +292,45 @@ function CustomField() {
                 return (
                     <textarea
                         disabled={true}
-
                         placeholder={field?.placeholder}
-
                         className={`${baseStyles} min-h-[100px]`}
                     />
                 );
             case 'select':
+                return (
+                    // <select
+                    //     // disabled={true}
+
+                    //     className={baseStyles}>
+                    //     <option value="">{field?.placeholder || 'Select an option'}</option>
+                    //     {field?.options?.map((opt, idx) => (
+                    //         <option key={idx} value={opt}>{opt}</option>
+                    //     ))}
+                    // </select>
+                    <Select
+                        isDisabled={true}
+                        name="select"
+                        options={options}
+                        className="basic-multi-select"
+                        classNamePrefix="select"
+                    />
+                );
             case 'multiselect':
                 return (
-                    <select
-                        disabled={true}
-
-                        className={baseStyles}>
-                        <option value="">{field?.placeholder || 'Select an option'}</option>
-                        {field?.options?.map((opt, idx) => (
-                            <option key={idx} value={opt}>{opt}</option>
-                        ))}
-                    </select>
+                    <Select
+                        isDisabled={true}
+                        isMulti
+                        name="colors"
+                        options={options}
+                        className="basic-multi-select"
+                        classNamePrefix="select"
+                    />
                 );
             case 'checkbox':
                 return (
                     <input
                         disabled={true}
-
                         type="checkbox"
-
                         className="h-5 w-5 text-blue-600"
                     />
                 );
@@ -320,7 +339,6 @@ function CustomField() {
                     <input
                         type="file"
                         disabled={true}
-
                         accept={field?.validation?.fileTypes?.join(',')}
                         className={baseStyles}
                     />
@@ -330,9 +348,7 @@ function CustomField() {
                     <input
                         type="date"
                         disabled={true}
-
                         placeholder={field?.placeholder || 'Select a date'}
-
                         className={baseStyles}
                     />
                 );
@@ -341,9 +357,7 @@ function CustomField() {
                     <input
                         type="time"
                         disabled={true}
-
                         placeholder={field?.placeholder || 'Select a time'}
-
                         className={baseStyles}
                     />
                 );
@@ -352,8 +366,6 @@ function CustomField() {
                     <input
                         type="color"
                         disabled={true}
-
-
                         className={`${baseStyles} h-10 cursor-not-allowed`}
                     />
                 );

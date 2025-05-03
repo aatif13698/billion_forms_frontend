@@ -7,6 +7,8 @@ import LoadingSpinner from "../../components/Loading/LoadingSpinner";
 import images from "../../constant/images";
 import Swal from "sweetalert2";
 import "../../App.css"
+import Select from 'react-select';
+
 
 
 // Secret key for decryption
@@ -145,7 +147,6 @@ function EditForm() {
             setLogoPreview(
                 `${import.meta.env.VITE_API_URL_IMG}${fields[0]?.sessionId?.organizationId?.logo || ""}`
             );
-
             if (fields[0]?.sessionId?.isPasswordRequired) {
                 setNavigateToForm(false)
             } else {
@@ -197,15 +198,45 @@ function EditForm() {
 
             for (let index = 0; index < existingFields.length; index++) {
                 const element = existingFields[index];
+                const type = element?.type;
                 const filedLabel = element?.label;
                 const fieldName = element?.name;
 
-                for (let j = 0; j < customData.length; j++) {
-                    const data = customData[j];
-                    if (data?.key == filedLabel) {
-                        dataObject[fieldName] = data?.value
+                // console.log("type", type);
+
+                if (type == "select") {
+
+                    for (let j = 0; j < customData.length; j++) {
+                        const data = customData[j];
+                        if (data?.key == filedLabel) {
+                             const parse = JSON.parse(data?.value);
+                            dataObject[fieldName] = { value: parse?.value, label: parse?.value }
+                        }
+                    }
+
+                } else if (type == "multiselect" ) {
+
+                    for (let j = 0; j < customData.length; j++) {
+                        const data = customData[j];
+                        // console.log("data", data);
+                        if (data?.key == filedLabel) {
+                            const parse = JSON.parse(data?.value);
+                            // console.log("parse", parse);
+                            dataObject[fieldName] = parse
+                        }
+                    }
+
+                } else {
+                    for (let j = 0; j < customData.length; j++) {
+                        const data = customData[j];
+                        if (data?.key == filedLabel) {
+                            dataObject[fieldName] = data?.value
+                        }
                     }
                 }
+
+
+
 
             }
 
@@ -233,6 +264,10 @@ function EditForm() {
 
 
     const renderFieldPreview = (field) => {
+        const options = field?.options ? field?.options?.map((item) => ({ value: item, label: item })) : [];
+
+        // console.log("options2", options);
+
 
         const baseStyles =
             "w-[100%] bg-transparent p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500";
@@ -268,10 +303,26 @@ function EditForm() {
                     </>
                 );
             case "select":
+                return (
+                    <>
+
+                        <Select
+                            value={customizationValues[fieldName] || ""}
+                            name="select"
+                            options={options}
+                            classNamePrefix="select"
+                            onChange={(e) => {
+                                console.log("123aaa", e);
+                                handleInputChange(fieldName, e, field)
+                            }}
+                        />
+
+                    </>
+                )
             case "multiselect":
                 return (
                     <>
-                        <select
+                        {/* <select
                             className={baseStyles}
                             value={customizationValues[fieldName] || ""}
                             onChange={(e) => handleInputChange(fieldName, e.target.value, field)}
@@ -282,7 +333,19 @@ function EditForm() {
                                     {opt}
                                 </option>
                             ))}
-                        </select>
+                        </select> */}
+                        <Select
+                            isMulti
+                            value={customizationValues[fieldName] || ""}
+                            name="colors"
+                            options={options}
+                            className="basic-multi-select"
+                            classNamePrefix="select"
+                            onChange={(e) => {
+                                console.log("123", e);
+                                handleInputChange(fieldName, e, field)
+                            }}
+                        />
                         {errors[fieldName] && <p className="text-red-500 text-sm mt-1">{errors[fieldName]}</p>}
                     </>
                 );
@@ -425,6 +488,9 @@ function EditForm() {
                 if (value !== undefined && value !== null) {
                     if (field.type === "file" && value instanceof File) {
                         formData.append(label, value);
+                    } else if (field.type === "multiselect" || field.type === "select") {
+                        const stringData = JSON.stringify(value)
+                        formData.append(label, stringData);
                     } else {
                         formData.append(label, value);
                     }
