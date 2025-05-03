@@ -156,7 +156,7 @@ function ViewOrganization({ noFade }) {
             }
 
             let response;
-            if (setSessionId) {
+            if (sessionId) {
                 response = await sessionService.updateSession({ ...dataObject, sessionId: sessionId });
             } else {
                 response = await sessionService.createSession(dataObject);
