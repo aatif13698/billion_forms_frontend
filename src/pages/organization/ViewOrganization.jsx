@@ -438,7 +438,9 @@ function ViewOrganization({ noFade }) {
                                                             <span className="font-bold">Total Forms Received <span className="mt-1">{item?.formReceived || 0}</span></span>
                                                             
                                                             <button
-                                                                onClick={() => handleAddField(item)}
+                                                                onClick={() => {
+                                                                    navigate(`/list/forms/${common.encryptId(item?._id)}`)
+                                                                }}
                                                                 className="flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-yellow-400 to-yellow-600 dark:from-yellow-500 dark:to-yellow-700 rounded-lg shadow-md hover:from-yellow-500 hover:to-yellow-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
                                                                 aria-label={`Add or remove fields for ${item?.name}`}
                                                             >
@@ -516,7 +518,9 @@ function ViewOrganization({ noFade }) {
                                                                 <td className="py-2 px-3 flex gap-2 items-center sm:px-4 w-[60%]">
                                                                     <span>{item?.formReceived || 0}</span>
                                                                     <button
-                                                                        onClick={() => handleAddField(item)}
+                                                                        onClick={() => {
+                                                                            navigate(`/list/forms/${common.encryptId(item?._id)}`)
+                                                                        }}
                                                                         className="flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-yellow-400 to-yellow-600 dark:from-yellow-500 dark:to-yellow-700 rounded-lg shadow-md hover:from-yellow-500 hover:to-yellow-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
                                                                         aria-label={`Add or remove fields for ${item?.name}`}
                                                                     >

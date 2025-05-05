@@ -27,7 +27,8 @@ const ListFields = lazy(() => import("../src/pages/customField/CustomField"));
 const SubmitForm = lazy(() => import("../src/pages/customField/SubmitForm"));
 const AdjustOrder = lazy(() => import("../src/pages/customField/AdjustOrder"));
 const FormPassword = lazy(() => import("../src/pages/customField/FormPassword"));
-const EditForm = lazy(() => import("../src/pages/customField/EditForm"))
+const EditForm = lazy(() => import("../src/pages/customField/EditForm"));
+const ListForms = lazy(() => import("../src/pages/customField/ListForm"));
 
 import PublicRoute from "./routes/PublicRoute";
 import PrivateRoute from "./routes/PrivateRoute";
@@ -106,6 +107,7 @@ export default function App() {
               <Route path="list/organization" element={<ListOrganization />} />
               <Route path="list/fields" element={<ListFields />} />
               <Route path="list/adjustOrder" element={<AdjustOrder />} />
+              <Route path="list/forms/:sessionId" element={<ListForms />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Route>

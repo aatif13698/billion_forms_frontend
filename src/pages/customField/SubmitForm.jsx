@@ -42,7 +42,7 @@ function SubmitForm() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [customizationValues, setCustomizationValues] = useState({});
 
-    // console.log("customizationValues", customizationValues);
+    console.log("errors", errors);
 
 
     // Handle input changes and validate
@@ -325,6 +325,17 @@ function SubmitForm() {
                         (field.type === "checkbox" && value === false)
                     ) {
                         newErrors[fieldName] = `${field.label} is required`;
+                    }
+
+                    if (field.type === "multiselect") {
+                        console.log("fieldName", fieldName);
+                        console.log("fieldName value type", typeof value);
+                        console.log("fieldName value", value);
+                    
+                        if (!value?.length) {
+                            console.log("fieldName value2", typeof value);
+                            newErrors[fieldName] = `${field.label} is required`;
+                        }
                     }
                 }
                 // Validate regex

@@ -46,9 +46,11 @@ function EditForm() {
     const fileInputRefs = useRef({}); // Store refs for file inputs
 
 
-    console.log("existingFields", existingFields);
+    // console.log("existingFields", existingFields);
     console.log("customizationValues", customizationValues);
-    console.log("customData", customData);
+    // console.log("customData", customData);
+    console.log("errors",errors);
+    
 
 
     // Handle input changes and validate
@@ -440,15 +442,29 @@ function EditForm() {
             existingFields.forEach((field) => {
                 const fieldName = field.name;
                 const value = customizationValues[fieldName];
+
+                console.log("value",value);
+                
                 if (field.isRequired) {
                     if (
                         value === undefined ||
                         value === null ||
                         (typeof value === "string" && !value.trim()) ||
                         (field.type === "file" && !value) ||
-                        (field.type === "checkbox" && value === false)
+                        (field.type === "checkbox" && value === false) 
                     ) {
                         newErrors[fieldName] = `${field.label} is required`;
+                    }
+
+                    if (field.type === "multiselect") {
+                        if (!value?.length) {
+                            newErrors[fieldName] = `${field.label} is required`;
+                        }
+                    }
+                    if (field.type === "select") {
+                        if (!value) {
+                            newErrors[fieldName] = `${field.label} is required`;
+                        }
                     }
                 }
                 // Validate regex

@@ -257,7 +257,7 @@ const FormPassword = ({ companyIdentifier }) => {
                                                             type="text"
                                                             placeholder='Enter ID'
                                                             onChange={handleChange}
-                                                            className="w-[100%] bg-transparent p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                            className="w-[100%] text-white bg-transparent p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                         />
                                                         <span className='text-deep-orange-400 text-sm mt-4 pb-0 mb-0'>{formDataError?.serialNumber}</span>
                                                     </div>
@@ -266,7 +266,7 @@ const FormPassword = ({ companyIdentifier }) => {
                                                             name='password'
                                                             type="password"
                                                             placeholder='Password'
-                                                            className="w-[100%] bg-transparent p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                            className="w-[100%] text-white bg-transparent p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                             onChange={handleChange}
                                                         />
                                                         <span className='text-deep-orange-400 text-sm mt-4 pb-0 mb-0'>{formDataError?.password}</span>
