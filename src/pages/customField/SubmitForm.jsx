@@ -642,7 +642,7 @@ function SubmitForm() {
                                                     <span className="">Already submitted and want to modify the details:</span>
                                                     <button
                                                         onClick={() => navigate(`/passwordForm/auth/${encryptId(decryptedId)}`)}
-                                                        className="flex items-center gap-1 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-red-500 to-red-700 dark:from-red-600 dark:to-red-800 rounded-lg shadow-md hover:from-red-600 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                                        className="flex items-center gap-1 px-2 sm:px-3 py-2 text-[.70rem] sm:text-[.70rem] font-medium text-white bg-gradient-to-r from-red-500 to-red-700 dark:from-red-600 dark:to-red-800 rounded-lg shadow-md hover:from-red-600 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-red-500"
                                                     >
                                                         Click Here
                                                     </button>

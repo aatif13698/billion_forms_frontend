@@ -94,6 +94,7 @@
   .pageControls button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    /* color: black;   */
   }
   
   @keyframes pulse {
