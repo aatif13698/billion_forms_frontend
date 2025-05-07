@@ -1,20 +1,17 @@
 
 
-
-
-
-
 // import React, { useEffect, useState, useMemo } from 'react';
 // import { useParams } from 'react-router-dom';
 // import { FaEnvelope, FaExclamationCircle } from 'react-icons/fa';
 // import PropTypes from 'prop-types';
+// import * as XLSX from 'xlsx';
+// import Swal from 'sweetalert2';
 // import Hamberger from '../../components/Hamberger/Hamberger';
 // import common from '../../helper/common';
 // import sessionService from '../../services/sessionService';
 // import customFieldService from '../../services/customFieldService';
 // import LoadingSpinner from '../../components/Loading/LoadingSpinner';
 // import styles from '../../components/CustomTable/CustomTable.module.css';
-
 
 // // Error Message Component
 // const ErrorMessage = ({ message }) => (
@@ -30,37 +27,43 @@
 // };
 
 // // Pagination Component
-// const Pagination = ({ currentPage, totalPages, onPageChange }) => (
-//     <div className="flex justify-center items-center space-x-2 mt-4">
-//         <button
-//             onClick={() => onPageChange(currentPage - 1)}
-//             disabled={currentPage === 1}
-//             className="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded disabled:opacity-50"
-//             aria-label="Previous page"
-//         >
-//             Previous
-//         </button>
-//         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-//             <button
-//                 key={page}
-//                 onClick={() => onPageChange(page)}
-//                 className={`px-3 py-1 rounded ${page === currentPage
-//                     ? 'bg-blue-500 text-white'
-//                     : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-//                     }`}
-//                 aria-current={page === currentPage ? 'page' : undefined}
+// const Pagination = ({ currentPage, totalPages, onPageChange, rowsPerPage, onRowsPerPageChange }) => (
+//     <div className={styles.pagination}>
+//         <div className={styles.rowsPerPage}>
+//             <span className="text-[.70rem]">Rows per page:</span>
+//             <select
+//                 className="text-black dark:text-white bg-white dark:bg-cardBgDark"
+//                 value={rowsPerPage}
+//                 onChange={onRowsPerPageChange}
 //             >
-//                 {page}
+//                 {[5, 10, 20, 50].map((option) => (
+//                     <option key={option} value={option} className="text-black dark:text-white py-1 text-[.70rem]">
+//                         {option}
+//                     </option>
+//                 ))}
+//             </select>
+//         </div>
+//         <div className={styles.pageControls}>
+//             <button
+//                 onClick={() => onPageChange(currentPage - 1)}
+//                 disabled={currentPage === 1}
+//                 className="text-white bg-blue-700 dark:text-white px-2 py-2 text-[.8rem]"
+//                 aria-label="Previous page"
+//             >
+//                 Previous
 //             </button>
-//         ))}
-//         <button
-//             onClick={() => onPageChange(currentPage + 1)}
-//             disabled={currentPage === totalPages}
-//             className="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded disabled:opacity-50"
-//             aria-label="Next page"
-//         >
-//             Next
-//         </button>
+//             <span className="text-[.70rem]">
+//                 Page {currentPage} of {totalPages}
+//             </span>
+//             <button
+//                 onClick={() => onPageChange(currentPage + 1)}
+//                 disabled={currentPage === totalPages}
+//                 className="text-white bg-green-700 dark:text-white px-2 py-2 text-[.8rem]"
+//                 aria-label="Next page"
+//             >
+//                 Next
+//             </button>
+//         </div>
 //     </div>
 // );
 
@@ -68,6 +71,8 @@
 //     currentPage: PropTypes.number.isRequired,
 //     totalPages: PropTypes.number.isRequired,
 //     onPageChange: PropTypes.func.isRequired,
+//     rowsPerPage: PropTypes.number.isRequired,
+//     onRowsPerPageChange: PropTypes.func.isRequired,
 // };
 
 // function ListForm() {
@@ -80,8 +85,7 @@
 //     const [searchQuery, setSearchQuery] = useState('');
 //     const [currentPage, setCurrentPage] = useState(1);
 //     const [rowsPerPage, setRowsPerPage] = useState(5);
-
-//     const itemsPerPage = 10;
+//     const [isDownloading, setIsDownloading] = useState(false);
 
 //     // Fetch data
 //     useEffect(() => {
@@ -115,7 +119,7 @@
 //                 const forms = formsResponse?.data?.data?.data || [];
 //                 setOrganizationData(session.organizationId);
 //                 setSessionData(session);
-//                 setFormsData(forms);
+//                 setFormsData(forms.reverse());
 //                 setIsLoading(false);
 //             } catch (err) {
 //                 setError(err.message || 'An unexpected error occurred');
@@ -146,8 +150,6 @@
 //     const columns = useMemo(() => {
 //         const fixedColumns = [
 //             { key: 'serialNumber', label: 'Serial Number' },
-//             //   { key: 'firstName', label: 'First Name' },
-//             //   { key: 'phone', label: 'Phone' },
 //             { key: 'createdAt', label: 'Created At', format: (value) => new Date(value).toLocaleDateString() },
 //         ];
 
@@ -160,7 +162,7 @@
 
 //         const dynamicColumns = Array.from(dynamicKeys).map((key) => ({
 //             key: `otherThanFiles.${key}`,
-//             label: key,
+//             label: key.charAt(0).toUpperCase() + key.slice(1),
 //         }));
 
 //         return [...fixedColumns, ...dynamicColumns];
@@ -183,11 +185,11 @@
 //     }, [formsData, searchQuery]);
 
 //     // Paginate filtered forms
-//     const totalPages = Math.ceil(filteredForms.length / itemsPerPage);
+//     const totalPages = Math.ceil(filteredForms.length / rowsPerPage);
 //     const paginatedForms = useMemo(() => {
-//         const start = (currentPage - 1) * itemsPerPage;
-//         return filteredForms.slice(start, start + itemsPerPage);
-//     }, [filteredForms, currentPage]);
+//         const start = (currentPage - 1) * rowsPerPage;
+//         return filteredForms.slice(start, start + rowsPerPage);
+//     }, [filteredForms, currentPage, rowsPerPage]);
 
 //     // Handle page change
 //     const handlePageChange = (page) => {
@@ -196,9 +198,59 @@
 //         }
 //     };
 
+//     // Handle rows per page change
 //     const handleRowsPerPageChange = (e) => {
-//         setRowsPerPage(Number(e.target.value));
+//         const newRowsPerPage = Number(e.target.value);
+//         setRowsPerPage(newRowsPerPage);
 //         setCurrentPage(1);
+//     };
+
+//     // Handle Excel download
+//     const handleDownloadExcel = () => {
+//         setIsDownloading(true);
+//         try {
+//             // Prepare data for Excel
+//             const data = filteredForms.map((form) => {
+//                 const row = {};
+//                 columns.forEach((col) => {
+//                     let value;
+//                     if (col.key.includes('otherThanFiles.')) {
+//                         const key = col.key.split('.')[1];
+//                         value = form.otherThanFiles?.[key];
+//                     } else {
+//                         value = form[col.key];
+//                     }
+//                     value = parseValue(value);
+//                     if (col.format) {
+//                         value = col.format(value);
+//                     }
+//                     row[col.label] = value || '-';
+//                 });
+//                 return row;
+//             });
+
+//             // Create worksheet
+//             const ws = XLSX.utils.json_to_sheet(data);
+//             const wb = XLSX.utils.book_new();
+//             XLSX.utils.book_append_sheet(wb, ws, 'Forms');
+
+//             // Generate file name
+//             const sessionName = sessionData?.name?.replace(/[^a-zA-Z0-9]/g, '_') || 'Session';
+//             const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+//             const fileName = `Forms_${sessionName}_${date}.xlsx`;
+
+//             // Write and download file
+//             XLSX.writeFile(wb, fileName);
+//         } catch (error) {
+//             console.error('Error generating Excel:', error);
+//             Swal.fire({
+//                 icon: 'error',
+//                 title: 'Error',
+//                 text: 'Failed to generate Excel file. Please try again.',
+//             });
+//         } finally {
+//             setIsDownloading(false);
+//         }
 //     };
 
 //     // Conditional Rendering
@@ -211,13 +263,12 @@
 //     }
 
 //     return (
-//         <div className="flex flex-col md claw mx-4  mt-3 min-h-screen bg-light dark:bg-dark">
+//         <div className="flex flex-col md claw mx-4 mt-3 min-h-screen bg-light dark:bg-dark">
 //             <Hamberger text="Forms / List" />
 //             <div className="w-[100%] mb-4 bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-lg p-1">
 //                 <div className="relative bg-light dark:bg-transparent overflow-hidden transition-transform duration-300">
 //                     <div className="absolute inset-0 bg-cover" />
 //                     <div className="relative z-10 hover:bg-opacity-40 flex flex-col justify-start py-6 px-4">
-//                         {/* Organization and Session Details */}
 //                         <div className="text-left text-textLight dark:text-textDark w-full">
 //                             <h2 className="text-md md:text-4xl font-bold mb-2 drop-shadow-md">
 //                                 {`${organizationData?.name || 'Unknown Organization'} - ${sessionData?.for || ''} (${sessionData?.name || 'Unknown Session'})`}
@@ -234,99 +285,73 @@
 //                 </div>
 //             </div>
 
-//             {/* Forms Table */}
 //             <div className="w-[100%] bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-lg p-4 mb-20">
 //                 <h3 className="text-lg md:text-2xl font-semibold text-textLight dark:text-textDark mb-4">
 //                     Forms List
 //                 </h3>
 
-//                 {/* Search Filter */}
-//                 <div className="mb-4">
+//                 <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
 //                     <input
 //                         type="text"
 //                         value={searchQuery}
 //                         onChange={(e) => {
 //                             setSearchQuery(e.target.value);
-//                             setCurrentPage(1); // Reset to first page on search
+//                             setCurrentPage(1);
 //                         }}
 //                         placeholder="Search forms..."
-//                         className="w-full md:w-1/3 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-light dark:bg-dark text-textLight dark:text-textDark focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                         className="w-[100%] sm:w-1/3 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent text-textLight dark:text-textDark focus:outline-none focus:ring-2 focus:ring-blue-500"
 //                         aria-label="Search forms"
 //                     />
+//                     <button
+//                         onClick={handleDownloadExcel}
+//                         disabled={isDownloading || filteredForms.length === 0}
+//                         className="w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark flex items-center justify-center shadow-lg"
+//                         aria-label="Download forms as Excel"
+//                     >
+//                         {isDownloading ? (
+//                             <>
+//                                 <svg
+//                                     className="animate-spin mr-2 h-4 w-4 text-white"
+//                                     xmlns="http://www.w3.org/2000/svg"
+//                                     fill="none"
+//                                     viewBox="0 0 24 24"
+//                                 >
+//                                     <circle
+//                                         className="opacity-25"
+//                                         cx="12"
+//                                         cy="12"
+//                                         r="10"
+//                                         stroke="currentColor"
+//                                         strokeWidth="4"
+//                                     ></circle>
+//                                     <path
+//                                         className="opacity-75"
+//                                         fill="currentColor"
+//                                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+//                                     ></path>
+//                                 </svg>
+//                                 Generating...
+//                             </>
+//                         ) : (
+//                             'Download Excel'
+//                         )}
+//                     </button>
 //                 </div>
 
 //                 {filteredForms.length > 0 ? (
 //                     <>
-//                         <div
-//                         // className={styles.tableContainer}
-//                         >
-//                             <div
-//                                 // className={styles.tableWrapper}
-//                                 className='overflow-auto rounded-lg'
-//                             >
-//                                 <table
-//                                     className="w-full border-2 border-t-0 text-sm md:text-base text-textLight dark:text-textDark"
-//                                     role="grid"
-//                                     aria-label="Forms table"
-//                                 >
-//                                     <thead>
-//                                         <tr className="bg-[#3f8e90] text-white ">
-//                                             {columns.map((col) => (
-//                                                 <th
-//                                                     key={col.key}
-//                                                     className=" whitespace-nowrap py-4  px-4 text-left font-bold  "
-//                                                     scope="col"
-//                                                 >
-//                                                     {col.label}
-//                                                 </th>
-//                                             ))}
-//                                         </tr>
-//                                     </thead>
-//                                     <tbody>
-//                                         {paginatedForms.map((form) => (
-//                                             <tr
-//                                                 key={form._id.$oid}
-//                                                 className="border-b border-gray-200 text-dark/80 dark:text-white dark:border-gray-700 hover:bg-[#3f8e90]/20 dark:hover:bg-[#3f8e90]/15"
-//                                             >
-//                                                 {columns.map((col) => {
-//                                                     let value;
-//                                                     if (col.key.includes('otherThanFiles.')) {
-//                                                         const key = col.key.split('.')[1];
-//                                                         value = form.otherThanFiles?.[key];
-//                                                     } else {
-//                                                         value = form[col.key];
-//                                                     }
-//                                                     value = parseValue(value);
-//                                                     if (col.format) {
-//                                                         value = col.format(value);
-//                                                     }
-//                                                     return (
-//                                                         <td key={col.key} className="py-2 px-4  ">
-//                                                             {value || '-'}
-//                                                         </td>
-//                                                     );
-//                                                 })}
-//                                             </tr>
-//                                         ))}
-//                                     </tbody>
-//                                 </table>
-
-
-//                             </div>
-
-//                         </div>
-//                         {/* <div className="overflow-x-auto">
+//                         <div className="overflow-auto rounded-lg">
 //                             <table
-//                                 className="w-full text-sm md:text-base text-textLight dark:text-textDark"
+//                                 className="w-full border-2 border-t-0 text-sm md:text-base text-textLight dark:text-textDark"
 //                                 role="grid"
 //                                 aria-label="Forms table"
 //                             >
 //                                 <thead>
-//                                     <tr className="bg-gray-100 dark:bg-gray-800">
+//                                     <tr className="bg-[#3f8e90] text-white">
 //                                         {columns.map((col) => (
 //                                             <th
 //                                                 key={col.key}
-//                                                 className="py-2 px-4 text-left font-medium text-gray-700 dark:text-gray-300"
+//                                                 className="whitespace-nowrap py-4 px-4 text-left font-bold"
 //                                                 scope="col"
 //                                             >
 //                                                 {col.label}
@@ -338,7 +363,7 @@
 //                                     {paginatedForms.map((form) => (
 //                                         <tr
 //                                             key={form._id.$oid}
-//                                             className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
+//                                             className="border-b border-gray-200 text-dark/80 dark:text-white dark:border-gray-700 hover:bg-[#3f8e90]/20 dark:hover:bg-[#3f8e90]/15"
 //                                         >
 //                                             {columns.map((col) => {
 //                                                 let value;
@@ -362,46 +387,23 @@
 //                                     ))}
 //                                 </tbody>
 //                             </table>
-//                         </div> */}
-//                         <div className={styles.pagination}>
-//                             <div className={styles.rowsPerPage}>
-//                                 <span className='text-[.70rem]'>Rows per page:</span>
-//                                 <select className='text-black dark:text-white bg-white dark:bg-cardBgDark'
-//                                     value={rowsPerPage}
-//                                     onChange={handleRowsPerPageChange}
-//                                 >
-//                                     {[5, 10, 20, 50].map((option, index) => (
-//                                         <option className='text-black dark:text-white py-1 text-[.70rem]' key={index} value={option}>
-//                                             {option}
-//                                         </option>
-//                                     ))}
-//                                 </select>
-//                             </div>
-//                             <div className={styles.pageControls}>
-//                                 <button
-//                                     onClick={() => handlePageChange(currentPage - 1)}
-//                                     disabled={currentPage === 1}
-//                                     className=' text-black dark:text-white px-2 py-1 text-[.7rem]'
-//                                 >
-//                                     Previous
-//                                 </button>
-//                                 <span className='text-[.70rem]'>
-//                                     Page {currentPage} of {totalPages}
-//                                 </span>
-//                                 <button
-//                                     onClick={() => handlePageChange(currentPage + 1)}
-//                                     disabled={currentPage === totalPages}
-//                                     className=' text-black dark:text-white px-2 py-1 text-[.7rem]'
-//                                 >
-//                                     Next
-//                                 </button>
-//                             </div>
 //                         </div>
-
+//                         <Pagination
+//                             currentPage={currentPage}
+//                             totalPages={totalPages}
+//                             onPageChange={handlePageChange}
+//                             rowsPerPage={rowsPerPage}
+//                             onRowsPerPageChange={handleRowsPerPageChange}
+//                         />
+//                         <div className="flex justify-end">
+//                             <span className="text-[.85rem] mx-4">
+//                                 Total Data - <span className="font-bold">{formsData?.length}</span>
+//                             </span>
+//                         </div>
 //                     </>
 //                 ) : (
 //                     <div className="flex mt-4 flex-col justify-center items-center py-8 sm:py-12 bg-gray-100 dark:bg-gray-900 rounded-xl shadow-sm">
-//                         <FaExclamationCircle className="text-3xl sm:text-4xl text-gray-400 dark:text-gray-500  sm:mb-4" />
+//                         <FaExclamationCircle className="text-3xl sm:text-4xl text-gray-400 dark:text-gray-500 sm:mb-4" />
 //                         <p className="text-sm md:text-lg text-center text-gray-600 dark:text-white">
 //                             No data available
 //                         </p>
@@ -420,6 +422,8 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { FaEnvelope, FaExclamationCircle } from 'react-icons/fa';
 import PropTypes from 'prop-types';
+import * as XLSX from 'xlsx';
+import Swal from 'sweetalert2';
 import Hamberger from '../../components/Hamberger/Hamberger';
 import common from '../../helper/common';
 import sessionService from '../../services/sessionService';
@@ -499,6 +503,8 @@ function ListForm() {
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [isDownloading, setIsDownloading] = useState(false);
+    const [isCopying, setIsCopying] = useState(false);
 
     // Fetch data
     useEffect(() => {
@@ -575,7 +581,7 @@ function ListForm() {
 
         const dynamicColumns = Array.from(dynamicKeys).map((key) => ({
             key: `otherThanFiles.${key}`,
-            label: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize label
+            label: key.charAt(0).toUpperCase() + key.slice(1),
         }));
 
         return [...fixedColumns, ...dynamicColumns];
@@ -615,7 +621,114 @@ function ListForm() {
     const handleRowsPerPageChange = (e) => {
         const newRowsPerPage = Number(e.target.value);
         setRowsPerPage(newRowsPerPage);
-        setCurrentPage(1); // Reset to first page
+        setCurrentPage(1);
+    };
+
+    // Handle Excel download
+    const handleDownloadExcel = () => {
+        setIsDownloading(true);
+        try {
+            // Prepare data for Excel
+            const data = filteredForms.map((form) => {
+                const row = {};
+                columns.forEach((col) => {
+                    let value;
+                    if (col.key.includes('otherThanFiles.')) {
+                        const key = col.key.split('.')[1];
+                        value = form.otherThanFiles?.[key];
+                    } else {
+                        value = form[col.key];
+                    }
+                    value = parseValue(value);
+                    if (col.format) {
+                        value = col.format(value);
+                    }
+                    row[col.label] = value || '-';
+                });
+                return row;
+            });
+
+            // Create worksheet
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Forms');
+
+            // Generate file name
+            const sessionName = sessionData?.name?.replace(/[^a-zA-Z0-9]/g, '_') || 'Session';
+            const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+            const fileName = `Forms_${sessionName}_${date}.xlsx`;
+
+            // Write and download file
+            XLSX.writeFile(wb, fileName);
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Excel file downloaded successfully!',
+                timer: 1500,
+                showConfirmButton: false,
+            });
+        } catch (error) {
+            console.error('Error generating Excel:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to generate Excel file. Please try again.',
+            });
+        } finally {
+            setIsDownloading(false);
+        }
+    };
+
+    // Handle Copy Data
+    const handleCopyData = async () => {
+        setIsCopying(true);
+        try {
+            // Prepare headers
+            const headers = columns.map((col) => col.label);
+            const headerRow = headers.join('\t');
+
+            // Prepare data rows
+            const dataRows = filteredForms.map((form) => {
+                const row = columns.map((col) => {
+                    let value;
+                    if (col.key.includes('otherThanFiles.')) {
+                        const key = col.key.split('.')[1];
+                        value = form.otherThanFiles?.[key];
+                    } else {
+                        value = form[col.key];
+                    }
+                    value = parseValue(value);
+                    if (col.format) {
+                        value = col.format(value);
+                    }
+                    // Escape tabs and newlines in value
+                    return (value || '-').toString().replace(/\t/g, ' ').replace(/\n/g, ' ');
+                });
+                return row.join('\t');
+            });
+
+            // Combine headers and data
+            const tsvContent = [headerRow, ...dataRows].join('\n');
+
+            // Copy to clipboard
+            await navigator.clipboard.writeText(tsvContent);
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: `Copied ${filteredForms.length} rows to clipboard!`,
+                timer: 1500,
+                showConfirmButton: false,
+            });
+        } catch (error) {
+            console.error('Error copying data:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to copy data to clipboard. Please try again.',
+            });
+        } finally {
+            setIsCopying(false);
+        }
     };
 
     // Conditional Rendering
@@ -634,7 +747,6 @@ function ListForm() {
                 <div className="relative bg-light dark:bg-transparent overflow-hidden transition-transform duration-300">
                     <div className="absolute inset-0 bg-cover" />
                     <div className="relative z-10 hover:bg-opacity-40 flex flex-col justify-start py-6 px-4">
-                        {/* Organization and Session Details */}
                         <div className="text-left text-textLight dark:text-textDark w-full">
                             <h2 className="text-md md:text-4xl font-bold mb-2 drop-shadow-md">
                                 {`${organizationData?.name || 'Unknown Organization'} - ${sessionData?.for || ''} (${sessionData?.name || 'Unknown Session'})`}
@@ -651,25 +763,94 @@ function ListForm() {
                 </div>
             </div>
 
-            {/* Forms Table */}
             <div className="w-[100%] bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-lg p-4 mb-20">
                 <h3 className="text-lg md:text-2xl font-semibold text-textLight dark:text-textDark mb-4">
                     Forms List
                 </h3>
 
-                {/* Search Filter */}
-                <div className="mb-4">
+                <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
+                        <button
+                            onClick={handleDownloadExcel}
+                            disabled={isDownloading || filteredForms.length === 0}
+                            className="w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark flex items-center justify-center shadow-lg"
+                            aria-label="Download forms as Excel"
+                        >
+                            {isDownloading ? (
+                                <>
+                                    <svg
+                                        className="animate-spin mr-2 h-4 w-4 text-white"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <circle
+                                            className="opacity-25"
+                                            cx="12"
+                                            cy="12"
+                                            r="10"
+                                            stroke="currentColor"
+                                            strokeWidth="4"
+                                        ></circle>
+                                        <path
+                                            className="opacity-75"
+                                            fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                        ></path>
+                                    </svg>
+                                    Generating...
+                                </>
+                            ) : (
+                                'Download Excel'
+                            )}
+                        </button>
+                        <button
+                            onClick={handleCopyData}
+                            disabled={isCopying || filteredForms.length === 0}
+                            className="w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark flex items-center justify-center shadow-lg"
+                            aria-label="Copy forms data to clipboard"
+                        >
+                            {isCopying ? (
+                                <>
+                                    <svg
+                                        className="animate-spin mr-2 h-4 w-4 text-white"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <circle
+                                            className="opacity-25"
+                                            cx="12"
+                                            cy="12"
+                                            r="10"
+                                            stroke="currentColor"
+                                            strokeWidth="4"
+                                        ></circle>
+                                        <path
+                                            className="opacity-75"
+                                            fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                        ></path>
+                                    </svg>
+                                    Copying...
+                                </>
+                            ) : (
+                                'Copy'
+                            )}
+                        </button>
+                    </div>
                     <input
                         type="text"
                         value={searchQuery}
                         onChange={(e) => {
                             setSearchQuery(e.target.value);
-                            setCurrentPage(1); // Reset to first page on search
+                            setCurrentPage(1);
                         }}
                         placeholder="Search forms..."
-                        className="w-[100%] md:w-1/3 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent text-textLight dark:text-textDark focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-[100%] sm:w-1/3 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent text-textLight dark:text-textDark focus:outline-none focus:ring-2 focus:ring-blue-500"
                         aria-label="Search forms"
                     />
+                   
                 </div>
 
                 {filteredForms.length > 0 ? (
@@ -729,12 +910,10 @@ function ListForm() {
                             rowsPerPage={rowsPerPage}
                             onRowsPerPageChange={handleRowsPerPageChange}
                         />
-                        <div className='flex justify-end '>
-
-                            <span className='text-[.85rem] mx-4 '>
-                                Total Data - <span className='font-bold'>{formsData?.length} </span>
+                        <div className="flex justify-end">
+                            <span className="text-[.85rem] mx-4">
+                                Total Data - <span className="font-bold">{formsData?.length}</span>
                             </span>
-
                         </div>
                     </>
                 ) : (
@@ -751,9 +930,3 @@ function ListForm() {
 }
 
 export default ListForm;
-
-
-
-
-
-
