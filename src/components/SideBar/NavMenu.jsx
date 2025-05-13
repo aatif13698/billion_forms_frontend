@@ -29,7 +29,7 @@ const NavMenu = ({ isCollapsed }) => {
             setMenuItems([
                 { title: "Dashboard", icon: AiOutlineDashboard, link: "/dashboard" },
                 { title: "Organization", icon: FaRegBuilding, link: "/list/organization" },
-                { title: "User", icon: FaUser, link: "/user" },
+                { title: "User", icon: FaUser, link: "/list/users" },
                 { title: "Requests", icon: FaUserPlus, link: "/requests" },
                 { title: "Clients", icon: FaUserCheck, link: "/list/clients" },
                 { title: "Companies", icon: FaUsersViewfinder, link: "/list/company" },
@@ -41,7 +41,7 @@ const NavMenu = ({ isCollapsed }) => {
             setMenuItems([
                 { title: "Dashboard", icon: AiOutlineDashboard, link: "/dashboard" },
                 { title: "Organisation", icon: FaRegBuilding, link: "/list/organization" },
-                { title: "User", icon: FaUser, link: "/user" },
+                { title: "User", icon: FaUser, link: "/list/users" },
             ]);
         }
     }, [clientUser]);
@@ -66,8 +66,8 @@ const NavMenu = ({ isCollapsed }) => {
                                 // Add additional active route logic here
                                 const additionalActiveRoutes = {
                                     "/list/clients": ["/list/clients", "/create/clients"],
-                                    "/user": ["/user", "/edit/user", "/view/user"],
-                                    "/list/organization" : ["/list/organization", "/create/organization", "/view/organization", "/list/fields"],
+                                    "/list/users": ["/list/users", "/edit/user", "/view/user", "/create/user"],
+                                    "/list/organization" : ["/list/organization", "/create/organization", "/view/organization", "/list/fields", "/assign/user", "/list/adjustOrder"],
                                     "/list/company": ["/list/company", "/create/company"],
                                     "/list/subscription": ["/list/subscription", "/create/subscription"],
                                     "/list/topup": ["/list/topup", "/create/topup"],

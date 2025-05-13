@@ -573,9 +573,13 @@ function ListForm() {
         ];
 
         const dynamicKeys = new Set();
+        const dynamicKeys2 = new Set();
         formsData.forEach((form) => {
             if (form.otherThanFiles) {
                 Object.keys(form.otherThanFiles).forEach((key) => dynamicKeys.add(key));
+                form?.files?.forEach((data) => {
+                    dynamicKeys2.add(data?.fieldName)
+                })
             }
         });
 
@@ -584,7 +588,12 @@ function ListForm() {
             label: key.charAt(0).toUpperCase() + key.slice(1),
         }));
 
-        return [...fixedColumns, ...dynamicColumns];
+        let dynamicColumns2 = Array.from(dynamicKeys2).map((key) => ({
+            key: `files.${key}`,
+            label: key.charAt(0).toUpperCase() + key.slice(1),
+        }));
+
+        return [...fixedColumns, ...dynamicColumns, ...dynamicColumns2];
     }, [formsData]);
 
     // Filter forms based on search query
@@ -603,12 +612,18 @@ function ListForm() {
         });
     }, [formsData, searchQuery]);
 
+    console.log("filteredForms", filteredForms);
+
+
     // Paginate filtered forms
     const totalPages = Math.ceil(filteredForms.length / rowsPerPage);
     const paginatedForms = useMemo(() => {
         const start = (currentPage - 1) * rowsPerPage;
         return filteredForms.slice(start, start + rowsPerPage);
     }, [filteredForms, currentPage, rowsPerPage]);
+
+    console.log("paginatedForms", paginatedForms);
+
 
     // Handle page change
     const handlePageChange = (page) => {
@@ -639,6 +654,15 @@ function ListForm() {
                     } else {
                         value = form[col.key];
                     }
+                    if (col.key.includes('files.')) {
+                        const key = col.key.split('.')[1];
+                        const fileValue = form?.files?.filter((fileName) => {
+                            if (fileName?.fieldName == key) {
+                                return  fileName
+                            }
+                        });
+                        value = fileValue[0]?.fileUrl;
+                    } 
                     value = parseValue(value);
                     if (col.format) {
                         value = col.format(value);
@@ -769,7 +793,7 @@ function ListForm() {
                 </h3>
 
                 <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                <div className="flex flex-col sm:flex-row gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                         <button
                             onClick={handleDownloadExcel}
                             disabled={isDownloading || filteredForms.length === 0}
@@ -850,7 +874,7 @@ function ListForm() {
                         className="w-[100%] sm:w-1/3 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent text-textLight dark:text-textDark focus:outline-none focus:ring-2 focus:ring-blue-500"
                         aria-label="Search forms"
                     />
-                   
+
                 </div>
 
                 {filteredForms.length > 0 ? (
@@ -888,6 +912,15 @@ function ListForm() {
                                                 } else {
                                                     value = form[col.key];
                                                 }
+                                                if (col.key.includes('files.')) {
+                                                    const key = col.key.split('.')[1];
+                                                    const fileValue = form?.files?.filter((fileName) => {
+                                                        if (fileName?.fieldName == key) {
+                                                            return  fileName
+                                                        }
+                                                    });
+                                                    value = fileValue[0]?.fileUrl;
+                                                } 
                                                 value = parseValue(value);
                                                 if (col.format) {
                                                     value = col.format(value);

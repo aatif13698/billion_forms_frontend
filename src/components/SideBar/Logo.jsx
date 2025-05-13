@@ -62,7 +62,7 @@ const Logo = ({
 
   return (
     <div
-      className={`flex items-center pl-5 py-3 ${className}`.trim()}
+      className={`flex items-center py-3 ${className}`.trim()}
       style={baseContainerStyles}
     >
       <Link to={to} {...props}>

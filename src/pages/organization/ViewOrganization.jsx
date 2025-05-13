@@ -64,7 +64,11 @@ function ViewOrganization({ noFade }) {
     }, [client]);
 
     const handleManageUser = () => {
-        console.log("Manage User clicked");
+        try {
+            navigate("/assign/user", { state: { organization: client } })
+        } catch (error) {
+            console.log("error while navigating to assign user", error);
+        }
     };
 
     const handleEdit = async () => {
@@ -436,7 +440,7 @@ function ViewOrganization({ noFade }) {
                                                         </div>
                                                         <div className="border-b-2 pb-2">
                                                             <span className="font-bold">Total Forms Received <span className="mt-1">{item?.formReceived || 0}</span></span>
-                                                            
+
                                                             <button
                                                                 onClick={() => {
                                                                     navigate(`/list/forms/${common.encryptId(item?._id)}`)

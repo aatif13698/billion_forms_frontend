@@ -19,9 +19,50 @@ const createClient = async (data) => {
 
 
 
+const createUser = async (data) => {
+    try {
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/create/user`, { ...data });
+        return response;
+    } catch (error) {
+        if (error.response) {
+            return Promise.reject(error.response.data.message);
+        } else if (error.request) {
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+}
+
+
+
+
+
 const updateClient = async (data) => {
     try {
         const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/update/client`, { ...data },
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
+        return response;
+    } catch (error) {
+        if (error.response) {
+            return Promise.reject(error.response.data.message);
+        } else if (error.request) {
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+}
+
+
+const updateUser = async (data) => {
+    try {
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/update/user`, { ...data },
             {
                 headers: {
                     Authorization: `Bearer ${authToken}`,
@@ -47,6 +88,31 @@ const activeInactive = async (data) => {
         const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
 
         const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/activeInactive/client`, { ...data },
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
+        return response;
+    } catch (error) {
+        if (error.response) {
+            return Promise.reject(error.response.data.message);
+        } else if (error.request) {
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+}
+
+
+
+
+const activeInactiveUser = async (data) => {
+    try {
+        const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/activeInactive/user`, { ...data },
             {
                 headers: {
                     Authorization: `Bearer ${authToken}`,
@@ -95,6 +161,84 @@ const getClients = async (currentPage, rowsPerPage, text) => {
 
 
 
+const getUser = async (currentPage, rowsPerPage, text, companyId) => {
+    const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+    try {
+        const response = await axios.get(
+            `${import.meta.env.VITE_API_URL}/api/superadmin/administration/get/user?keyword=${text}&page=${currentPage}&perPage=${rowsPerPage}&companyId=${companyId}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
+        return response;
+    } catch (error) {
+        if (error.response) {
+            // The request was made, but the server responded with a status code
+            return Promise.reject(error.response.data.message);
+        } else if (error.request) {
+            // The request was made but no response was received
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+};
+
+
+const getAllUser = async (companyId) => {
+    const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+    try {
+        const response = await axios.get(
+            `${import.meta.env.VITE_API_URL}/api/superadmin/administration//get/all/user/${companyId}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
+        return response;
+    } catch (error) {
+        if (error.response) {
+            // The request was made, but the server responded with a status code
+            return Promise.reject(error.response.data.message);
+        } else if (error.request) {
+            // The request was made but no response was received
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+};
+
+
+
+const assignUser = async (data) => {
+    try {
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/assign/user`, { ...data },
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
+        return response;
+    } catch (error) {
+        if (error.response) {
+            return Promise.reject(error.response.data.message);
+        } else if (error.request) {
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+}
+
+
+
 
 const getParticularClient = async (id) => {
     const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
@@ -120,8 +264,8 @@ const getParticularClient = async (id) => {
             return Promise.reject("An error occurred. Please try again later.");
         }
     }
-  };
-  
+};
+
 
 
 const getClientsNotSetuped = async () => {
@@ -182,52 +326,52 @@ const getAllClients = async () => {
 
 const softDeleteClient = async (data) => {
     try {
-      const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
-  
-      const response = await axios.delete(
-        `${import.meta.env.VITE_API_URL}/api/superadmin/administration/softdelete/client`,
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-          data: data, // Send payload in `data` property for DELETE
+        const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+
+        const response = await axios.delete(
+            `${import.meta.env.VITE_API_URL}/api/superadmin/administration/softdelete/client`,
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+                data: data, // Send payload in `data` property for DELETE
+            }
+        );
+        return response;
+    } catch (error) {
+        if (error.response) {
+            return Promise.reject(error.response.data.error);
+        } else if (error.request) {
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            return Promise.reject("An error occurred. Please try again later.");
         }
-      );
-      return response;
-    } catch (error) {
-      if (error.response) {
-        return Promise.reject(error.response.data.error);
-      } else if (error.request) {
-        return Promise.reject("Network error. Please try again.");
-      } else {
-        return Promise.reject("An error occurred. Please try again later.");
-      }
     }
-  }
-  
-  
-  const restoreClient = async (data) => {
+}
+
+
+const restoreClient = async (data) => {
     try {
-      const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
-  
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/restore/client`, { ...data },
-        {
-          headers: {
-              Authorization: `Bearer ${authToken}`,
-          },
-      }
-      );
-      return response;
+        const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/restore/client`, { ...data },
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
+        return response;
     } catch (error) {
-      if (error.response) {
-        return Promise.reject(error.response.data.error);
-      } else if (error.request) {
-        return Promise.reject("Network error. Please try again.");
-      } else {
-        return Promise.reject("An error occurred. Please try again later.");
-      }
+        if (error.response) {
+            return Promise.reject(error.response.data.error);
+        } else if (error.request) {
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            return Promise.reject("An error occurred. Please try again later.");
+        }
     }
-  }
+}
 
 
 export default {
@@ -239,6 +383,13 @@ export default {
     getClientsNotSetuped,
     getAllClients,
     softDeleteClient,
-    restoreClient
+    restoreClient,
+
+    createUser,
+    updateUser,
+    activeInactiveUser,
+    getUser,
+    getAllUser,
+    assignUser
 
 }
