@@ -117,7 +117,7 @@ const Login = ({ companyIdentifier }) => {
         }
 
         const dataObject = {
-            identifier: formData?.identifier,
+            identifier: formData?.identifier?.trim(),
             password: formData?.password
         };
 

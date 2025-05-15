@@ -7,6 +7,8 @@ import { FaRegBuilding, FaUserCheck, FaUserPlus, FaUser } from "react-icons/fa";
 import { PiPaperPlaneTiltFill } from "react-icons/pi";
 import { FaArrowUpFromBracket } from "react-icons/fa6";
 import { MdOutlineSubscriptions } from "react-icons/md";
+import { FaUserTie } from "react-icons/fa";
+
 
 
 
@@ -30,6 +32,7 @@ const NavMenu = ({ isCollapsed }) => {
                 { title: "Dashboard", icon: AiOutlineDashboard, link: "/dashboard" },
                 { title: "Organization", icon: FaRegBuilding, link: "/list/organization" },
                 { title: "User", icon: FaUser, link: "/list/users" },
+                { title: "Staff", icon: FaUserTie, link: "/list/staffs" },
                 { title: "Requests", icon: FaUserPlus, link: "/requests" },
                 { title: "Clients", icon: FaUserCheck, link: "/list/clients" },
                 { title: "Companies", icon: FaUsersViewfinder, link: "/list/company" },
@@ -42,6 +45,12 @@ const NavMenu = ({ isCollapsed }) => {
                 { title: "Dashboard", icon: AiOutlineDashboard, link: "/dashboard" },
                 { title: "Organisation", icon: FaRegBuilding, link: "/list/organization" },
                 { title: "User", icon: FaUser, link: "/list/users" },
+            ]);
+        }else if (clientUser?.role?.id === 3) {
+            setMenuItems([
+                { title: "Dashboard", icon: AiOutlineDashboard, link: "/dashboard" },
+                { title: "Organisation", icon: FaRegBuilding, link: "/list/organization" },
+                // { title: "User", icon: FaUser, link: "/list/users" },
             ]);
         }
     }, [clientUser]);
@@ -67,6 +76,7 @@ const NavMenu = ({ isCollapsed }) => {
                                 const additionalActiveRoutes = {
                                     "/list/clients": ["/list/clients", "/create/clients"],
                                     "/list/users": ["/list/users", "/edit/user", "/view/user", "/create/user"],
+                                    "/list/staffs":["/list/staffs", "/create/staffs"],
                                     "/list/organization" : ["/list/organization", "/create/organization", "/view/organization", "/list/fields", "/assign/user", "/list/adjustOrder"],
                                     "/list/company": ["/list/company", "/create/company"],
                                     "/list/subscription": ["/list/subscription", "/create/subscription"],

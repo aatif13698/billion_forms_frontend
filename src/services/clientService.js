@@ -34,6 +34,101 @@ const createUser = async (data) => {
     }
 }
 
+const updateStaff = async (data) => {
+    try {
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/update/superadmin/staff`, { ...data },
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
+        return response;
+    } catch (error) {
+        if (error.response) {
+            return Promise.reject(error.response.data.message);
+        } else if (error.request) {
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+}
+
+const activeInactiveStaff = async (data) => {
+    try {
+        const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/activeInactive/superadmin/staff`, { ...data },
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
+        return response;
+    } catch (error) {
+        if (error.response) {
+            return Promise.reject(error.response.data.message);
+        } else if (error.request) {
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+}
+
+
+
+
+const softDeleteStaff = async (data) => {
+    try {
+        const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+
+        const response = await axios.delete(
+            `${import.meta.env.VITE_API_URL}/api/superadmin/administration/softdelete/superadmin/staff`,
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+                data: data, // Send payload in `data` property for DELETE
+            }
+        );
+        return response;
+    } catch (error) {
+        if (error.response) {
+            return Promise.reject(error.response.data.error);
+        } else if (error.request) {
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+}
+
+
+
+const restoreStaff = async (data) => {
+    try {
+        const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/restore/superadmin/staff`, { ...data },
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
+        return response;
+    } catch (error) {
+        if (error.response) {
+            return Promise.reject(error.response.data.error);
+        } else if (error.request) {
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+}
 
 
 
@@ -240,6 +335,80 @@ const assignUser = async (data) => {
 
 
 
+const createStaff = async (data) => {
+    try {
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/create/superadmin/staff`, { ...data });
+        return response;
+    } catch (error) {
+        if (error.response) {
+            return Promise.reject(error.response.data.message);
+        } else if (error.request) {
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+}
+
+
+const getStaff = async (currentPage, rowsPerPage, text, companyId) => {
+    const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+    try {
+        const response = await axios.get(
+            `${import.meta.env.VITE_API_URL}/api/superadmin/administration/get/all/superadmin/staff?keyword=${text}&page=${currentPage}&perPage=${rowsPerPage}&companyId=${companyId}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
+        return response;
+    } catch (error) {
+        if (error.response) {
+            // The request was made, but the server responded with a status code
+            return Promise.reject(error.response.data.message);
+        } else if (error.request) {
+            // The request was made but no response was received
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+};
+
+
+
+const getParticularStaff = async (id) => {
+    const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+    try {
+        const response = await axios.get(
+            `${import.meta.env.VITE_API_URL}/api/superadmin/administration/get/staff/${id}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
+        return response;
+    } catch (error) {
+        if (error.response) {
+            // The request was made, but the server responded with a status code
+            return Promise.reject(error.response.data.message);
+        } else if (error.request) {
+            // The request was made but no response was received
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+};
+
+
+
+
+
 const getParticularClient = async (id) => {
     const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
     try {
@@ -390,6 +559,15 @@ export default {
     activeInactiveUser,
     getUser,
     getAllUser,
-    assignUser
+    assignUser,
+
+
+    getStaff,
+    createStaff,
+    getParticularStaff,
+    updateStaff,
+    activeInactiveStaff,
+    softDeleteStaff,
+    restoreStaff
 
 }

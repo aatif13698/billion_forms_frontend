@@ -32,6 +32,8 @@ const ListForms = lazy(() => import("../src/pages/customField/ListForm"));
 const UserList = lazy(() => import("../src/pages/user/UserList"));
 const CreateUser = lazy(() => import("../src/pages/user/CreateUser"));
 const AssignUser = lazy(() => import("../src/pages/user/AssignUser"));
+const ListStaff = lazy(() => import("../src/pages/staff/ListStaff"));
+const CreateStaff = lazy(() => import("../src/pages/staff/CreateStaff"))
 
 import PublicRoute from "./routes/PublicRoute";
 import PrivateRoute from "./routes/PrivateRoute";
@@ -100,6 +102,8 @@ export default function App() {
               <Route path="list/clients" element={<ListClients />} />
               <Route path="create/user" element={<CreateUser />} />
               <Route path="list/users" element={<UserList />} />
+              <Route path="create/staffs" element={<CreateStaff />} />
+              <Route path="list/staffs" element={<ListStaff />} />
               <Route path="assign/user" element={<AssignUser />} />
               <Route path="list/subscription" element={<ListSubscriptionPlan />} />
               <Route path="create/subscription" element={<CreateSubscriptionPlan />} />
