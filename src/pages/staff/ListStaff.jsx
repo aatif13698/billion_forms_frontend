@@ -324,7 +324,6 @@ function ListStaff({ noFade }) {
                     >
                         <div className="fixed inset-0 bg-slate-900/50 backdrop-filter backdrop-blur-sm" />
                     </Transition.Child>
-
                     <div className="fixed  inset-0 overflow-y-auto flex justify-center items-center">
                         <Transition.Child
                             as={Fragment}
@@ -336,15 +335,9 @@ function ListStaff({ noFade }) {
                             leaveTo={noFade ? "" : "opacity-0 scale-95"}
                         >
                             <Dialog.Panel>
-
-
-
                                 <div className='flex  justify-center items-center'>
                                     <LoadingSpinner />
-
                                 </div>
-
-
                             </Dialog.Panel>
                         </Transition.Child>
                     </div>
