@@ -94,11 +94,38 @@ const decryptId = (encryptedId) => {
 // );
 
 
+function extractFilename(url) {
+    // Validate input
+    if (!url || typeof url !== 'string') {
+      return 'Invalid or missing URL'
+    }
+
+    // Parse URL
+    const parsedUrl = new URL(url);
+    const pathSegments = parsedUrl.pathname.split('/').filter(segment => segment);
+
+    // Check if path has at least one segment (filename)
+    if (pathSegments.length === 0) {
+      return 'URL has no path segments';
+    }
+
+    // Return the last segment (filename)
+    const filename = pathSegments[pathSegments.length - 1];
+    if (!filename) {
+     return 'No filename found in URL'
+    }
+
+    return filename;
+  
+}
+
+
 export default {
   handleKeyPress,
   customStyles,
   formatDateToReadableString,
   formatDateToYYYYMMDD,
   encryptId,
-  decryptId
+  decryptId,
+  extractFilename
 }

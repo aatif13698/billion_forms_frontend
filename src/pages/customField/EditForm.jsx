@@ -8,6 +8,7 @@ import images from "../../constant/images";
 import Swal from "sweetalert2";
 import "../../App.css"
 import Select from 'react-select';
+import common from "../../helper/common";
 
 
 
@@ -49,8 +50,8 @@ function EditForm() {
     // console.log("existingFields", existingFields);
     console.log("customizationValues", customizationValues);
     // console.log("customData", customData);
-    console.log("errors",errors);
-    
+    console.log("errors", errors);
+
 
 
     // Handle input changes and validate
@@ -211,12 +212,12 @@ function EditForm() {
                     for (let j = 0; j < customData.length; j++) {
                         const data = customData[j];
                         if (data?.key == filedLabel) {
-                             const parse = JSON.parse(data?.value);
+                            const parse = JSON.parse(data?.value);
                             dataObject[fieldName] = { value: parse?.value, label: parse?.value }
                         }
                     }
 
-                } else if (type == "multiselect" ) {
+                } else if (type == "multiselect") {
 
                     for (let j = 0; j < customData.length; j++) {
                         const data = customData[j];
@@ -374,13 +375,17 @@ function EditForm() {
                             ref={(el) => (fileInputRefs.current[fieldName] = el)} // Store ref
                         />
                         {customizationValues[fieldName] && (
-                            <p className="text-sm text-gray-600 mt-1 max-w-[300px]">
-                                {
-                                    customizationValues[fieldName]
-                                        ? truncateText(removeCustomFormPath(customizationValues[fieldName]), 30)
-                                        : ""
-                                }
-                            </p>
+                            <>
+                                {/* <iframe className="h-36 w-[100%] object-cover border-2 border-white dark:border-gray-200 shadow-md" src={customizationValues[fieldName]} frameborder="0"></iframe> */}
+                                <p className="text-sm text-gray-600 mt-1 max-w-[300px]">
+                                    {
+                                        customizationValues[fieldName]
+                                            ? truncateText(common.extractFilename(customizationValues[fieldName]), 30)
+                                            : ""
+                                    }
+                                </p>
+                            </>
+
                         )}
                         {errors[fieldName] && <p className="text-red-500 text-sm mt-1">{errors[fieldName]}</p>}
                     </>
@@ -443,15 +448,15 @@ function EditForm() {
                 const fieldName = field.name;
                 const value = customizationValues[fieldName];
 
-                console.log("value",value);
-                
+                console.log("value", value);
+
                 if (field.isRequired) {
                     if (
                         value === undefined ||
                         value === null ||
                         (typeof value === "string" && !value.trim()) ||
                         (field.type === "file" && !value) ||
-                        (field.type === "checkbox" && value === false) 
+                        (field.type === "checkbox" && value === false)
                     ) {
                         newErrors[fieldName] = `${field.label} is required`;
                     }

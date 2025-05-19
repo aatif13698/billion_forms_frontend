@@ -661,7 +661,7 @@ function ListForm() {
                                 return  fileName
                             }
                         });
-                        value = fileValue[0]?.fileUrl;
+                        value = common.extractFilename(fileValue[0]?.fileUrl) ;
                     } 
                     value = parseValue(value);
                     if (col.format) {
@@ -919,7 +919,7 @@ function ListForm() {
                                                             return  fileName
                                                         }
                                                     });
-                                                    value = fileValue[0]?.fileUrl;
+                                                    value = common.extractFilename(fileValue[0]?.fileUrl) ;
                                                 } 
                                                 value = parseValue(value);
                                                 if (col.format) {
