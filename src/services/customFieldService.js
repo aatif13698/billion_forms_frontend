@@ -213,8 +213,8 @@ const submitFormData = async (data) => {
         return response;
     } catch (error) {
 
-        console.log("error form",error);
-        
+        console.log("error form", error);
+
 
         if (error.response) {
             return Promise.reject(error.response.data.message || "Invalid credentials");
@@ -238,7 +238,7 @@ const editFormData = async (data, id) => {
         });
         return response;
     } catch (error) {
-        console.log("error form",error);
+        console.log("error form", error);
         if (error.response) {
             return Promise.reject(error.response.data.message || "Invalid credentials");
         } else if (error.request) {
@@ -323,6 +323,85 @@ const getAllFormsBySession = async (id) => {
     }
 };
 
+const initiateDownload = async (sessionId) => {
+    try {
+        const response = await axios.get(
+            `${import.meta.env.VITE_API_URL}/api/superadmin/administration/download`,
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+                params: { sessionId },
+            }
+        );
+        return response.data.data.jobId;
+    } catch (error) {
+        if (error.response) {
+            // The request was made, but the server responded with a status code
+            return Promise.reject(error.response.data.message);
+        } else if (error.request) {
+            // The request was made but no response was received
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+}
+
+
+const initiateDownloadByField = async (sessionId, fieldName) => {
+    try {
+        const response = await axios.get(
+            `${import.meta.env.VITE_API_URL}/api/superadmin/administration/download-by-field`,
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+                params: { sessionId, fieldName },
+            }
+        );
+        return response.data.data.jobId;
+    } catch (error) {
+        if (error.response) {
+            // The request was made, but the server responded with a status code
+            return Promise.reject(error.response.data.message);
+        } else if (error.request) {
+            // The request was made but no response was received
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+}
+
+const getDownloadStatus = async (jobId) => {
+    try {
+        const response = await axios.get(
+            `${import.meta.env.VITE_API_URL}/api/superadmin/administration/download/status`,
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+                params: { jobId },
+            }
+        );
+        return response.data.data;
+    } catch (error) {
+        if (error.response) {
+            // The request was made, but the server responded with a status code
+            return Promise.reject(error.response.data.message);
+        } else if (error.request) {
+            // The request was made but no response was received
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+}
+
 
 export default {
     createCustomField,
@@ -337,5 +416,8 @@ export default {
     submitPassword,
     submitFormPassword,
     getFormData,
-    getAllFormsBySession
+    getAllFormsBySession,
+    initiateDownload,
+    initiateDownloadByField,
+    getDownloadStatus
 }
