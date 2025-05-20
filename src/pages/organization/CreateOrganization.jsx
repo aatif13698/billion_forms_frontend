@@ -197,8 +197,8 @@ function CreateOrganization() {
                 address : client?.address,
                 captionText : client?.captionText
             });
-            setBannerPreview(`${import.meta.env.VITE_API_URL_IMG}${client?.banner}`)
-            setLogoPreview(`${import.meta.env.VITE_API_URL_IMG}${client?.logo}`)
+            setBannerPreview(`${client?.banner}`)
+            setLogoPreview(`${client?.logo}`)
         }
     },[client])
 
