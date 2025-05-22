@@ -374,7 +374,7 @@ function SubmitForm() {
                 const value = customizationValues[fieldName];
                 if (value !== undefined && value !== null) {
                     if (field.type === "file" && value instanceof File) {
-                        formData.append(label, value);
+                        formData.append(fieldName, value);
                     } else if (field.type === "multiselect" || field.type === "select") {
                         const stringData = JSON.stringify(value)
                         formData.append(label, stringData);

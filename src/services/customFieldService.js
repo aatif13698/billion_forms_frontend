@@ -352,16 +352,27 @@ const initiateDownload = async (sessionId) => {
 
 const initiateDownloadByField = async (sessionId, fieldName) => {
     try {
-        const response = await axios.get(
-            `${import.meta.env.VITE_API_URL}/api/superadmin/administration/download-by-field`,
-            {
-                headers: {
-                    Authorization: `Bearer ${authToken}`,
-                },
-                params: { sessionId, fieldName },
-            }
-        );
-        return response.data.data.jobId;
+
+        // old
+        // const response = await axios.get(
+        //     `${import.meta.env.VITE_API_URL}/api/superadmin/administration/download-by-field`,
+        //     {
+        //         headers: {
+        //             Authorization: `Bearer ${authToken}`,
+        //         },
+        //         params: { sessionId, fieldName },
+        //     }
+        // );
+        // return response.data.data.jobId;
+
+        // new
+        return axios.get(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/download-by-field`, {
+            params: { sessionId, fieldName },
+            responseType: 'blob', // Handle binary data
+            headers: {
+                Authorization: `Bearer ${authToken}`,
+            },
+        });
     } catch (error) {
         if (error.response) {
             // The request was made, but the server responded with a status code
@@ -378,16 +389,26 @@ const initiateDownloadByField = async (sessionId, fieldName) => {
 
 const getDownloadStatus = async (jobId) => {
     try {
-        const response = await axios.get(
-            `${import.meta.env.VITE_API_URL}/api/superadmin/administration/download/status`,
-            {
-                headers: {
-                    Authorization: `Bearer ${authToken}`,
-                },
-                params: { jobId },
-            }
-        );
-        return response.data.data;
+
+        // old
+        // const response = await axios.get(
+        //     `${import.meta.env.VITE_API_URL}/api/superadmin/administration/download/status`,
+        //     {
+        //         headers: {
+        //             Authorization: `Bearer ${authToken}`,
+        //         },
+        //         params: { jobId },
+        //     }
+        // );
+        // return response.data.data;
+
+        // new
+        return axios.get(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/download/status`, {
+            params: { jobId },
+            headers: {
+                Authorization: `Bearer ${authToken}`,
+            },
+        });
     } catch (error) {
         if (error.response) {
             // The request was made, but the server responded with a status code

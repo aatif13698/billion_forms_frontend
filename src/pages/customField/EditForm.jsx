@@ -170,6 +170,8 @@ function EditForm() {
             const fieldsData = response?.data?.data?.data || null;
             const otherThanFile = fieldsData?.otherThanFiles;
             const files = fieldsData?.files;
+            console.log("files", files);
+
             const fieldArray = Object.entries(otherThanFile).map(([key, value]) => ({
                 key,
                 value
@@ -180,6 +182,10 @@ function EditForm() {
                     value: item?.fileUrl
                 }
             });
+
+            console.log("fileArray", fileArray);
+
+
             const resultantDataArray = [...fieldArray, ...fileArray]
             setCustomData(resultantDataArray);
             setIsPageLoading(false);
@@ -226,6 +232,15 @@ function EditForm() {
                             const parse = JSON.parse(data?.value);
                             // console.log("parse", parse);
                             dataObject[fieldName] = parse
+                        }
+                    }
+
+                } else if (type == "file") {
+
+                    for (let j = 0; j < customData.length; j++) {
+                        const data = customData[j];
+                        if (data?.key == fieldName) {
+                            dataObject[fieldName] = data?.value
                         }
                     }
 
@@ -508,7 +523,7 @@ function EditForm() {
                 const value = customizationValues[fieldName];
                 if (value !== undefined && value !== null) {
                     if (field.type === "file" && value instanceof File) {
-                        formData.append(label, value);
+                        formData.append(fieldName, value);
                     } else if (field.type === "multiselect" || field.type === "select") {
                         const stringData = JSON.stringify(value)
                         formData.append(label, stringData);

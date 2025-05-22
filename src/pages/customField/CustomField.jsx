@@ -579,6 +579,9 @@ flex items-center justify-center shadow-lg">
                                     name="name"
                                     value={formData.name}
                                     onChange={handleChange}
+                                    onKeyDown={(e) => {
+                                        if (e.key === ' ') e.preventDefault(); // Prevent spacebar
+                                    }}
                                     required
                                     className="w-[100%] bg-transparent  p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     placeholder="e.g., emergencyContact"
