@@ -13,6 +13,8 @@ import LoadingSpinner from '../../components/Loading/LoadingSpinner';
 import styles from '../../components/CustomTable/CustomTable.module.css';
 import io from 'socket.io-client';
 import { useSelector } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
+
 
 
 const socket = io(import.meta.env.VITE_API_URL);
@@ -96,11 +98,6 @@ function ListForm() {
 
   const { clientUser: currentUser } = useSelector((state) => state.authCustomerSlice);
 
-  console.log("currentUser", currentUser);
-
-
-
-  console.log("filesName", filesName);
 
 
   // Fetch data
@@ -363,9 +360,21 @@ function ListForm() {
         [fieldName]: { jobId: null, status: 'pending', progress: 0, fieldName },
       }));
 
+      const uniqueId = uuidv4();
+
+      console.log("uniqueId", uniqueId);
+
+
+
+
+      socket.emit('joinDownload', { userId: currentUser.id, jobId: uniqueId });
+
+
       // Fetch the ZIP file with authentication
-      const response = await customFieldService.initiateDownloadByField(common.decryptId(encryptedId), fieldName);
-      const jobId = headers['x-job-id'] || headers['X-Job-Id'] || Object.keys(headers).find(key => key.toLowerCase() === 'x-job-id')?.headers[key];
+      const response = await customFieldService.initiateDownloadByField(common.decryptId(encryptedId), fieldName, uniqueId);
+      console.log("headers ", response.headers);
+
+      const jobId = response.headers['x-job-id'] || response.headers['X-Job-Id'];
       // Join WebSocket room for this job
       socket.emit('joinDownload', { userId: currentUser.id, jobId: jobId });
 
@@ -379,6 +388,17 @@ function ListForm() {
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
+
+
+      // Trigger native download
+      // console.log('Initiating native download...');
+      // const downloadUrl = `/api/superadmin/administration/download-by-field?sessionId=${encodeURIComponent(common.decryptId(encryptedId))}&fieldName=${encodeURIComponent(fieldName)}&uniqueId=${encodeURIComponent(uniqueId)}&token=${encodeURIComponent(localStorage.getItem('SAAS_BILLION_FORMS_customer_token'))}`;
+      // const link = document.createElement('a');
+      // link.href = downloadUrl;
+      // link.setAttribute('download', `${fieldName.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}.zip`);
+      // document.body.appendChild(link);
+      // link.click();
+      // document.body.removeChild(link);
 
       // Update state to processing
       setDownloadJobs((prev) => ({
@@ -505,79 +525,79 @@ function ListForm() {
   //   };
   // }, [downloadJobs, sessionData]);
 
-  useEffect(() => {
-    const intervals = {};
+  // useEffect(() => {
+  //   const intervals = {};
 
-    const clearAllIntervals = () => {
-      Object.values(intervals).forEach(clearInterval);
-    };
+  //   const clearAllIntervals = () => {
+  //     Object.values(intervals).forEach(clearInterval);
+  //   };
 
-    Object.entries(downloadJobs).forEach(([fieldName, job]) => {
-      if (job.status !== 'completed' && job.status !== 'failed') {
-        intervals[fieldName] = setInterval(async () => {
-          try {
-            const status = await customFieldService.getDownloadStatus(job.jobId);
+  //   Object.entries(downloadJobs).forEach(([fieldName, job]) => {
+  //     if (job.status !== 'completed' && job.status !== 'failed') {
+  //       intervals[fieldName] = setInterval(async () => {
+  //         try {
+  //           const status = await customFieldService.getDownloadStatus(job.jobId);
 
-            setDownloadJobs((prev) => ({
-              ...prev,
-              [fieldName]: {
-                jobId: status.jobId,
-                status: status.status,
-                progress: status.progress,
-                zipUrl: status.zipUrl,
-                fieldName: status.fieldName,
-                errorMessage: status.errorMessage,
-              },
-            }));
+  //           setDownloadJobs((prev) => ({
+  //             ...prev,
+  //             [fieldName]: {
+  //               jobId: status.jobId,
+  //               status: status.status,
+  //               progress: status.progress,
+  //               zipUrl: status.zipUrl,
+  //               fieldName: status.fieldName,
+  //               errorMessage: status.errorMessage,
+  //             },
+  //           }));
 
-            if (status.status === 'completed') {
-              // Stop all polling
-              clearAllIntervals();
+  //           if (status.status === 'completed') {
+  //             // Stop all polling
+  //             clearAllIntervals();
 
-              const link = document.createElement('a');
-              link.href = status.zipUrl;
-              link.setAttribute('download', `${sessionData?.name || 'session'}_${fieldName}_files.zip`);
-              document.body.appendChild(link);
-              link.click();
-              link.remove();
+  //             const link = document.createElement('a');
+  //             link.href = status.zipUrl;
+  //             link.setAttribute('download', `${sessionData?.name || 'session'}_${fieldName}_files.zip`);
+  //             document.body.appendChild(link);
+  //             link.click();
+  //             link.remove();
 
-              Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: `Downloaded ${fieldName} files successfully!`,
-                timer: 1500,
-                showConfirmButton: false,
-              });
-            } else if (status.status === 'failed') {
-              // Stop all polling
-              clearAllIntervals();
+  //             Swal.fire({
+  //               icon: 'success',
+  //               title: 'Success',
+  //               text: `Downloaded ${fieldName} files successfully!`,
+  //               timer: 1500,
+  //               showConfirmButton: false,
+  //             });
+  //           } else if (status.status === 'failed') {
+  //             // Stop all polling
+  //             clearAllIntervals();
 
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: status.errorMessage || `Failed to download ${fieldName} files. Please try again.`,
-              });
-            }
-          } catch (error) {
-            clearAllIntervals();
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: `Failed to check download status for ${fieldName}: ${error.message}`,
-            });
-            setDownloadJobs((prev) => ({
-              ...prev,
-              [fieldName]: { ...prev[fieldName], status: 'failed' },
-            }));
-          }
-        }, 4000);
-      }
-    });
+  //             Swal.fire({
+  //               icon: 'error',
+  //               title: 'Error',
+  //               text: status.errorMessage || `Failed to download ${fieldName} files. Please try again.`,
+  //             });
+  //           }
+  //         } catch (error) {
+  //           clearAllIntervals();
+  //           Swal.fire({
+  //             icon: 'error',
+  //             title: 'Error',
+  //             text: `Failed to check download status for ${fieldName}: ${error.message}`,
+  //           });
+  //           setDownloadJobs((prev) => ({
+  //             ...prev,
+  //             [fieldName]: { ...prev[fieldName], status: 'failed' },
+  //           }));
+  //         }
+  //       }, 4000);
+  //     }
+  //   });
 
-    return () => {
-      clearAllIntervals();
-    };
-  }, [downloadJobs, sessionData]);
+  //   return () => {
+  //     clearAllIntervals();
+  //   };
+  // }, [downloadJobs, sessionData]);
 
 
 
@@ -596,7 +616,7 @@ function ListForm() {
     });
 
     socket.on('downloadProgress', (data) => {
-      console.log('Received progress:', data);
+      // console.log('Received progress:', data);
       setDownloadJobs((prev) => ({
         ...prev,
         [data.fieldName]: {
@@ -608,14 +628,53 @@ function ListForm() {
         },
       }));
 
-      if (data.status === 'completed' || data.status === 'failed') {
+      if (data.progress == 100) {
         Swal.fire({
-          icon: data.status === 'completed' ? 'success' : 'error',
+          icon: 'success',
           title: data.status.charAt(0).toUpperCase() + data.status.slice(1),
-          text: data.errorMessage || `Download for ${data.fieldName} ${data.status}`,
+          text: data.errorMessage || `Download for ${data.fieldName} success`,
           timer: 1500,
           showConfirmButton: false,
         });
+      }
+
+      // if (data.status === 'completed' || data.status === 'failed') {
+      //   Swal.fire({
+      //     icon: data.status === 'completed' ? 'success' : 'error',
+      //     title: data.status.charAt(0).toUpperCase() + data.status.slice(1),
+      //     text: data.errorMessage || `Download for ${data.fieldName} ${data.status}`,
+      //     timer: 1500,
+      //     showConfirmButton: false,
+      //   });
+      // }
+    });
+
+
+    socket.on('downloadProgressLive', (data) => {
+      // console.log('Received progress:', data);
+      if (data.progress == 100) {
+        setDownloadJobs((prev) => ({
+          ...prev,
+          [data.fieldName]: {
+            jobId: data.jobId,
+            status: "completed",
+            progress: 100,
+            fieldName: data.fieldName,
+            errorMessage: data.errorMessage,
+          },
+        }));
+      } else {
+        setDownloadJobs((prev) => ({
+          ...prev,
+          [data.fieldName]: {
+            jobId: data.jobId,
+            status: data.status,
+            progress: data.progress,
+            fieldName: data.fieldName,
+            errorMessage: data.errorMessage,
+          },
+        }));
+
       }
     });
 

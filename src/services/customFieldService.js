@@ -350,7 +350,7 @@ const initiateDownload = async (sessionId) => {
 }
 
 
-const initiateDownloadByField = async (sessionId, fieldName) => {
+const initiateDownloadByField = async (sessionId, fieldName, uniqueId) => {
     try {
 
         // old
@@ -366,12 +366,16 @@ const initiateDownloadByField = async (sessionId, fieldName) => {
         // return response.data.data.jobId;
 
         // new
+
+        console.log("uniqueIdqqq",uniqueId);
+        
         return axios.get(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/download-by-field`, {
-            params: { sessionId, fieldName },
+            params: { sessionId, fieldName, uniqueId },
             responseType: 'blob', // Handle binary data
             headers: {
                 Authorization: `Bearer ${authToken}`,
             },
+            timeout: 300000,
         });
     } catch (error) {
         if (error.response) {
