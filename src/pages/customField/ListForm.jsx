@@ -20,7 +20,18 @@ import { v4 as uuidv4 } from 'uuid';
 console.log("VITE_SOCKET_API_URL",import.meta.env.VITE_SOCKET_API_URL);
 
 
-const socket = io("https://aestree.in");
+let socket ;
+
+if(import.meta.env.VITE_NODE_ENV == "development"){
+ socket = io(import.meta.env.VITE_SOCKET_API_URL);
+
+}else{
+   socket = io(import.meta.env.VITE_SOCKET_API_URL, {
+  path: '/api/socket.io', // Match backend path
+  transports: ['websocket', 'polling'], // Ensure fallback to polling if needed
+});
+}
+
 
 // Error Message Component
 const ErrorMessage = ({ message }) => (
