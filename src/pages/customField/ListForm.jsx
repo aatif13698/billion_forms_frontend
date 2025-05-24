@@ -27,7 +27,7 @@ if(import.meta.env.VITE_NODE_ENV == "development"){
 
 }else{
    socket = io(import.meta.env.VITE_SOCKET_API_URL, {
-  path: '/api/socket.io', // Match backend path
+  path: '/socket.io', // Match backend path
   // transports: ['websocket', 'polling'], // Ensure fallback to polling if needed
   // withCredentials: true,
 });
