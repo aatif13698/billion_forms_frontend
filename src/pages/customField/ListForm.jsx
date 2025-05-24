@@ -20,7 +20,7 @@ import { v4 as uuidv4 } from 'uuid';
 console.log("VITE_SOCKET_API_URL",import.meta.env.VITE_SOCKET_API_URL);
 
 
-const socket = io("https://aes.aestree.in/api");
+const socket = io("https://aestree.in");
 
 // Error Message Component
 const ErrorMessage = ({ message }) => (
