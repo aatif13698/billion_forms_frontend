@@ -17,6 +17,9 @@ import { v4 as uuidv4 } from 'uuid';
 
 // test
 
+console.log("VITE_SOCKET_API_URL",import.meta.env.VITE_SOCKET_API_URL);
+
+
 const socket = io(import.meta.env.VITE_SOCKET_API_URL);
 
 // Error Message Component
