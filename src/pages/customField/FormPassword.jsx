@@ -113,7 +113,7 @@ const FormPassword = ({ companyIdentifier }) => {
             const encrypted = CryptoJS.AES.encrypt(id.toString(), SECRET_KEY).toString();
             // URL-safe encoding
             return encodeURIComponent(encrypted);
-        };
+    };
 
 
     function handleChange(e) {

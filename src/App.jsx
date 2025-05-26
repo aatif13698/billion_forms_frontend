@@ -33,7 +33,8 @@ const UserList = lazy(() => import("../src/pages/user/UserList"));
 const CreateUser = lazy(() => import("../src/pages/user/CreateUser"));
 const AssignUser = lazy(() => import("../src/pages/user/AssignUser"));
 const ListStaff = lazy(() => import("../src/pages/staff/ListStaff"));
-const CreateStaff = lazy(() => import("../src/pages/staff/CreateStaff"))
+const CreateStaff = lazy(() => import("../src/pages/staff/CreateStaff"));
+const EditFormByAdmin = lazy(() => import("../src/pages/customField/EditFormByAdmin"))
 
 import PublicRoute from "./routes/PublicRoute";
 import PrivateRoute from "./routes/PrivateRoute";
@@ -118,11 +119,12 @@ export default function App() {
               <Route path="list/fields" element={<ListFields />} />
               <Route path="list/adjustOrder" element={<AdjustOrder />} />
               <Route path="list/forms/:sessionId" element={<ListForms />} />
+              <Route path="editformbyadmin/:formId/:id" element={<EditFormByAdmin />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Route>
 
-          
+
         </Route>
       </Routes>
     </main>

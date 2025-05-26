@@ -133,10 +133,10 @@ function SubmitForm() {
             setOrganizationData(fields[0]?.sessionId?.organizationId);
             setSessionData(fields[0]?.sessionId);
             setBannerPreview(
-                `${import.meta.env.VITE_API_URL_IMG}${fields[0]?.sessionId?.organizationId?.banner || ""}`
+                `${fields[0]?.sessionId?.organizationId?.banner || ""}`
             );
             setLogoPreview(
-                `${import.meta.env.VITE_API_URL_IMG}${fields[0]?.sessionId?.organizationId?.logo || ""}`
+                `${fields[0]?.sessionId?.organizationId?.logo || ""}`
             );
 
             if (fields[0]?.sessionId?.isPasswordRequired) {

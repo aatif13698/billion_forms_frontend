@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
-import { FaEnvelope, FaExclamationCircle } from 'react-icons/fa';
+import { useNavigate, useParams } from 'react-router-dom';
+import { FaEnvelope, FaExclamationCircle, FaRegEye, FaTrashAlt } from 'react-icons/fa';
 import PropTypes from 'prop-types';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
@@ -17,20 +17,20 @@ import { v4 as uuidv4 } from 'uuid';
 
 // test qqq
 
-console.log("VITE_SOCKET_API_URL",import.meta.env.VITE_SOCKET_API_URL);
+console.log("VITE_SOCKET_API_URL", import.meta.env.VITE_SOCKET_API_URL);
 
 
-let socket ;
+let socket;
 
-if(import.meta.env.VITE_NODE_ENV == "development"){
- socket = io(import.meta.env.VITE_SOCKET_API_URL);
+if (import.meta.env.VITE_NODE_ENV == "development") {
+  socket = io(import.meta.env.VITE_SOCKET_API_URL);
 
-}else{
-   socket = io(import.meta.env.VITE_SOCKET_API_URL, {
-  path: '/api/socket.io', // Match backend path
-  // transports: ['websocket', 'polling'], // Ensure fallback to polling if needed
-  // withCredentials: true,
-});
+} else {
+  socket = io(import.meta.env.VITE_SOCKET_API_URL, {
+    path: '/api/socket.io', // Match backend path
+    // transports: ['websocket', 'polling'], // Ensure fallback to polling if needed
+    // withCredentials: true,
+  });
 }
 
 
@@ -112,6 +112,7 @@ function ListForm() {
   const [downloadJobs, setDownloadJobs] = useState({}); // Track jobs by fieldName
 
   const { clientUser: currentUser } = useSelector((state) => state.authCustomerSlice);
+  const navigate = useNavigate();
 
 
 
@@ -186,6 +187,11 @@ function ListForm() {
       { key: 'createdAt', label: 'Created At', format: (value) => new Date(value).toLocaleDateString() },
     ];
 
+
+    const actionColumn = [
+      { key: 'action', label: 'Action' },
+    ]
+
     const dynamicKeys = new Set();
     formsData.forEach((form) => {
       if (form.otherThanFiles) {
@@ -203,7 +209,7 @@ function ListForm() {
       label: key.charAt(0).toUpperCase() + key.slice(1),
     }));
 
-    return [...fixedColumns, ...dynamicColumns, ...dynamicColumns2];
+    return [...fixedColumns, ...dynamicColumns, ...dynamicColumns2, ...actionColumn];
   }, [formsData, filesName]);
 
   // Filter forms based on search query
@@ -348,25 +354,7 @@ function ListForm() {
     }
   };
 
-  // Handle field-specific download
-  // const handleDownloadByField = async (fieldName) => {
-  //   try {
-  //     const jobId = await customFieldService.initiateDownloadByField(
-  //       common.decryptId(encryptedId),
-  //       fieldName
-  //     );
-  //     setDownloadJobs((prev) => ({
-  //       ...prev,
-  //       [fieldName]: { jobId, status: 'pending', progress: 0 },
-  //     }));
-  //   } catch (error) {
-  //     Swal.fire({
-  //       icon: 'error',
-  //       title: 'Error',
-  //       text: 'Failed to initiate download: ' + error.message,
-  //     });
-  //   }
-  // };
+
   const handleDownloadByField = async (fieldName) => {
     try {
       // Update downloadJobs to show pending state
@@ -404,17 +392,6 @@ function ListForm() {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
-
-      // Trigger native download
-      // console.log('Initiating native download...');
-      // const downloadUrl = `/api/superadmin/administration/download-by-field?sessionId=${encodeURIComponent(common.decryptId(encryptedId))}&fieldName=${encodeURIComponent(fieldName)}&uniqueId=${encodeURIComponent(uniqueId)}&token=${encodeURIComponent(localStorage.getItem('SAAS_BILLION_FORMS_customer_token'))}`;
-      // const link = document.createElement('a');
-      // link.href = downloadUrl;
-      // link.setAttribute('download', `${fieldName.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}.zip`);
-      // document.body.appendChild(link);
-      // link.click();
-      // document.body.removeChild(link);
-
       // Update state to processing
       setDownloadJobs((prev) => ({
         ...prev,
@@ -432,191 +409,6 @@ function ListForm() {
       });
     }
   };
-
-  // testing
-
-  // Poll download status (only for progress UI, not triggering download)
-  // useEffect(() => {
-  //   const intervals = {};
-
-  //   const clearAllIntervals = () => {
-  //     Object.values(intervals).forEach(clearInterval);
-  //   };
-
-  //   Object.entries(downloadJobs).forEach(([fieldName, job]) => {
-  //     if (job.status !== 'completed' && job.status !== 'failed' && job.jobId) {
-  //       intervals[fieldName] = setInterval(async () => {
-  //         try {
-  //           const statusResponse = await customFieldService.getDownloadStatus(job.jobId);
-  //           const status = statusResponse.data.data;
-  //           setDownloadJobs((prev) => ({
-  //             ...prev,
-  //             [fieldName]: {
-  //               jobId: status.jobId,
-  //               status: status.status,
-  //               progress: status.progress,
-  //               fieldName: status.fieldName,
-  //               errorMessage: status.errorMessage,
-  //             },
-  //           }));
-
-  //           if (status.status === 'completed' || status.status === 'failed') {
-  //             clearInterval(intervals[fieldName]);
-  //           }
-  //         } catch (error) {
-  //           clearInterval(intervals[fieldName]);
-  //           setDownloadJobs((prev) => ({
-  //             ...prev,
-  //             [fieldName]: { ...prev[fieldName], status: 'failed', errorMessage: error.message },
-  //           }));
-  //         }
-  //       }, 4000);
-  //     }
-  //   });
-
-  //   return () => {
-  //     clearAllIntervals();
-  //   };
-  // }, [downloadJobs]);
-
-  // Poll download status for all jobs
-  // useEffect(() => {
-  //   const intervals = {};
-  //   Object.entries(downloadJobs).forEach(([fieldName, job]) => {
-  //     if (job.status !== 'completed' && job.status !== 'failed') {
-  //       intervals[fieldName] = setInterval(async () => {
-  //         try {
-  //           const status = await customFieldService.getDownloadStatus(job.jobId);
-  //           setDownloadJobs((prev) => ({
-  //             ...prev,
-  //             [fieldName]: {
-  //               jobId: status.jobId,
-  //               status: status.status,
-  //               progress: status.progress,
-  //               zipUrl: status.zipUrl,
-  //               fieldName: status.fieldName,
-  //               errorMessage: status.errorMessage,
-  //             },
-  //           }));
-
-  //           if (status.status === 'completed') {
-  //             const link = document.createElement('a');
-  //             link.href = status.zipUrl;
-  //             link.setAttribute('download', `${sessionData?.name || 'session'}_${fieldName}_files.zip`);
-  //             document.body.appendChild(link);
-  //             link.click();
-  //             link.remove();
-  //             Swal.fire({
-  //               icon: 'success',
-  //               title: 'Success',
-  //               text: `Downloaded ${fieldName} files successfully!`,
-  //               timer: 1500,
-  //               showConfirmButton: false,
-  //             });
-  //           } else if (status.status === 'failed') {
-  //             Swal.fire({
-  //               icon: 'error',
-  //               title: 'Error',
-  //               text: status.errorMessage || `Failed to download ${fieldName} files. Please try again.`,
-  //             });
-  //           }
-  //         } catch (error) {
-  //           Swal.fire({
-  //             icon: 'error',
-  //             title: 'Error',
-  //             text: `Failed to check download status for ${fieldName}: ${error.message}`,
-  //           });
-  //           setDownloadJobs((prev) => ({
-  //             ...prev,
-  //             [fieldName]: { ...prev[fieldName], status: 'failed' },
-  //           }));
-  //           clearInterval(intervals[fieldName]);
-  //         }
-  //       }, 4000);
-  //     }
-  //   });
-
-  //   return () => {
-  //     Object.values(intervals).forEach((interval) => clearInterval(interval));
-  //   };
-  // }, [downloadJobs, sessionData]);
-
-  // useEffect(() => {
-  //   const intervals = {};
-
-  //   const clearAllIntervals = () => {
-  //     Object.values(intervals).forEach(clearInterval);
-  //   };
-
-  //   Object.entries(downloadJobs).forEach(([fieldName, job]) => {
-  //     if (job.status !== 'completed' && job.status !== 'failed') {
-  //       intervals[fieldName] = setInterval(async () => {
-  //         try {
-  //           const status = await customFieldService.getDownloadStatus(job.jobId);
-
-  //           setDownloadJobs((prev) => ({
-  //             ...prev,
-  //             [fieldName]: {
-  //               jobId: status.jobId,
-  //               status: status.status,
-  //               progress: status.progress,
-  //               zipUrl: status.zipUrl,
-  //               fieldName: status.fieldName,
-  //               errorMessage: status.errorMessage,
-  //             },
-  //           }));
-
-  //           if (status.status === 'completed') {
-  //             // Stop all polling
-  //             clearAllIntervals();
-
-  //             const link = document.createElement('a');
-  //             link.href = status.zipUrl;
-  //             link.setAttribute('download', `${sessionData?.name || 'session'}_${fieldName}_files.zip`);
-  //             document.body.appendChild(link);
-  //             link.click();
-  //             link.remove();
-
-  //             Swal.fire({
-  //               icon: 'success',
-  //               title: 'Success',
-  //               text: `Downloaded ${fieldName} files successfully!`,
-  //               timer: 1500,
-  //               showConfirmButton: false,
-  //             });
-  //           } else if (status.status === 'failed') {
-  //             // Stop all polling
-  //             clearAllIntervals();
-
-  //             Swal.fire({
-  //               icon: 'error',
-  //               title: 'Error',
-  //               text: status.errorMessage || `Failed to download ${fieldName} files. Please try again.`,
-  //             });
-  //           }
-  //         } catch (error) {
-  //           clearAllIntervals();
-  //           Swal.fire({
-  //             icon: 'error',
-  //             title: 'Error',
-  //             text: `Failed to check download status for ${fieldName}: ${error.message}`,
-  //           });
-  //           setDownloadJobs((prev) => ({
-  //             ...prev,
-  //             [fieldName]: { ...prev[fieldName], status: 'failed' },
-  //           }));
-  //         }
-  //       }, 4000);
-  //     }
-  //   });
-
-  //   return () => {
-  //     clearAllIntervals();
-  //   };
-  // }, [downloadJobs, sessionData]);
-
-
-
 
   useEffect(() => {
     if (!currentUser?.id) {
@@ -653,16 +445,6 @@ function ListForm() {
           showConfirmButton: false,
         });
       }
-
-      // if (data.status === 'completed' || data.status === 'failed') {
-      //   Swal.fire({
-      //     icon: data.status === 'completed' ? 'success' : 'error',
-      //     title: data.status.charAt(0).toUpperCase() + data.status.slice(1),
-      //     text: data.errorMessage || `Download for ${data.fieldName} ${data.status}`,
-      //     timer: 1500,
-      //     showConfirmButton: false,
-      //   });
-      // }
     });
 
 
@@ -860,6 +642,29 @@ function ListForm() {
                           const key = col.key.split('.')[1];
                           const fileValue = form?.files?.find((file) => file.fieldName === key);
                           value = fileValue ? common.extractFilename(fileValue.fileUrl) : null;
+                        } else if (col.key.includes('action')) {
+
+                          value = (
+                            <div className='flex flex-row gap-2'>
+                              <button
+                                onClick={() => {
+                                  // console.log("clicked view", form)
+                                  navigate(`/editformbyadmin/${common.encryptId(form.sessionId)}/${common.encryptId(form._id)}`)
+                                }}
+                                className="flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-yellow-400 to-yellow-600 dark:from-yellow-500 dark:to-yellow-700 rounded-lg  hover:from-yellow-500 hover:to-yellow-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                              >
+                                <FaRegEye />
+                                View/Edit
+                              </button>
+                              <button
+                                className="flex items-center gap-1 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-red-500 to-red-700 dark:from-red-600 dark:to-red-800 rounded-lg hover:from-red-600 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-red-500"
+                              >
+                                <FaTrashAlt />
+                                Delete
+                              </button>
+                            </div>
+                          )
+
                         } else {
                           value = form[col.key];
                         }
