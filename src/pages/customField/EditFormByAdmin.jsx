@@ -548,21 +548,7 @@ function EditFormByAdmin() {
             // Reset form
             setCustomizationValues({});
             setErrors({});
-            setTimeout(() => {
-                Swal.fire({
-                    title: "Please Note",
-                    html: `
-                    <p>If you need to edit the form, you can use this credential.</p>
-                    <p><strong>ID:</strong> ${response?.data?.data?.data?.serialNumber}</p>
-                    <p><strong>Password:</strong> ${response?.data?.data?.data?.password}</p>
-                  `,
-                    icon: "info"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.reload()
-                    }
-                });
-            }, 700);
+            navigate(-1);
         } catch (error) {
             console.error("Error submitting form:", error);
             Swal.fire({
