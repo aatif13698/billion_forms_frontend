@@ -835,10 +835,10 @@
 // export default SubmitForm;
 
 
- // new code 2
+// new code 2
 
 
- import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import CryptoJS from "crypto-js";
 import { useNavigate, useParams } from "react-router-dom";
 import customFieldService from "../../services/customFieldService";
@@ -889,6 +889,9 @@ function SubmitForm() {
   const [isActive, setIsActive] = useState(null);
   const [isSessionCheckComplete, setIsSessionCheckComplete] = useState(false);
 
+  // console.log("existingFields", existingFields);
+
+
   // Cropper states
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [imageSrc, setImageSrc] = useState(null);
@@ -896,9 +899,10 @@ function SubmitForm() {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [currentFieldName, setCurrentFieldName] = useState(null);
+  const [currentAspectRation, setCurrentAspectRation] = useState(null)
 
-  console.log("errors", errors);
-  console.log("isSessionExpired", isSessionExpired);
+  // console.log("errors", errors);
+  // console.log("currentAspectRation", currentAspectRation);
 
   // Handle input changes and validate
   const handleInputChange = (fieldName, value, field) => {
@@ -958,11 +962,17 @@ function SubmitForm() {
 
   // Handle image file selection
   const handleFileChange = (fieldName, file, field) => {
+
+    // console.log("field sss", field);
+
     if (file && field.type === "file" && file.type.startsWith("image/")) {
       const reader = new FileReader();
       reader.onload = () => {
         setImageSrc(reader.result);
         setCurrentFieldName(fieldName);
+        if (field?.aspectRation && field?.aspectRation?.xAxis && field?.aspectRation?.yAxis) {
+          setCurrentAspectRation(field?.aspectRation)
+        }
         setCropModalOpen(true);
       };
       reader.readAsDataURL(file);
@@ -1336,8 +1346,8 @@ function SubmitForm() {
           error === "A form with this phone, first name, and session already exists"
             ? "This form has already been submitted with the same phone, first name, and session."
             : error === "Invalid email format"
-            ? "Please enter a valid email address"
-            : error || "Failed to submit form",
+              ? "Please enter a valid email address"
+              : error || "Failed to submit form",
       });
     } finally {
       setIsSubmitting(false);
@@ -1384,9 +1394,8 @@ function SubmitForm() {
 
   return (
     <div
-      className={`flex ${
-        navigateToForm ? "" : "flex-col justify-center items-center"
-      } justify-center h-[100%] overflow-auto bg-custom-gradient-sidebar dark:bg-dark`}
+      className={`flex ${navigateToForm ? "" : "flex-col justify-center items-center"
+        } justify-center h-[100%] overflow-auto bg-custom-gradient-sidebar dark:bg-dark`}
     >
       {isPageLoading || !isSessionCheckComplete ? (
         <LoadingSpinner />
@@ -1395,7 +1404,7 @@ function SubmitForm() {
       ) : (
         <>
           {(isSessionExpired || !isActive) ? (
-            <div className="w-[100%] max-w-4xl mx-auto flex flex-col p-2 sm:p-4 mt-2 sm:mt-3">
+            <div className="w-[100%] max-w-6xl mx-auto flex flex-col p-2 sm:p-4 mt-2 sm:mt-3">
               <div className="w-[100%] bg-cardBgLight dark:bg-cardBgDark rounded-t-md shadow-lg">
                 <div className="relative border-2 hover:border-subscriptionCardBgLightFrom bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden transition-transform duration-300 hover:shadow-xl">
                   <div
@@ -1418,9 +1427,8 @@ function SubmitForm() {
                         {organizationData?.captionText || "Caption Text"}
                       </h4>
                       <h2 className="text-base sm:text-xl md:text-3xl font-bold mb-2 drop-shadow-md">
-                        {`${sessionData?.for || "Session"} (${
-                          sessionData?.name || "Name"
-                        })`}
+                        {`${sessionData?.for || "Session"} (${sessionData?.name || "Name"
+                          })`}
                       </h2>
                     </div>
                   </div>
@@ -1487,7 +1495,7 @@ function SubmitForm() {
             <>
               {!navigateToForm ? (
                 <>
-                  <div className="w-[100%] max-w-4xl mx-auto flex flex-col">
+                  <div className="w-[100%] max-w-6xl mx-auto flex flex-col">
                     <div className="flex flex-col items-center mt-4 mb-0 md:px-1 px-1">
                       <style>
                         {`
@@ -1511,9 +1519,8 @@ function SubmitForm() {
                                 {organizationData?.name || "Organization Name"}
                               </h2>
                               <h2 className="text-base sm:text-xl md:text-3xl font-bold mb-2 drop-shadow-md">
-                                {`${sessionData?.for || "Session"} (${
-                                  sessionData?.name || "Name"
-                                })`}
+                                {`${sessionData?.for || "Session"} (${sessionData?.name || "Name"
+                                  })`}
                               </h2>
                             </div>
                           </div>
@@ -1583,7 +1590,7 @@ function SubmitForm() {
                   </div>
                 </>
               ) : (
-                <div className="w-[100%] max-w-4xl mx-auto flex flex-col p-2 sm:p-4 mt-2 sm:mt-3">
+                <div className="w-[100%] max-w-6xl mx-auto flex flex-col p-2 sm:p-4 mt-2 sm:mt-3">
                   <div className="w-[100%] bg-cardBgLight dark:bg-cardBgDark rounded-t-md shadow-lg">
                     <div className="relative border-2 hover:border-subscriptionCardBgLightFrom bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden transition-transform duration-300 hover:shadow-xl">
                       <div
@@ -1606,9 +1613,8 @@ function SubmitForm() {
                             {organizationData?.captionText || "Caption Text"}
                           </h4>
                           <h2 className="text-base sm:text-xl md:text-3xl font-bold mb-2 drop-shadow-md">
-                            {`${sessionData?.for || "Session"} (${
-                              sessionData?.name || "Name"
-                            })`}
+                            {`${sessionData?.for || "Session"} (${sessionData?.name || "Name"
+                              })`}
                           </h2>
                         </div>
                       </div>
@@ -1636,9 +1642,8 @@ function SubmitForm() {
                               <div
                                 key={index}
                                 style={{ order: field?.gridConfig?.order }}
-                                className={`min-w-0 ${
-                                  field?.type === "checkbox" ? "flex items-center gap-2" : ""
-                                }`}
+                                className={`min-w-0 ${field?.type === "checkbox" ? "flex items-center gap-2" : ""
+                                  }`}
                               >
                                 <label className="block text-xs sm:text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">
                                   {field?.label}
@@ -1721,7 +1726,7 @@ function SubmitForm() {
             marginRight: "-50%",
             transform: "translate(-50%, -50%)",
             width: "100%",
-            height:"100%",
+            height: "100%",
             // maxWidth: "600px",
             padding: "20px",
           },
@@ -1733,7 +1738,7 @@ function SubmitForm() {
             image={imageSrc}
             crop={crop}
             zoom={zoom}
-            aspect={4 / 3} // Adjustable aspect ratio
+            aspect={ currentAspectRation ? currentAspectRation?.xAxis/currentAspectRation?.yAxis : 3/4} // Adjustable aspect ratio
             onCropChange={setCrop}
             onZoomChange={setZoom}
             onCropComplete={onCropComplete}

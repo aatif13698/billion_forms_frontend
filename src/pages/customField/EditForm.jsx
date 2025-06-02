@@ -634,7 +634,7 @@ function EditForm() {
                     {
                         !navigateToForm ?
                             <>
-                                <div className="w-full max-w-4xl mx-auto flex flex-col  ">
+                                <div className="w-full max-w-6xl mx-auto flex flex-col  ">
                                     <div className="flex flex-col items-center mt-4 mb-0 md:px-1 px-1">
                                         <style>
                                             {`
@@ -747,7 +747,7 @@ function EditForm() {
 
 
                             :
-                            <div className="w-full max-w-4xl mx-auto flex flex-col p-2 sm:p-4 mt-2 sm:mt-3">
+                            <div className="w-full max-w-6xl mx-auto flex flex-col p-2 sm:p-4 mt-2 sm:mt-3">
                                 <div className="w-[100%] bg-cardBgLight dark:bg-cardBgDark rounded-t-md shadow-lg">
                                     <div className="relative border-2 hover:border-subscriptionCardBgLightFrom bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden transition-transform duration-300 hover:shadow-xl">
                                         <div

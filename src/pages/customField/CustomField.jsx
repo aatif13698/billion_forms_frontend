@@ -14,6 +14,10 @@ import 'sweetalert2/src/sweetalert2.scss'
 import "../../App.css"
 import { FiPlus } from "react-icons/fi";
 
+import { FaInfoCircle } from "react-icons/fa";
+import useWidth from '../../Hooks/useWidth';
+
+
 
 
 
@@ -26,7 +30,27 @@ function CustomField() {
     const location = useLocation();
     const data = location?.state;
 
-    console.log("aatif", data);
+    const { width, breakpoints } = useWidth();
+
+
+    // console.log("aatif", data);
+
+    const [trigger, setTrigger] = useState('mouseenter focus');
+
+    useEffect(() => {
+        const updateTrigger = () => {
+            // Use 'click' for screen width below 768px (mobile)
+            if (width < breakpoints.md) {
+                setTrigger('click');
+            } else {
+                setTrigger('mouseenter focus');
+            }
+        };
+
+        updateTrigger(); // Run once on mount
+        window.addEventListener('resize', updateTrigger);
+        return () => window.removeEventListener('resize', updateTrigger);
+    }, []);
 
 
     // custom field handling
@@ -39,6 +63,11 @@ function CustomField() {
         placeholder: '',
         validation: { regex: '', min: '', max: '', maxLength: '', fileTypes: [], maxSize: '' },
         gridConfig: { span: 12, order: 0 }
+    });
+
+    const [aspectRation, setAspectRation] = useState({
+        xAxis: "",
+        yAxis: ""
     });
 
     const [errors, setErrors] = useState([]);
@@ -216,6 +245,10 @@ function CustomField() {
                 maxLength: formData.validation.maxLength ? Number(formData.validation.maxLength) : undefined,
                 fileTypes: formData.validation.fileTypes.length > 0 ? formData.validation.fileTypes : undefined,
                 maxSize: formData.validation.maxSize ? Number(formData.validation.maxSize) : undefined
+            },
+            aspectRation: {
+                xAxis: aspectRation?.xAxis,
+                yAxis: aspectRation?.yAxis
             },
             gridConfig: {
                 span: Number(formData.gridConfig.span),
@@ -720,6 +753,74 @@ flex items-center justify-center shadow-lg">
                                         className="w-[100%] bg-transparent p-2 border border-gray-300 rounded-md"
                                         placeholder="e.g., 5242880 (5MB)"
                                     />
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Aspect Ration */}
+
+                        {formData.type === 'file' && (
+                            <div>
+                                <div className="flex flex-row gap-2 items-center">
+                                    <h3>Aspect Ratio (Optional)</h3>
+                                    <Tippy
+                                        content={
+                                            "You can set the aspect ratio of the image file. Define the width and height respectively. If left blank, it defaults to 3/4."
+                                        }
+                                        placement="top"
+                                        trigger={trigger}
+                                        interactive={true}
+                                        hideOnClick={true}
+                                    >
+                                        <span className="cursor-pointer">
+                                            <FaInfoCircle />
+                                        </span>
+                                    </Tippy>
+                                </div>
+                                <div className="flex flex-row">
+                                    <div className="mt-4 md:w-[10%] w-[30%]">
+                                        <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Width</label>
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                value={aspectRation?.xAxis}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    if (/^\d*$/.test(value)) {
+                                                        setAspectRation((prev) => ({
+                                                            ...prev,
+                                                            xAxis: value,
+                                                        }));
+                                                    }
+                                                }}
+                                                className="flex-1 md:w-[10%] w-[20%] bg-transparent p-2 border border-gray-300 rounded-md"
+                                                placeholder="e.g., 4"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className=' flex items-end  justify-center w-7'>
+                                        <span className='text-3xl'>/</span>
+                                    </div>
+                                    <div className="mt-4 md:w-[10%] w-[30%]">
+                                        <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Height</label>
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                value={aspectRation?.yAxis}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    if (/^\d*$/.test(value)) {
+                                                        setAspectRation((prev) => ({
+                                                            ...prev,
+                                                            yAxis: value,
+                                                        }));
+                                                    }
+                                                }}
+                                                className="flex-1 md:w-[10%] w-[20%] bg-transparent p-2 border border-gray-300 rounded-md"
+                                                placeholder="e.g., 4"
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         )}
