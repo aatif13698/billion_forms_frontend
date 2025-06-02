@@ -798,8 +798,8 @@ flex items-center justify-center shadow-lg">
                                             />
                                         </div>
                                     </div>
-                                    <div className=' flex items-end  justify-center w-7'>
-                                        <span className='text-3xl'>/</span>
+                                    <div className=' flex flex-col justify-end items-center w-7'>
+                                        <span className='text-4xl'>/</span>
                                     </div>
                                     <div className="mt-4 md:w-[10%] w-[30%]">
                                         <label className="block text-sm font-medium text-formLabelLight dark:text-formLabelDark mb-1">Height</label>

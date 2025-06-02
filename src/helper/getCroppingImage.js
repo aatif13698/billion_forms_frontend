@@ -1,4 +1,4 @@
-export default async function getCroppedImg(imageSrc, pixelCrop) {
+export default async function getCroppedImg(imageSrc, pixelCrop, quality = 0.6) {
   const image = new Image();
   image.src = imageSrc;
   await new Promise((resolve) => (image.onload = resolve));
@@ -24,6 +24,6 @@ export default async function getCroppedImg(imageSrc, pixelCrop) {
   return new Promise((resolve) => {
     canvas.toBlob((blob) => {
       resolve(blob);
-    }, "image/jpeg", 0.9); // 90% quality
+    }, "image/jpeg", quality); // 40% quality
   });
 }
