@@ -77,7 +77,7 @@ const NavMenu = ({ isCollapsed }) => {
                                     "/list/clients": ["/list/clients", "/create/clients"],
                                     "/list/users": ["/list/users", "/edit/user", "/view/user", "/create/user"],
                                     "/list/staffs":["/list/staffs", "/create/staffs"],
-                                    "/list/organization" : ["/list/organization", "/create/organization", "/view/organization", "/list/fields", "/assign/user", "/list/adjustOrder"],
+                                    "/list/organization" : ["/list/organization", "/create/organization", "/view/organization", "/list/fields", "/assign/user", "/list/adjustOrder", "/list/forms"],
                                     "/list/company": ["/list/company", "/create/company"],
                                     "/list/subscription": ["/list/subscription", "/create/subscription"],
                                     "/list/topup": ["/list/topup", "/create/topup"],
