@@ -129,14 +129,14 @@ const NavMenu = ({ isCollapsed }) => {
             </ul>
 
             {/* Logo */}
-            {/* <hr className="border-t border-gray-700" />
+            <hr className="border-t border-gray-700" />
             <div className="flex my-4 justify-center">
                 <img
                     src={logo}
                     className="h-[6rem] bg-white rounded-md w-auto object-contain"
                     alt="Logo"
                 />
-            </div> */}
+            </div>
         </>
     );
 };

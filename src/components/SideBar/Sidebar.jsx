@@ -7,6 +7,7 @@ import useWidth from "../../Hooks/useWidth";
 import useDarkmode from "../../Hooks/useDarkMode";
 import customLogo from "../../assets/logo/logo2.png";
 import logo from "../../assets/logo/logo.png"
+import "../../App.css"
 
 export const Sidebar = ({ isCollapsed }) => {
   const { width, breakpoints } = useWidth();
@@ -50,14 +51,19 @@ export const Sidebar = ({ isCollapsed }) => {
             transition-all duration-300 ease-in-out overflow-y-hidden overflow-x-hidden`}
         >
           {/* Logo */}
-          <Logo logoSrc={logo} to="/home" />
-
-          <hr className="border-t my-3 border-gray-700" />
+          <div className="h-[10%]">
+            <Logo logoSrc={logo} to="/home" />
+            <hr className="border-t mt-0 border-gray-700" />
+          </div>
 
           {/* Navigation items */}
-          <SimpleBar className="px-4 w-[100%]   ">
+          {/* <SimpleBar className="px-4 w-[100%]   ">
+          </SimpleBar> */}
+
+          <div className=" h-[90%] custom-scrollbar overflow-y-auto mx-3">
             <NavMenu isCollapsed={isCollapsed} />
-          </SimpleBar>
+
+          </div>
         </div>
       )}
     </>

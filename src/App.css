@@ -33,3 +33,40 @@
   padding: 10px;
   box-shadow: 12px 12px 30px ;
 }
+
+
+
+
+
+  /* scrollbar css */
+/* NavMenu.css */
+.custom-scrollbar {
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox: Hide scrollbar completely */
+  -ms-overflow-style: none; /* IE and Edge: Hide scrollbar completely */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  display: none; /* WebKit: Hide scrollbar completely */
+}
+
+/* Remove hover effects that show the scrollbar */
+.custom-scrollbar:hover {
+  scrollbar-width: none; /* Firefox: Keep scrollbar hidden on hover */
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar {
+  display: none; /* WebKit: Keep scrollbar hidden on hover */
+}
+
+/* Light mode variables */
+.custom-scrollbar.light {
+  --scrollbar-track: #f1f5f9;
+}
+
+/* Dark mode variables */
+.custom-scrollbar.dark {
+  --scrollbar-track: #2d3748;
+}
+
+
