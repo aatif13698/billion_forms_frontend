@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import CryptoJS from "crypto-js";
 import { useNavigate, useParams } from "react-router-dom";
 import customFieldService from "../../services/customFieldService";
@@ -9,6 +9,10 @@ import Swal from "sweetalert2";
 import "../../App.css"
 import Select from 'react-select';
 import common from "../../helper/common";
+
+import Cropper from "react-easy-crop";
+import Modal from "react-modal";
+import getCroppedImg from "../../helper/getCroppingImage";
 
 
 
@@ -47,10 +51,21 @@ function EditForm() {
     const fileInputRefs = useRef({}); // Store refs for file inputs
 
 
+
+    // Cropper states
+    const [cropModalOpen, setCropModalOpen] = useState(false);
+    const [imageSrc, setImageSrc] = useState(null);
+    const [crop, setCrop] = useState({ x: 0, y: 0 });
+    const [zoom, setZoom] = useState(1);
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+    const [currentFieldName, setCurrentFieldName] = useState(null);
+    const [currentAspectRation, setCurrentAspectRation] = useState(null)
+
+
     // console.log("existingFields", existingFields);
-    console.log("customizationValues", customizationValues);
+    // console.log("customizationValues", customizationValues);
     // console.log("customData", customData);
-    console.log("errors", errors);
+    // console.log("errors", errors);
 
 
 
@@ -63,7 +78,6 @@ function EditForm() {
 
         let newErrors = { ...errors };
         const validation = field.validation;
-        // Required field validation
         if (field?.isRequired) {
             if (typeof value === "string" && !value.trim()) {
                 newErrors[fieldName] = `${field?.label} is required`;
@@ -73,19 +87,13 @@ function EditForm() {
                 delete newErrors[fieldName];
             }
         } else {
-            // Remove error if field is not required and empty
             if (typeof value === "string" && !value.trim()) {
                 delete newErrors[fieldName];
             }
         }
-        // Regex validation
         if (validation?.regex && value) {
             try {
-                // Convert string regex to RegExp object
                 const regex = new RegExp(validation.regex);
-                console.log("regex", regex);
-
-
                 if (typeof value === "string" && !regex.test(value.trim())) {
                     newErrors[fieldName] = `Please enter a valid ${field?.label}`;
                 } else {
@@ -96,21 +104,18 @@ function EditForm() {
                 newErrors[fieldName] = `Invalid validation rule for ${field?.label}`;
             }
         }
-        // min length and max length
         if (validation?.minLength && value) {
             if (value?.length < validation?.minLength) {
-                newErrors[fieldName] = `Minimun ${validation?.minLength} characters are required.`;
+                newErrors[fieldName] = `Minimum ${validation?.minLength} characters are required.`;
             } else if (value?.length > validation?.maxLength) {
                 newErrors[fieldName] = `Maximum ${validation?.maxLength} characters are required.`;
-
             } else {
                 delete newErrors[fieldName];
             }
         }
-        // min value and max value
         if (validation?.min && value) {
             if (value < validation?.min) {
-                newErrors[fieldName] = `Must be grater than or equal to ${validation?.min}`;
+                newErrors[fieldName] = `Must be greater than or equal to ${validation?.min}`;
             } else if (value > validation?.max) {
                 newErrors[fieldName] = `Must be less than or equal to ${validation?.max}`;
             } else {
@@ -119,6 +124,74 @@ function EditForm() {
         }
         setErrors(newErrors);
     };
+
+    // Handle image file selection
+    const handleFileChange = (fieldName, file, field) => {
+
+        // console.log("field sss", field);
+
+        if (file && field.type === "file" && file.type.startsWith("image/")) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                setImageSrc(reader.result);
+                setCurrentFieldName(fieldName);
+                if (field?.aspectRation && field?.aspectRation?.xAxis && field?.aspectRation?.yAxis) {
+                    setCurrentAspectRation(field?.aspectRation)
+                }
+                setCropModalOpen(true);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            handleInputChange(fieldName, file, field);
+        }
+    };
+
+
+
+    // Cropper callbacks
+    const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
+        setCroppedAreaPixels(croppedAreaPixels);
+    }, []);
+
+    // Finalize crop and save image
+    const handleCropConfirm = useCallback(async () => {
+        try {
+            const croppedImage = await getCroppedImg(imageSrc, croppedAreaPixels);
+            const fileName = `cropped_${Date.now()}.jpg`;
+            const croppedFile = new File([croppedImage], fileName, { type: "image/jpeg" });
+            handleInputChange(currentFieldName, croppedFile, existingFields.find((f) => f.name === currentFieldName));
+            setCropModalOpen(false);
+            setImageSrc(null);
+            setCurrentFieldName(null);
+            setCrop({ x: 0, y: 0 });
+            setZoom(1);
+        } catch (error) {
+            console.error("Error cropping image:", error);
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Failed to crop image. Please try again.",
+            });
+        }
+    }, [imageSrc, croppedAreaPixels, currentFieldName, existingFields]);
+
+    // Cancel crop
+    const handleCropCancel = () => {
+        setCropModalOpen(false);
+        setImageSrc(null);
+        setCurrentFieldName(null);
+        setCrop({ x: 0, y: 0 });
+        setZoom(1);
+        // Clear file input
+        setCustomizationValues((prev) => ({
+            ...prev,
+            [currentFieldName]: null,
+        }));
+    };
+
+
+
+
 
     useEffect(() => {
         if (encryptedId) {
@@ -385,10 +458,19 @@ function EditForm() {
                         <input
                             type="file"
                             accept={field?.validation?.fileTypes?.join(",")}
-                            onChange={(e) => handleInputChange(fieldName, e.target.files[0], field)}
+                            onChange={(e) => handleFileChange(fieldName, e.target.files[0], field)}
                             className={baseStyles}
-                            ref={(el) => (fileInputRefs.current[fieldName] = el)} // Store ref
+                        // ref={(el) => (fileInputRefs.current[fieldName] = el)} // Store ref
                         />
+                        {customizationValues[fieldName] instanceof File && (
+                            <div className="mt-2">
+                                <img
+                                    src={URL.createObjectURL(customizationValues[fieldName])}
+                                    alt="Preview"
+                                    className="max-w-[100px] max-h-[100px] object-cover"
+                                />
+                            </div>
+                        )}
                         {customizationValues[fieldName] && (
                             <>
                                 {/* <iframe className="h-36 w-[100%] object-cover border-2 border-white dark:border-gray-200 shadow-md" src={customizationValues[fieldName]} frameborder="0"></iframe> */}
@@ -654,7 +736,7 @@ function EditForm() {
                                                     className="absolute inset-0 bg-cover bg-center"
                                                 // style={{ backgroundImage: `url(${bannerPreview})` }}
                                                 />
-                                                <div className="absolute z-20 top-2 sm:top-4 right-2 sm:right-4">
+                                                <div className="absolute z-0 top-2 sm:top-4 right-2 sm:right-4">
                                                     {/* <img
                                                         src={logoPreview}
                                                         alt={`${organizationData?.name} logo`}
@@ -751,18 +833,18 @@ function EditForm() {
                                 <div className="w-[100%] bg-cardBgLight dark:bg-cardBgDark rounded-t-md shadow-lg">
                                     <div className="relative border-2 hover:border-subscriptionCardBgLightFrom bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden transition-transform duration-300 hover:shadow-xl">
                                         <div
-                                            className="absolute inset-0 bg-cover bg-center"
+                                            className="absolute  inset-0 bg-cover bg-center"
                                             style={{ backgroundImage: `url(${bannerPreview})` }}
                                         />
-                                        <div className="absolute z-20 top-2 sm:top-4 right-2 sm:right-4">
+                                        <div className="absolute z-0 top-2 sm:top-4 right-2 sm:right-4">
                                             <img
                                                 src={logoPreview}
                                                 alt={`${organizationData?.name} logo`}
-                                                className="h-12 sm:h-16 w-12 sm:w-16 rounded-full object-cover border-2 border-white dark:border-gray-200 shadow-md"
+                                                className="h-12 sm:h-16 w-12 sm:w-16 rounded-[100%] object-cover border-2 border-white dark:border-gray-200 shadow-md"
                                             />
                                         </div>
-                                        <div className="relative z-10 bg-black bg-opacity-50 hover:bg-opacity-40 flex flex-col justify-between py-4 sm:py-6 px-3 sm:px-4">
-                                            <div className="text-left text-white w-full">
+                                        <div className="relative z-0 bg-black bg-opacity-50 hover:bg-opacity-40 flex flex-col justify-between py-4 sm:py-6 px-3 sm:px-4">
+                                            <div className="text-left text-white w-[100%]">
                                                 <h2 className="text-lg sm:text-2xl md:text-4xl font-bold mb-2 drop-shadow-md">
                                                     {organizationData?.name || "Organization Name"}
                                                 </h2>
@@ -770,7 +852,8 @@ function EditForm() {
                                                     {organizationData?.captionText || "Caption Text"}
                                                 </h4>
                                                 <h2 className="text-base sm:text-xl md:text-3xl font-bold mb-2 drop-shadow-md">
-                                                    {`${sessionData?.for || "Session"} (${sessionData?.name || "Name"})`}
+                                                    {`${sessionData?.for || "Session"} (${sessionData?.name || "Name"
+                                                        })`}
                                                 </h2>
                                             </div>
                                         </div>
@@ -877,6 +960,69 @@ function EditForm() {
                 </>
 
             )}
+
+
+            {/* Cropper Modal */}
+            <Modal
+                isOpen={cropModalOpen}
+                onRequestClose={handleCropCancel}
+                style={{
+                    content: {
+                        top: "50%",
+                        left: "50%",
+                        right: "auto",
+                        bottom: "auto",
+                        marginRight: "-50%",
+                        transform: "translate(-50%, -50%)",
+                        width: "100%",
+                        height: "100%",
+                        // maxWidth: "600px",
+                        padding: "20px",
+                    },
+                }}
+            >
+                <h2 className="text-lg font-semibold mb-4">Crop Image</h2>
+                <div style={{ position: "relative", width: "100%", height: "70vh" }}>
+                    <Cropper
+                        image={imageSrc}
+                        crop={crop}
+                        zoom={zoom}
+                        aspect={currentAspectRation ? currentAspectRation?.xAxis / currentAspectRation?.yAxis : 3 / 4} // Adjustable aspect ratio
+                        onCropChange={setCrop}
+                        onZoomChange={setZoom}
+                        onCropComplete={onCropComplete}
+                    />
+                </div>
+                <div className="mt-4">
+                    <label className="block text-sm font-medium mb-1">Zoom</label>
+                    <input
+                        type="range"
+                        value={zoom}
+                        min={1}
+                        max={3}
+                        step={0.1}
+                        onChange={(e) => setZoom(Number(e.target.value))}
+                        className="w-[100%]"
+                    />
+                </div>
+                <div className="flex justify-end mt-4 gap-2">
+                    <button
+                        onClick={handleCropCancel}
+                        className="px-4 py-2 text-sm text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={handleCropConfirm}
+                        className="px-4 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+                    >
+                        Confirm Crop
+                    </button>
+                </div>
+            </Modal>
+
+
+
         </div>
     );
 }
