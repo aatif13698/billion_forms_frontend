@@ -23,6 +23,8 @@ const NavMenu = ({ isCollapsed }) => {
     const { width, breakpoints } = useWidth();
     const [isDark, setDarkMode] = useDarkmode();
     const { clientUser } = useSelector((state) => state.authCustomerSlice);
+    const capability = useSelector((state) => state?.capabilitySlice);
+
     const [menuItems, setMenuItems] = useState([]);
     const location = useLocation(); // to track current URL path
 
@@ -46,7 +48,7 @@ const NavMenu = ({ isCollapsed }) => {
                 { title: "Organisation", icon: FaRegBuilding, link: "/list/organization" },
                 { title: "User", icon: FaUser, link: "/list/users" },
             ]);
-        }else if (clientUser?.role?.id === 3) {
+        } else if (clientUser?.role?.id === 3) {
             setMenuItems([
                 { title: "Dashboard", icon: AiOutlineDashboard, link: "/dashboard" },
                 { title: "Organisation", icon: FaRegBuilding, link: "/list/organization" },
@@ -76,8 +78,8 @@ const NavMenu = ({ isCollapsed }) => {
                                 const additionalActiveRoutes = {
                                     "/list/clients": ["/list/clients", "/create/clients"],
                                     "/list/users": ["/list/users", "/edit/user", "/view/user", "/create/user"],
-                                    "/list/staffs":["/list/staffs", "/create/staffs"],
-                                    "/list/organization" : ["/list/organization", "/create/organization", "/view/organization", "/list/fields", "/assign/user", "/list/adjustOrder", "/list/forms", "/editformbyadmin"],
+                                    "/list/staffs": ["/list/staffs", "/create/staffs"],
+                                    "/list/organization": ["/list/organization", "/create/organization", "/view/organization", "/list/fields", "/assign/user", "/list/adjustOrder", "/list/forms", "/editformbyadmin"],
                                     "/list/company": ["/list/company", "/create/company"],
                                     "/list/subscription": ["/list/subscription", "/create/subscription"],
                                     "/list/topup": ["/list/topup", "/create/topup"],

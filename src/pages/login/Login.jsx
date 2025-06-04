@@ -12,6 +12,7 @@ import { setClientUser } from '../../store/reducer/auth/authCustomerSlice';
 import { useDispatch } from 'react-redux';
 import toast from 'react-hot-toast';
 import LoadingSpinner from '../../components/Loading/LoadingSpinner';
+import { setCapability } from '../../store/reducer/auth/capabilitySlice';
 
 
 const SignUpLink = memo(() => {
@@ -135,6 +136,7 @@ const Login = ({ companyIdentifier }) => {
             );
             localStorage.setItem("SAAS_BILLION_FORMS_expiryTime", data?.token?.expiresIn);
             dispatch(setClientUser(data?.user));
+            dispatch(setCapability(data?.capability))
 
             // Update loading toast to success
             toast.success('Login successful!');
