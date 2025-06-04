@@ -121,7 +121,7 @@ function CreateCompany() {
             }
             setFormData({ name: "", subDomain: "", adminEmail: "", adminPassword: "" });
 
-            navigate("/list/company")
+            navigate("/list/companies")
 
         } catch (error) {
             console.error("Error creating company:", error);

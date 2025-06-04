@@ -215,7 +215,7 @@ function ListCompany({ noFade }) {
     }
 
     function buttonAction() {
-        navigate("/create/company")
+        navigate("/create/companies")
     }
 
     async function handleActiveInactive(currentPage, rowsPerPage, text, status, id) {

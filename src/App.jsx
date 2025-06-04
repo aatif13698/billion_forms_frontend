@@ -97,12 +97,12 @@ export default function App() {
             <Route path="/" element={<Layout />}>
               <Route path="home1" element={<Home />} />
               <Route path="createCustomField" element={<CreateCustomField />} />
-              <Route path="create/company" element={<CreateCompany />} />
-              <Route path="list/company" element={<ListCompany />} />
+              <Route path="create/companies" element={<CreateCompany />} />
+              <Route path="list/companies" element={<ListCompany />} />
               <Route path="create/clients" element={<CreateClients />} />
               <Route path="list/clients" element={<ListClients />} />
               <Route path="create/user" element={<CreateUser />} />
-              <Route path="list/users" element={<UserList />} />
+              <Route path="list/user" element={<UserList />} />
               <Route path="create/staffs" element={<CreateStaff />} />
               <Route path="list/staffs" element={<ListStaff />} />
               <Route path="assign/user" element={<AssignUser />} />

@@ -101,7 +101,7 @@ function ListOrganization() {
                     <div
                       onClick={() => viewOrganization(item?._id)}
                       key={item._id}
-                      className="relative commonClass hover:border-subscriptionCardBgLightFrom border-2 bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-xl"
+                      className="relative commonClass cursor-pointer hover:border-subscriptionCardBgLightFrom border-2 bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-xl"
                       style={{
                         backgroundImage: `url(${bannerUrl})`,
                         backgroundSize: 'cover',
