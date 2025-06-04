@@ -135,7 +135,7 @@ const Header = ({ isCollapsed, toggleMobileSidebar, setIsCollapsed, toggleSideba
                                                 <button onClick={toggleSidebar} className="hover:bg-blue-200/30 p-2 rounded-full transition duration-300 ease-in-out">
                                                     <RxHamburgerMenu className={` text-lg ${isDark ? "text-white" : "text-white"}`} />
                                                 </button>
-                                                <h2 className="text-lg text-white">Dashboard</h2>
+                                                <h2 className="text-md text-white">Dashboard</h2>
                                             </div>
                                     }
 

@@ -18,7 +18,7 @@ export const Sidebar = ({ isCollapsed }) => {
   console.log("width window", width);
 
   // Add smooth transition to the sidebar width
-  const sidebarWidth = width < breakpoints.lg || isCollapsed ? "w-[100px]" : "w-[238px]";
+  const sidebarWidth = width < breakpoints.lg || isCollapsed ? "w-[100px]" : "w-[200px]";
 
   // Handle scroll to show/hide the shadow effect
   useEffect(() => {

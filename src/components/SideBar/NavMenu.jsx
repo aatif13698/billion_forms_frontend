@@ -281,7 +281,7 @@ const NavMenu = ({ isCollapsed }) => {
                                 <Icons icon={item.icon} color="#ffffff" size={18} className="my-icon" />
                             </span>
                             <span
-                                className={`text-white whitespace-nowrap ${width < breakpoints.lg || isCollapsed ? "text-[.6rem]" : ""
+                                className={`text-white whitespace-nowrap ${width < breakpoints.lg || isCollapsed ? "text-[.5rem]" : "text-[.80rem]"
                                     }`}
                             >
                                 {item.title}
