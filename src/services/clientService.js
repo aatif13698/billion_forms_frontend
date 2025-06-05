@@ -255,6 +255,104 @@ const getClients = async (currentPage, rowsPerPage, text) => {
 };
 
 
+const createRole = async (data) => {
+    try {
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/roles/create/role`, { ...data },
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
+        return response;
+    } catch (error) {
+        if (error.response) {
+            return Promise.reject(error.response.data.message);
+        } else if (error.request) {
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+}
+
+
+const updateRole = async (data) => {
+    try {
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/roles/update/role`, { ...data },
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
+        return response;
+    } catch (error) {
+        if (error.response) {
+            return Promise.reject(error.response.data.message);
+        } else if (error.request) {
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+}
+
+
+
+
+const softDeleteRole = async (data) => {
+    try {
+        const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+
+        const response = await axios.delete(
+            `${import.meta.env.VITE_API_URL}/api/superadmin/roles/softdelete/role`,
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+                data: data, // Send payload in `data` property for DELETE
+            }
+        );
+        return response;
+    } catch (error) {
+        if (error.response) {
+            return Promise.reject(error.response.data.error);
+        } else if (error.request) {
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+}
+
+
+const restoreRole = async (data) => {
+    try {
+        const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/roles/restore/role`, { ...data },
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
+        return response;
+    } catch (error) {
+        if (error.response) {
+            return Promise.reject(error.response.data.error);
+        } else if (error.request) {
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+}
+
+
+
+
 
 const getRolesList = async (currentPage, rowsPerPage, text) => {
     const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
@@ -281,6 +379,29 @@ const getRolesList = async (currentPage, rowsPerPage, text) => {
         }
     }
 };
+
+
+const activeInactiveRole = async (data) => {
+    try {
+        const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/roles/activeinactive/role`, { ...data },
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
+        return response;
+    } catch (error) {
+        if (error.response) {
+            return Promise.reject(error.response.data.message);
+        } else if (error.request) {
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+}
 
 
 
@@ -598,7 +719,11 @@ export default {
     softDeleteStaff,
     restoreStaff,
 
-
-    getRolesList
+    createRole,
+    updateRole,
+    getRolesList,
+    softDeleteRole,
+    activeInactiveRole,
+    restoreRole
 
 }

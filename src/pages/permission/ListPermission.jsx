@@ -12,6 +12,7 @@ import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css'; // Optional: default CSS styling
 import useWidth from '../../Hooks/useWidth';
 import { RxCross2 } from 'react-icons/rx';
+import { Swal } from 'sweetalert2/dist/sweetalert2';
 
 
 
@@ -35,21 +36,27 @@ function ListPermission({ noFade }) {
 
 
     const [formData2, setFormData2] = useState({
-        naem: "",
+        name: "",
     });
+    // const [roleId, setRoleId] = useState(null)
+
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [roleId, setRoleId] = useState(null)
+    const [roleId, setRoleId] = useState(null);
+    const [refreshCount, setRefreshCount] = useState(0)
+
+    console.log("isSubmitting", isSubmitting);
+
 
 
 
     const [showSessionModal, setShowSessionModal] = useState(false);
     const handleCloseSessionModal = () => {
         setShowSessionModal(false);
-        setSessionId(null);
         setFormData2({
             name: "",
         });
+        setRoleId(null)
         setErrors({})
     };
 
@@ -117,7 +124,7 @@ function ListPermission({ noFade }) {
                     >
                         <button
                             className='bg-hambergerLight dark:bg-hambergerDark p-2 rounded-md'
-                            onClick={() => handleView(row?._id)}
+                            onClick={() => handleView(row)}
                         >
                             <FaRegEdit />
                         </button>
@@ -164,17 +171,18 @@ function ListPermission({ noFade }) {
         }
     }
 
-    async function handleView(id) {
+    async function handleView(row) {
         try {
-            setShowLoadingModal(true)
-            const response = await clientService.getParticularClient(id);
-            setShowLoadingModal(false);
-            setTimeout(() => {
-                navigate("/create/clients", { state: { client: response?.data?.data?.data } })
-            }, 600);
+            setFormData2((prev) => {
+                return {
+                    ...prev, name: row?.name
+                }
+            });
+            setRoleId(row?._id)
+            setShowSessionModal(true);
         } catch (error) {
             setShowLoadingModal(false)
-            console.log("error while getting client data", error);
+            console.log("error while getting the role", error);
         }
     }
 
@@ -182,18 +190,18 @@ function ListPermission({ noFade }) {
     async function handleDelete(currentPage, rowsPerPage, text, id) {
         try {
             const dataObject = {
-                clientId: id,
+                roleId: id,
                 keyword: text,
                 page: currentPage,
                 perPage: rowsPerPage
             }
             setShowLoadingModal(true)
-            const response = await clientService.softDeleteClient(dataObject);
+            const response = await clientService.softDeleteRole(dataObject);
             setUpdatedData(response.data?.data?.data)
             setShowLoadingModal(false);
         } catch (error) {
             setShowLoadingModal(false)
-            console.log("error while getting company data", error);
+            console.log("error while getting role data", error);
         }
     }
 
@@ -201,18 +209,18 @@ function ListPermission({ noFade }) {
     async function handleRestore(currentPage, rowsPerPage, text, id) {
         try {
             const dataObject = {
-                clientId: id,
+                roleId: id,
                 keyword: text,
                 page: currentPage,
                 perPage: rowsPerPage
             }
             setShowLoadingModal(true)
-            const response = await clientService.restoreClient(dataObject);
+            const response = await clientService.restoreRole(dataObject);
             setUpdatedData(response.data?.data?.data)
             setShowLoadingModal(false);
         } catch (error) {
             setShowLoadingModal(false)
-            console.log("error while getting client data", error);
+            console.log("error while getting role data", error);
         }
     }
 
@@ -221,30 +229,94 @@ function ListPermission({ noFade }) {
         try {
             const dataObject = {
                 status: status ? "0" : "1",
-                clientId: id,
+                roleId: id,
                 keyword: text,
                 page: currentPage,
                 perPage: rowsPerPage
             }
             setShowLoadingModal(true)
-            const response = await clientService.activeInactive(dataObject);
-
+            const response = await clientService.activeInactiveRole(dataObject);
             setUpdatedData(response.data?.data?.data)
             setShowLoadingModal(false)
-
-
         } catch (error) {
             setShowLoadingModal(false)
-
             console.log("error while active inactive status", error);
         }
     }
 
     function buttonAction() {
         // navigate("/create/clients")
-
         setShowSessionModal(true)
     }
+
+
+
+    const validateForm = () => {
+        const newErrors = {};
+        if (!formData2.name.trim()) {
+            newErrors.name = "Name is required";
+        }
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+
+    const handleSubmit = async (e) => {
+        console.log("yes");
+
+        e.preventDefault();
+        if (!validateForm()) return;
+        setIsSubmitting(true);
+        try {
+            const dataObject = {
+                name: formData2?.name
+            }
+            let response;
+            if (roleId) {
+                response = await clientService.updateRole({ ...dataObject, roleId: roleId });
+            } else {
+                response = await clientService.createRole(dataObject);
+            }
+            setFormData2({ name: "" });
+            setErrors({});
+            setIsSubmitting(false);
+            handleCloseSessionModal();
+            setRefreshCount((prev) => prev + 1);
+
+            setTimeout(() => {
+                Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: response?.data?.message,
+                    showConfirmButton: false,
+                    timer: 2000,
+                    toast: true,
+                    customClass: {
+                        popup: 'my-toast-size'
+                    }
+                });
+            }, 600);
+        } catch (error) {
+            setIsSubmitting(false);
+            console.error("Error submitting role:", error);
+            const errorMessage = error || "An error occurred. Please try again." 
+            setErrors({ general: errorMessage });
+
+        }
+    };
+
+
+    useEffect(() => {
+        async function getRoles(currentPage, rowsPerPage, text) {
+            try {
+                const response = await clientService.getRolesList(currentPage, rowsPerPage, text);
+                setUpdatedData(response.data?.data?.data)
+            } catch (error) {
+                console.log("error while getting the role list");
+            }
+        }
+        getRoles(currentPage, rowsPerPage, text)
+    }, [refreshCount])
 
 
     return (
@@ -398,7 +470,7 @@ function ListPermission({ noFade }) {
                                             )}
                                             <div className="flex justify-end mt-6">
                                                 <button
-                                                    // onClick={handleSubmit}
+                                                    onClick={handleSubmit}
                                                     disabled={isSubmitting}
                                                     className="w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out 
                             bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light 
