@@ -13,6 +13,8 @@ import 'tippy.js/dist/tippy.css'; // Optional: default CSS styling
 import useWidth from '../../Hooks/useWidth';
 import { RxCross2 } from 'react-icons/rx';
 import { Swal } from 'sweetalert2/dist/sweetalert2';
+import { MdOutlineAssignmentTurnedIn } from "react-icons/md";
+
 
 
 
@@ -129,6 +131,18 @@ function ListPermission({ noFade }) {
                             <FaRegEdit />
                         </button>
                     </Tippy>
+                    <Tippy
+                        content={"Assign"}
+                        placement="top"
+                        theme="custom"
+                    >
+                        <button
+                            className='bg-hambergerLight dark:bg-hambergerDark p-2 rounded-md'
+                            onClick={() => navigate("/assign/permissions", {state: {id : row?._id, name : row?.name}})}
+                        >
+                            <MdOutlineAssignmentTurnedIn />
+                        </button>
+                    </Tippy>
                     {
                         row?.deletedAt ?
                             <Tippy
@@ -172,6 +186,22 @@ function ListPermission({ noFade }) {
     }
 
     async function handleView(row) {
+        try {
+            setFormData2((prev) => {
+                return {
+                    ...prev, name: row?.name
+                }
+            });
+            setRoleId(row?._id)
+            setShowSessionModal(true);
+        } catch (error) {
+            setShowLoadingModal(false)
+            console.log("error while getting the role", error);
+        }
+    }
+
+
+     async function assignPermission(row) {
         try {
             setFormData2((prev) => {
                 return {

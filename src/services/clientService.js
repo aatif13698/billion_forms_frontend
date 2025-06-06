@@ -404,6 +404,56 @@ const activeInactiveRole = async (data) => {
 }
 
 
+const getParticularRolesAndPermissionList = async (roleId) => {
+    const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+    try {
+        const response = await axios.get(
+            `${import.meta.env.VITE_API_URL}/api/superadmin/roles/permission/${roleId}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            // The request was made, but the server responded with a status code
+            return Promise.reject(error.response.data.message);
+        } else if (error.request) {
+            // The request was made but no response was received
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+};
+
+
+
+const submitRolesAndPermission = async (data) => {
+    try {
+        const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/roles/update/permissions`, { ...data },
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
+        return response;
+    } catch (error) {
+        if (error.response) {
+            return Promise.reject(error.response.data.error);
+        } else if (error.request) {
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+}
+
 
 const getUser = async (currentPage, rowsPerPage, text, companyId) => {
     const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
@@ -724,6 +774,8 @@ export default {
     getRolesList,
     softDeleteRole,
     activeInactiveRole,
-    restoreRole
+    restoreRole,
+    getParticularRolesAndPermissionList,
+    submitRolesAndPermission
 
 }

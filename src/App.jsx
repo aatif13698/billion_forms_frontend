@@ -36,6 +36,7 @@ const ListStaff = lazy(() => import("../src/pages/staff/ListStaff"));
 const CreateStaff = lazy(() => import("../src/pages/staff/CreateStaff"));
 const EditFormByAdmin = lazy(() => import("../src/pages/customField/EditFormByAdmin"));
 const ListPermission = lazy(() =>  import("../src/pages/permission/ListPermission"));
+const AssignPermission = lazy(() => import("../src/pages/permission/AssignPermission"))
 
 import PublicRoute from "./routes/PublicRoute";
 import PrivateRoute from "./routes/PrivateRoute";
@@ -98,6 +99,7 @@ export default function App() {
             <Route path="/" element={<Layout />}>
               <Route path="home1" element={<Home />} />
               <Route path="list/permissions" element={<ListPermission />} />
+              <Route path="assign/permissions" element={<AssignPermission />} />
 
               <Route path="createCustomField" element={<CreateCustomField />} />
               <Route path="create/companies" element={<CreateCompany />} />

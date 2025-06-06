@@ -266,7 +266,7 @@ const NavMenu = ({ isCollapsed }) => {
                                     "/list/subscription": ["/list/subscription", "/create/subscription"],
                                     "/list/topup": ["/list/topup", "/create/topup"],
                                     "/list/subscribed": ["/list/subscribed", "/create/subscribed", "/view/subscribed"],
-                                    "/list/roles & permissions": ["/list/roles & permissions", "/create/roles & permissions"],
+                                    "/list/rolesPermissions": ["/list/rolesPermissions", "/assign/permissions"],
                                 };
                                 const activeRoutes = additionalActiveRoutes[item.link] || [item.link];
                                 const isItemActive = activeRoutes.some((route) => currentPath.startsWith(route));
