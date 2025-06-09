@@ -40,8 +40,10 @@ function CreateStaff() {
                 firstName: client?.firstName,
                 lastName: client?.lastName,
                 email: client?.email,
-                phone: client?.phone
-            }))
+                phone: client?.phone,
+                roleId: client?.role?._id,
+                roleName: client?.role?.name
+            }));
         }
     }, [client])
 
@@ -263,7 +265,7 @@ function CreateStaff() {
                 <div className="h-[1.8px] bg-black dark:bg-white mb-4"></div>
                 <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">Admin Email</label>
+                        <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">Job Role</label>
                         <Select
                             options={jobRole}
                             className="basic-multi-select bg-transparent"

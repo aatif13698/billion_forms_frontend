@@ -251,7 +251,7 @@ const NavMenu = ({ isCollapsed }) => {
                                 const additionalActiveRoutes = {
                                     "/list/clients": ["/list/clients", "/create/clients"],
                                     "/list/user": ["/list/user", "/edit/user", "/view/user", "/create/user"],
-                                    "/list/staffs": ["/list/staffs", "/create/staffs"],
+                                    "/list/staff": ["/list/staff", "/create/staffs", "/create/staffs"],
                                     "/list/organization": [
                                         "/list/organization",
                                         "/create/organization",
@@ -266,7 +266,7 @@ const NavMenu = ({ isCollapsed }) => {
                                     "/list/subscription": ["/list/subscription", "/create/subscription"],
                                     "/list/topup": ["/list/topup", "/create/topup"],
                                     "/list/subscribed": ["/list/subscribed", "/create/subscribed", "/view/subscribed"],
-                                    "/list/rolesPermissions": ["/list/rolesPermissions", "/assign/permissions"],
+                                    "/list/permissions": ["/list/permissions", "/assign/permissions"],
                                 };
                                 const activeRoutes = additionalActiveRoutes[item.link] || [item.link];
                                 const isItemActive = activeRoutes.some((route) => currentPath.startsWith(route));
