@@ -109,7 +109,7 @@ export default function App() {
               <Route path="create/user" element={<CreateUser />} />
               <Route path="list/user" element={<UserList />} />
               <Route path="create/staffs" element={<CreateStaff />} />
-              <Route path="list/staffs" element={<ListStaff />} />
+              <Route path="list/staff" element={<ListStaff />} />
               <Route path="assign/user" element={<AssignUser />} />
               <Route path="list/subscription" element={<ListSubscriptionPlan />} />
               <Route path="create/subscription" element={<CreateSubscriptionPlan />} />

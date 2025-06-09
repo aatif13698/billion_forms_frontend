@@ -48,6 +48,16 @@ function ListStaff({ noFade }) {
                 )
             }
         },
+         {
+            key: 'Role', header: 'Role', width: '200px',
+            render: (value, row) => {
+                return (
+                    <span className={`whitespace-nowrap  text-black dark:text-white  rounded-md`} >
+                        {row?.role?.name}
+                    </span>
+                )
+            }
+        },
         {
             header: 'Name', width: '200px',
             render: (value, row) => {

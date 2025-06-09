@@ -8,23 +8,30 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2/dist/sweetalert2.js'
 import 'sweetalert2/src/sweetalert2.scss'
 import "../../App.css"
+import Select from 'react-select';
+import a from "../../helper/common";
+import rolesService from "../../services/rolesService";
 
 
 function CreateStaff() {
     const location = useLocation();
     const client = location?.state?.client
-
     const navigate = useNavigate()
-
 
     const [formData, setFormData] = useState({
         firstName: "",
         lastName: "",
         email: "",
         phone: "",
+        roleId: "",
+        roleName: "",
         password: "",
         confirmPassword: ""
     });
+
+    console.log("formData",formData);
+
+    const [jobRole, setJobRole] = useState([])
 
     useEffect(() => {
         if (client) {
@@ -59,6 +66,23 @@ function CreateStaff() {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
         let newErrors = { ...errors };
+
+         if (name === "firstName") {
+            if (!value.trim()) {
+                newErrors.firstName = "First Name is required";
+            }  else {
+                delete newErrors.firstName;
+            }
+        }
+
+         if (name === "lastName") {
+            if (!value.trim()) {
+                newErrors.lastName = "Last Name is required";
+            }  else {
+                delete newErrors.lastName;
+            }
+        }
+
         if (name === "email") {
             if (!value.trim()) {
                 newErrors.email = "Email is required";
@@ -105,6 +129,7 @@ function CreateStaff() {
 
     const validateForm = () => {
         let newErrors = {};
+        if (!formData.roleId.trim()) newErrors.roleId = "Role is required";
         if (!formData.firstName.trim()) newErrors.firstName = "First name is required";
         if (!formData.lastName.trim()) newErrors.lastName = "Last name is required";
         if (!formData.email.trim()) {
@@ -160,41 +185,31 @@ function CreateStaff() {
         if (!validateForm()) return;
         setIsSubmitting(true);
         try {
-
             const dataObject = {
                 firstName: formData?.firstName,
                 lastName: formData?.lastName,
                 email: formData?.email,
                 phone: formData?.phone,
+                roleId: formData?.roleId,
                 password: formData?.password
             }
-
             let response;
-
             if (client) {
-
                 response = await clientService.updateStaff({ ...dataObject, clientId: client?._id });
-
             } else {
-
                 response = await clientService.createStaff(dataObject);
-
             }
-
-            console.log("Response staff", response?.data?.message);
-            
-
-
             setFormData({
                 firstName: "",
                 lastName: "",
                 email: "",
                 phone: "",
+                roleId:"",
+                roleName: "",
                 password: "",
                 confirmPassword: ""
             });
             setErrors({});
-
             Swal.fire({
                 position: "top-end",
                 icon: "success",
@@ -206,9 +221,7 @@ function CreateStaff() {
                     popup: 'my-toast-size'
                 }
             });
-
-            navigate("/list/staffs")
-
+            navigate("/list/staff")
         } catch (error) {
             console.log("Error creating user:", error);
             const errorMessage = error || 'An error occurred while creating user';
@@ -219,6 +232,29 @@ function CreateStaff() {
         }
     };
 
+
+    const handleSelectChange = (selectedOptions) => {
+        console.log("selectedOptions", selectedOptions);
+        setFormData({ ...formData, ["roleId"]: selectedOptions?.value, ["roleName"] : selectedOptions?.label  });
+        setErrors((prev) => ({ ...prev, roleId: "" }))
+    };
+
+
+    useEffect(() => {
+        async function getJobRoles() {
+            try {
+                const response = await rolesService.getActiveRoles();
+                console.log("response active role", response?.data?.data?.data);
+                const data =  response?.data?.data?.data?.length > 0 ? response?.data?.data?.data?.map(type => ({ value: type?._id, label: type?.name })) : []
+                setJobRole(data)
+            } catch (error) {
+                console.log("error while getting the job role", error);
+            }
+        }
+
+        getJobRoles()
+    },[]);
+
     return (
         <div className="flex flex-col md:mx-4  mx-2     mt-3 min-h-screen bg-light dark:bg-dark">
             <Hamberger text={`${client ? "Staff / Update" : "Staff / Add New"}`} />
@@ -226,6 +262,20 @@ function CreateStaff() {
                 <h2 className="md:text-2xl text-1xl font-semibold text-formHeadingLight dark:text-formHeadingDark md:mb-4 mb-2 text-start">{`${client ? "Update Staff" : "Create Staff"}`}</h2>
                 <div className="h-[1.8px] bg-black dark:bg-white mb-4"></div>
                 <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">Admin Email</label>
+                        <Select
+                            options={jobRole}
+                            className="basic-multi-select bg-transparent"
+                            classNamePrefix="select"
+                            placeholder="Select Role..."
+                            onChange={handleSelectChange}
+                            styles={a.customStyles}
+                            value={{ value: formData?.roleId, label: formData?.roleName }}
+                            // isDisabled={company ? true : false}
+                        />
+                        {errors.roleId && <p className="text-red-500 text-sm mt-1">{errors.roleId}</p>}
+                    </div>
                     <div>
                         <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">First Name</label>
                         <input
