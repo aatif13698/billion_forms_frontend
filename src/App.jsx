@@ -109,6 +109,8 @@ export default function App() {
               <Route path="create/user" element={<CreateUser />} />
               <Route path="list/user" element={<UserList />} />
               <Route path="create/staffs" element={<CreateStaff />} />
+              <Route path="update/staffs" element={<CreateStaff />} />
+              <Route path="view/staffs" element={<CreateStaff />} />
               <Route path="list/staff" element={<ListStaff />} />
               <Route path="assign/user" element={<AssignUser />} />
               <Route path="list/subscription" element={<ListSubscriptionPlan />} />

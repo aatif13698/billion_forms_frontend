@@ -14,6 +14,8 @@ import authSrvice from '../../services/authSrvice';
 import { useSelector } from 'react-redux';
 import { BsDot } from "react-icons/bs";
 import organizationService from '../../services/organizationService';
+import { MdOutlineRemoveRedEye } from "react-icons/md";
+
 
 
 
@@ -123,7 +125,6 @@ function ListStaff({ noFade }) {
             key: 'isActive',
             header: 'Status',
             render: (value, row) => {
-                console.log("row active", row?.isActive);
                 return (
                     <Tippy
                         content={value ? "Click to deactivate" : "Click to activate"}
@@ -149,13 +150,25 @@ function ListStaff({ noFade }) {
             render: (value, row) => (
                 <div className='flex gap-3'>
                     <Tippy
-                        content={"Edit"}
+                        content={"View"}
                         placement="top"
                         theme="custom"
                     >
                         <button
                             className='bg-hambergerLight dark:bg-hambergerDark p-2 rounded-md'
                             onClick={() => handleView(row?._id)}
+                        >
+                            <MdOutlineRemoveRedEye />
+                        </button>
+                    </Tippy>
+                    <Tippy
+                        content={"Edit"}
+                        placement="top"
+                        theme="custom"
+                    >
+                        <button
+                            className='bg-hambergerLight dark:bg-hambergerDark p-2 rounded-md'
+                            onClick={() => handleEdit(row?._id)}
                         >
                             <FaRegEdit />
                         </button>
@@ -218,12 +231,12 @@ function ListStaff({ noFade }) {
 
     async function handleView(id) {
         try {
-            if (permission && permission[0].subMenus?.update?.access) {
+            if (permission && permission[0].subMenus?.view?.access) {
                 setShowLoadingModal(true)
                 const response = await clientService.getParticularStaff(id);
                 setShowLoadingModal(false);
                 setTimeout(() => {
-                    navigate("/create/staffs", { state: { client: response?.data?.data?.data } })
+                    navigate("/view/staffs", { state: { client: response?.data?.data?.data } })
                 }, 600);
             } else {
                 alert("Unauthorize to access this!")
@@ -233,6 +246,26 @@ function ListStaff({ noFade }) {
             console.log("error while getting data", error);
         }
     }
+
+     async function handleEdit(id) {
+        try {
+            if (permission && permission[0].subMenus?.update?.access) {
+                setShowLoadingModal(true)
+                const response = await clientService.getParticularStaff(id);
+                setShowLoadingModal(false);
+                setTimeout(() => {
+                    navigate("/update/staffs", { state: { client: response?.data?.data?.data } })
+                }, 600);
+            } else {
+                alert("Unauthorize to access this!")
+            }
+        } catch (error) {
+            setShowLoadingModal(false)
+            console.log("error while getting data", error);
+        }
+    }
+
+
 
 
     async function handleDelete(currentPage, rowsPerPage, text, id) {

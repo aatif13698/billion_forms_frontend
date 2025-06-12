@@ -19,6 +19,10 @@ function CreateStaff() {
     const client = location?.state?.client
     const navigate = useNavigate();
 
+    console.log("location", location);
+    const pathName = location?.pathname;
+
+
     const { capability } = useSelector((state) => state.capabilitySlice);
     const [permission, setPermission] = useState(null);
 
@@ -257,29 +261,35 @@ function CreateStaff() {
                 console.log("error while getting the job role", error);
             }
         }
-
         getJobRoles()
     }, []);
 
 
     useEffect(() => {
-        if (capability && capability?.length > 0) {
-            const administration = capability?.filter((item) => item?.name == "Administration");
-            const menu = administration[0].menu;
-            const permission = menu?.filter((menu) => menu?.name == "Staff");
-            setPermission(permission);
-            if (!permission[0].subMenus?.update?.access) {
-                alert("Unauthorize to access this!");
-                navigate("/home")
-            }
+        if (!capability || capability.length === 0) return;
+        const administration = capability.find(item => item?.name === "Administration");
+        if (!administration) return;
+        const staffMenu = administration.menu?.find(menu => menu?.name === "Staff");
+        if (!staffMenu) return;
+        setPermission([staffMenu]); 
+        const accessMap = {
+            "/view/staffs": staffMenu.subMenus?.view?.access,
+            "/update/staffs": staffMenu.subMenus?.update?.access,
+            "/create/staffs": staffMenu.subMenus?.create?.access,
+        };
+        const hasAccess = accessMap[pathName];
+        if (hasAccess === false) {
+            alert("Unauthorized to access this!");
+            navigate("/home");
         }
-    }, [capability])
+    }, [capability, pathName, navigate]);
+
 
     return (
         <div className="flex flex-col md:mx-4  mx-2     mt-3 min-h-screen bg-light dark:bg-dark">
             <Hamberger text={`${client ? "Staff / Update" : "Staff / Add New"}`} />
             <div className="w-[100%] mb-20  bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-lg p-6">
-                <h2 className="md:text-2xl text-1xl font-semibold text-formHeadingLight dark:text-formHeadingDark md:mb-4 mb-2 text-start">{`${client ? "Update Staff" : "Create Staff"}`}</h2>
+                <h2 className="md:text-2xl text-1xl font-semibold text-formHeadingLight dark:text-formHeadingDark md:mb-4 mb-2 text-start">{`${pathName == "/view/staffs" ? "View Staff" : client ? "Update Staff" : "Create Staff"}`}</h2>
                 <div className="h-[1.8px] bg-black dark:bg-white mb-4"></div>
                 <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -292,7 +302,7 @@ function CreateStaff() {
                             onChange={handleSelectChange}
                             styles={a.customStyles}
                             value={{ value: formData?.roleId, label: formData?.roleName }}
-                        // isDisabled={company ? true : false}
+                            isDisabled={pathName == "/view/staffs" ? true : false}
                         />
                         {errors.roleId && <p className="text-red-500 text-sm mt-1">{errors.roleId}</p>}
                     </div>
@@ -305,6 +315,7 @@ function CreateStaff() {
                             onChange={handleChange}
                             className="w-[100%]  bg-transparent p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Enter first name"
+                            disabled={pathName == "/view/staffs" ? true : false}
                         />
                         {errors.firstName && <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>}
                     </div>
@@ -317,6 +328,8 @@ function CreateStaff() {
                             onChange={handleChange}
                             className="w-[100%] bg-transparent p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Enter last name"
+                            disabled={pathName == "/view/staffs" ? true : false}
+
                         />
                         {errors.lastName && <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>}
                     </div>
@@ -329,6 +342,8 @@ function CreateStaff() {
                             onChange={handleChange}
                             className="w-[100%]   bg-transparent p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Enter email"
+                            disabled={pathName == "/view/staffs" ? true : false}
+
                         />
                         {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                     </div>
@@ -342,6 +357,8 @@ function CreateStaff() {
                             onInput={common.handleKeyPress}
                             className="w-[100%]  bg-transparent p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Enter phone number (e.g., 123-456-7890)"
+                            disabled={pathName == "/view/staffs" ? true : false}
+
                         />
                         {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
                     </div>
@@ -354,6 +371,8 @@ function CreateStaff() {
                             onChange={handleChange}
                             className="w-[100%]  bg-transparent p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Enter password"
+                            disabled={pathName == "/view/staffs" ? true : false}
+
                         />
                         <button
                             type="button"
@@ -373,6 +392,8 @@ function CreateStaff() {
                             onChange={handleChange}
                             className="w-[100%]  bg-transparent p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Confirm password"
+                            disabled={pathName == "/view/staffs" ? true : false}
+
                         />
                         <button
                             type="button"
@@ -396,45 +417,52 @@ function CreateStaff() {
                 )}
 
 
-                <div className="flex justify-end mt-4">
-                    <button
-                        onClick={handleSubmit}
-                        type="submit"
-                        className="w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out 
+                {
+                    pathName == "/view/staffs" ? ""
+                        :
+                        <div className="flex justify-end mt-4">
+                            <button
+                                onClick={handleSubmit}
+                                type="submit"
+                                className="w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out 
                 bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light 
                  hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark 
                  flex items-center justify-center shadow-lg"
-                        disabled={isSubmitting}
-                    >
-                        {isSubmitting ? (
-                            <>
-                                <svg
-                                    className="animate-spin mr-2 h-5 w-5 text-white"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <circle
-                                        className="opacity-25"
-                                        cx="12"
-                                        cy="12"
-                                        r="10"
-                                        stroke="currentColor"
-                                        strokeWidth="4"
-                                    ></circle>
-                                    <path
-                                        className="opacity-75"
-                                        fill="currentColor"
-                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                    ></path>
-                                </svg>
-                                Submitting...
-                            </>
-                        ) : (
-                            `${client ? "Update Staff" : "Create Staff"}`
-                        )}
-                    </button>
-                </div>
+                                disabled={isSubmitting}
+                            >
+                                {isSubmitting ? (
+                                    <>
+                                        <svg
+                                            className="animate-spin mr-2 h-5 w-5 text-white"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <circle
+                                                className="opacity-25"
+                                                cx="12"
+                                                cy="12"
+                                                r="10"
+                                                stroke="currentColor"
+                                                strokeWidth="4"
+                                            ></circle>
+                                            <path
+                                                className="opacity-75"
+                                                fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                            ></path>
+                                        </svg>
+                                        Submitting...
+                                    </>
+                                ) : (
+                                    `${client ? "Update Staff" : "Create Staff"}`
+                                )}
+                            </button>
+                        </div>
+                }
+
+
+
             </div>
         </div>
     );

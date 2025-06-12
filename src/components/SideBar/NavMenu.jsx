@@ -250,7 +250,7 @@ const NavMenu = ({ isCollapsed }) => {
                                 const additionalActiveRoutes = {
                                     "/list/clients": ["/list/clients", "/create/clients"],
                                     "/list/user": ["/list/user", "/edit/user", "/view/user", "/create/user"],
-                                    "/list/staff": ["/list/staff", "/create/staffs", "/create/staffs"],
+                                    "/list/staff": ["/list/staff", "/view/staffs", "/create/staffs"],
                                     "/list/organization": [
                                         "/list/organization",
                                         "/create/organization",
