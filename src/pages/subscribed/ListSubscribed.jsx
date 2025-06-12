@@ -158,9 +158,12 @@ function ListSubscribed({ noFade }) {
   }
 
   function buttonAction() {
-    navigate("/create/subscribed")
+    if (permission && permission[0].subMenus?.create?.access) {
+      navigate("/create/subscribed")
+    } else {
+      alert("Unauthorize to access this!")
+    }
   }
-
 
 
   useEffect(() => {

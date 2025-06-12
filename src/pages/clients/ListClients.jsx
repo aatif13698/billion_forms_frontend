@@ -11,6 +11,7 @@ import LoadingSpinner from '../../components/Loading/LoadingSpinner';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css'; // Optional: default CSS styling
 import { useSelector } from 'react-redux';
+import { MdOutlineRemoveRedEye } from 'react-icons/md';
 
 
 
@@ -114,13 +115,25 @@ function ListClients({ noFade }) {
             render: (value, row) => (
                 <div className='flex gap-3'>
                     <Tippy
-                        content={"Edit"}
+                        content={"View"}
                         placement="top"
                         theme="custom"
                     >
                         <button
                             className='bg-hambergerLight dark:bg-hambergerDark p-2 rounded-md'
                             onClick={() => handleView(row?._id)}
+                        >
+                            <MdOutlineRemoveRedEye />
+                        </button>
+                    </Tippy>
+                    <Tippy
+                        content={"Edit"}
+                        placement="top"
+                        theme="custom"
+                    >
+                        <button
+                            className='bg-hambergerLight dark:bg-hambergerDark p-2 rounded-md'
+                            onClick={() => handleEdit(row?._id)}
                         >
                             <FaRegEdit />
                         </button>
@@ -169,12 +182,31 @@ function ListClients({ noFade }) {
 
     async function handleView(id) {
         try {
+            if (permission && permission[0].subMenus?.view?.access) {
+                setShowLoadingModal(true)
+                const response = await clientService.getParticularClient(id);
+                setShowLoadingModal(false);
+                setTimeout(() => {
+                    navigate("/view/clients", { state: { client: response?.data?.data?.data } })
+                }, 600);
+            } else {
+                alert("Unauthorize to access this!")
+            }
+        } catch (error) {
+            setShowLoadingModal(false)
+            console.log("error while getting client data", error);
+        }
+    }
+
+
+     async function handleEdit(id) {
+        try {
             if (permission && permission[0].subMenus?.update?.access) {
                 setShowLoadingModal(true)
                 const response = await clientService.getParticularClient(id);
                 setShowLoadingModal(false);
                 setTimeout(() => {
-                    navigate("/create/clients", { state: { client: response?.data?.data?.data } })
+                    navigate("/update/clients", { state: { client: response?.data?.data?.data } })
                 }, 600);
             } else {
                 alert("Unauthorize to access this!")

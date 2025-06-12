@@ -248,9 +248,9 @@ const NavMenu = ({ isCollapsed }) => {
                             className={({ isActive }) => {
                                 const currentPath = location.pathname;
                                 const additionalActiveRoutes = {
-                                    "/list/clients": ["/list/clients", "/create/clients"],
-                                    "/list/user": ["/list/user", "/edit/user", "/view/user", "/create/user"],
-                                    "/list/staff": ["/list/staff", "/view/staffs", "/create/staffs"],
+                                    "/list/clients": ["/list/clients", "/create/clients", "/update/clients", "/view/clients"],
+                                    "/list/user": ["/list/user", "/update/user", "/view/user", "/create/user"],
+                                    "/list/staff": ["/list/staff", "/view/staffs", "/create/staffs", "/view/staffs"],
                                     "/list/organization": [
                                         "/list/organization",
                                         "/create/organization",
@@ -261,8 +261,8 @@ const NavMenu = ({ isCollapsed }) => {
                                         "/list/forms",
                                         "/editformbyadmin",
                                     ],
-                                    "/list/companies": ["/list/companies", "/create/companies"],
-                                    "/list/subscription": ["/list/subscription", "/create/subscription"],
+                                    "/list/companies": ["/list/companies", "/create/companies", "/update/companies", "/view/companies"],
+                                    "/list/subscription": ["/list/subscription", "/create/subscription", "/update/subscription", "/view/subscription"],
                                     "/list/topup": ["/list/topup", "/create/topup"],
                                     "/list/subscribed": ["/list/subscribed", "/create/subscribed", "/view/subscribed"],
                                     "/list/permissions": ["/list/permissions", "/assign/permissions"],

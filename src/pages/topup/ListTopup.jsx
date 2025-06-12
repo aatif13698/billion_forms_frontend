@@ -20,6 +20,7 @@ import "../../App.css"
 import subscriptionService from '../../services/subscriptionService';
 import topupService from '../../services/topupService';
 import { useSelector } from 'react-redux';
+import { MdOutlineRemoveRedEye } from 'react-icons/md';
 
 function ListTopup({ noFade }) {
 
@@ -121,13 +122,25 @@ function ListTopup({ noFade }) {
       render: (value, row) => (
         <div className='flex gap-3'>
           <Tippy
-            content={"Edit"}
+            content={"View"}
             placement="top"
             theme="custom"
           >
             <button
               className='bg-hambergerLight dark:bg-hambergerDark p-2 rounded-md'
               onClick={() => handleView(row?._id)}
+            >
+              <MdOutlineRemoveRedEye />
+            </button>
+          </Tippy>
+          <Tippy
+            content={"Edit"}
+            placement="top"
+            theme="custom"
+          >
+            <button
+              className='bg-hambergerLight dark:bg-hambergerDark p-2 rounded-md'
+              onClick={() => handleEdit(row?._id)}
             >
               <FaRegEdit />
             </button>
@@ -176,12 +189,30 @@ function ListTopup({ noFade }) {
 
   async function handleView(id) {
     try {
+      if (permission && permission[0].subMenus?.view?.access) {
+        setShowLoadingModal(true)
+        const response = await topupService.getParticularTopup(id);
+        setShowLoadingModal(false);
+        setTimeout(() => {
+          navigate("/view/topup", { state: { company: response?.data?.data?.data } })
+        }, 600);
+      } else {
+        alert("Unauthorize to access this!")
+      }
+    } catch (error) {
+      setShowLoadingModal(false)
+      console.log("error while getting topup data", error);
+    }
+  }
+
+  async function handleEdit(id) {
+    try {
       if (permission && permission[0].subMenus?.update?.access) {
         setShowLoadingModal(true)
         const response = await topupService.getParticularTopup(id);
         setShowLoadingModal(false);
         setTimeout(() => {
-          navigate("/create/topup", { state: { company: response?.data?.data?.data } })
+          navigate("/update/topup", { state: { company: response?.data?.data?.data } })
         }, 600);
       } else {
         alert("Unauthorize to access this!")

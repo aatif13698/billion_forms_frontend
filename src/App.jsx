@@ -36,7 +36,9 @@ const ListStaff = lazy(() => import("../src/pages/staff/ListStaff"));
 const CreateStaff = lazy(() => import("../src/pages/staff/CreateStaff"));
 const EditFormByAdmin = lazy(() => import("../src/pages/customField/EditFormByAdmin"));
 const ListPermission = lazy(() =>  import("../src/pages/permission/ListPermission"));
-const AssignPermission = lazy(() => import("../src/pages/permission/AssignPermission"))
+const AssignPermission = lazy(() => import("../src/pages/permission/AssignPermission"));
+
+const LandingPage = lazy(() => import("../src/pages/landingPage/LandingPage"))
 
 import PublicRoute from "./routes/PublicRoute";
 import PrivateRoute from "./routes/PrivateRoute";
@@ -90,7 +92,7 @@ export default function App() {
           <Route path="/editform/:formId/:id" element={<EditForm />} />
           <Route path="/passwordForm/auth/:formId" element={<FormPassword />} />
           <Route element={<PublicRoute isLoggedIn={isLoggedIn} />} >
-            <Route path="/" element={<Login />} />
+            <Route path="/" element={<LandingPage companyIdentifier={companyIdentifier} />} />
             <Route path="/login" element={<Login companyIdentifier={companyIdentifier} />} />
             <Route path="/signup" element={<SignUp />} />
           </Route>
@@ -103,10 +105,16 @@ export default function App() {
 
               <Route path="createCustomField" element={<CreateCustomField />} />
               <Route path="create/companies" element={<CreateCompany />} />
+              <Route path="update/companies" element={<CreateCompany />} />
+              <Route path="view/companies" element={<CreateCompany />} />
               <Route path="list/companies" element={<ListCompany />} />
               <Route path="create/clients" element={<CreateClients />} />
+              <Route path="update/clients" element={<CreateClients />} />
+              <Route path="view/clients" element={<CreateClients />} />
               <Route path="list/clients" element={<ListClients />} />
               <Route path="create/user" element={<CreateUser />} />
+              <Route path="update/user" element={<CreateUser />} />
+              <Route path="view/user" element={<CreateUser />} />
               <Route path="list/user" element={<UserList />} />
               <Route path="create/staffs" element={<CreateStaff />} />
               <Route path="update/staffs" element={<CreateStaff />} />
@@ -115,8 +123,12 @@ export default function App() {
               <Route path="assign/user" element={<AssignUser />} />
               <Route path="list/subscription" element={<ListSubscriptionPlan />} />
               <Route path="create/subscription" element={<CreateSubscriptionPlan />} />
+              <Route path="update/subscription" element={<CreateSubscriptionPlan />} />
+              <Route path="view/subscription" element={<CreateSubscriptionPlan />} />
               <Route path="list/topup" element={<ListTopup />} />
               <Route path="create/topup" element={<CreateTopup />} />
+              <Route path="update/topup" element={<CreateTopup />} />
+              <Route path="view/topup" element={<CreateTopup />} />
               <Route path="list/subscribed" element={<ListSubscribed />} />
               <Route path="create/subscribed" element={<CreatedSubscribed />} />
               <Route path="view/subscribed" element={<ViewSubscribed />} />

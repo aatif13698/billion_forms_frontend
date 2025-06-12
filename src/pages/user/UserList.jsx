@@ -14,6 +14,7 @@ import authSrvice from '../../services/authSrvice';
 import { useSelector } from 'react-redux';
 import { BsDot } from "react-icons/bs";
 import organizationService from '../../services/organizationService';
+import { MdOutlineRemoveRedEye } from 'react-icons/md';
 
 
 
@@ -139,13 +140,25 @@ function UserList({ noFade }) {
             render: (value, row) => (
                 <div className='flex gap-3'>
                     <Tippy
-                        content={"Edit"}
+                        content={"View"}
                         placement="top"
                         theme="custom"
                     >
                         <button
                             className='bg-hambergerLight dark:bg-hambergerDark p-2 rounded-md'
                             onClick={() => handleView(row?._id)}
+                        >
+                            <MdOutlineRemoveRedEye />
+                        </button>
+                    </Tippy>
+                    <Tippy
+                        content={"Edit"}
+                        placement="top"
+                        theme="custom"
+                    >
+                        <button
+                            className='bg-hambergerLight dark:bg-hambergerDark p-2 rounded-md'
+                            onClick={() => handleEdit(row?._id)}
                         >
                             <FaRegEdit />
                         </button>
@@ -208,12 +221,30 @@ function UserList({ noFade }) {
 
     async function handleView(id) {
         try {
+            if (permission && permission[0].subMenus?.view?.access) {
+                setShowLoadingModal(true)
+                const response = await clientService.getParticularClient(id);
+                setShowLoadingModal(false);
+                setTimeout(() => {
+                    navigate("/view/user", { state: { client: response?.data?.data?.data } })
+                }, 600);
+            } else {
+                alert("Unauthorize to access this!")
+            }
+        } catch (error) {
+            setShowLoadingModal(false)
+            console.log("error while getting user data", error);
+        }
+    }
+
+      async function handleEdit(id) {
+        try {
             if (permission && permission[0].subMenus?.update?.access) {
                 setShowLoadingModal(true)
                 const response = await clientService.getParticularClient(id);
                 setShowLoadingModal(false);
                 setTimeout(() => {
-                    navigate("/create/user", { state: { client: response?.data?.data?.data } })
+                    navigate("/update/user", { state: { client: response?.data?.data?.data } })
                 }, 600);
             } else {
                 alert("Unauthorize to access this!")
@@ -299,7 +330,11 @@ function UserList({ noFade }) {
     }
 
     function buttonAction() {
-        navigate("/create/user")
+        if (permission && permission[0].subMenus?.create?.access) {
+             navigate("/create/user")
+        } else {
+            alert("Unauthorize to access this!")
+        }
     }
 
 
