@@ -8,13 +8,18 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2/dist/sweetalert2.js'
 import 'sweetalert2/src/sweetalert2.scss'
 import "../../App.css"
+import { useSelector } from "react-redux";
 
 
 function CreateUser() {
     const location = useLocation();
     const client = location?.state?.client
 
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+
+    const { capability } = useSelector((state) => state.capabilitySlice);
+    const [permission, setPermission] = useState(null);
+
 
 
     const [formData, setFormData] = useState({
@@ -215,6 +220,19 @@ function CreateUser() {
             setIsSubmitting(false);
         }
     };
+
+    useEffect(() => {
+        if (capability && capability?.length > 0) {
+            const administration = capability?.filter((item) => item?.name == "Administration");
+            const menu = administration[0].menu;
+            const permission = menu?.filter((menu) => menu?.name == "User");
+            setPermission(permission);
+            if (!permission[0].subMenus?.update?.access) {
+                alert("Unauthorize to access this!");
+                navigate("/home")
+            }
+        }
+    }, [capability])
 
     return (
         <div className="flex flex-col md:mx-4  mx-2     mt-3 min-h-screen bg-light dark:bg-dark">

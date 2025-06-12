@@ -5,10 +5,14 @@ import common from "../../helper/common";
 import clientService from "../../services/clientService";
 import Hamberger from "../../components/Hamberger/Hamberger";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 function CreateClients() {
     const location = useLocation();
-    const client = location?.state?.client
+    const client = location?.state?.client;
+
+    const { capability } = useSelector((state) => state.capabilitySlice);
+    const [permission, setPermission] = useState(null);
 
     const navigate = useNavigate()
 
@@ -39,8 +43,8 @@ function CreateClients() {
     const [responseError, setResponseError] = useState([])
 
     const [errors, setErrors] = useState({});
-    console.log("errors",errors);
-    
+    console.log("errors", errors);
+
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -122,7 +126,7 @@ function CreateClients() {
 
         if (!client) {
             console.log("Aadsfdfdsfa");
-            
+
             if (!formData.password.trim()) {
                 newErrors.password = "Password is required";
             } else if (!passwordRegex.test(formData.password)) {
@@ -130,9 +134,9 @@ function CreateClients() {
             }
         } else {
             console.log("Aaa", errors?.password);
-            
+
             if (errors?.password) {
-            console.log("Bbb", errors?.password);
+                console.log("Bbb", errors?.password);
 
                 if (!formData.password.trim()) {
                     newErrors.password = "Password is required";
@@ -197,6 +201,20 @@ function CreateClients() {
             setIsSubmitting(false);
         }
     };
+
+
+    useEffect(() => {
+        if (capability && capability?.length > 0) {
+            const administration = capability?.filter((item) => item?.name == "Administration");
+            const menu = administration[0].menu;
+            const permission = menu?.filter((menu) => menu?.name == "Clients");
+            setPermission(permission);
+            if (!permission[0].subMenus?.update?.access) {
+                alert("Unauthorize to access this!");
+                navigate("/home")
+            }
+        }
+    }, [capability])
 
     return (
         <div className="flex flex-col md:mx-4  mx-2     mt-3 min-h-screen bg-light dark:bg-dark">

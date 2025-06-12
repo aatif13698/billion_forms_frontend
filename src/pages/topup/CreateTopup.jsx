@@ -11,12 +11,18 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Country, State, City } from "country-state-city";
 import subscriptionService from "../../services/subscriptionService";
 import topupService from "../../services/topupService";
+import { useSelector } from "react-redux";
 
 
 function CreateTopup() {
     const location = useLocation();
     const company = location?.state?.company
     const navigate = useNavigate();
+
+    const { capability } = useSelector((state) => state.capabilitySlice);
+    const [permission, setPermission] = useState(null);
+
+
     // states
     const [errors, setErrors] = useState({});
     const [responseError, setResponseError] = useState([])
@@ -253,6 +259,21 @@ function CreateTopup() {
             setIsSubmitting(false);
         }
     };
+
+
+
+    useEffect(() => {
+        if (capability && capability?.length > 0) {
+            const administration = capability?.filter((item) => item?.name == "Administration");
+            const menu = administration[0].menu;
+            const permission = menu?.filter((menu) => menu?.name == "Topup");
+            setPermission(permission);
+            if (!permission[0].subMenus?.update?.access) {
+                alert("Unauthorize to access this!");
+                navigate("/home")
+            }
+        }
+    }, [capability])
 
 
 

@@ -14,6 +14,7 @@ import useWidth from '../../Hooks/useWidth';
 import { RxCross2 } from 'react-icons/rx';
 import { Swal } from 'sweetalert2/dist/sweetalert2';
 import { MdOutlineAssignmentTurnedIn } from "react-icons/md";
+import { useSelector } from 'react-redux';
 
 
 
@@ -21,9 +22,9 @@ import { MdOutlineAssignmentTurnedIn } from "react-icons/md";
 
 function ListPermission({ noFade }) {
 
+    const { capability } = useSelector((state) => state.capabilitySlice);
+    const [permission, setPermission] = useState(null)
     const { width, breakpoints } = useWidth();
-
-
     const [showLoadingModal, setShowLoadingModal] = useState(false);
     const handleCloseLoadingModal = () => {
         setShowLoadingModal(false);
@@ -34,9 +35,6 @@ function ListPermission({ noFade }) {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [text, setText] = useState("");
     const [updatedData, setUpdatedData] = useState([]);
-
-
-
     const [formData2, setFormData2] = useState({
         name: "",
     });
@@ -138,7 +136,13 @@ function ListPermission({ noFade }) {
                     >
                         <button
                             className='bg-hambergerLight dark:bg-hambergerDark p-2 rounded-md'
-                            onClick={() => navigate("/assign/permissions", {state: {id : row?._id, name : row?.name}})}
+                            onClick={() => {
+                                if (permission && permission[0].subMenus?.update?.access) {
+                                    navigate("/assign/permissions", { state: { id: row?._id, name: row?.name } })
+                                } else {
+                                    alert("Unthorize to access this!")
+                                }
+                            }}
                         >
                             <MdOutlineAssignmentTurnedIn />
                         </button>
@@ -187,13 +191,17 @@ function ListPermission({ noFade }) {
 
     async function handleView(row) {
         try {
-            setFormData2((prev) => {
-                return {
-                    ...prev, name: row?.name
-                }
-            });
-            setRoleId(row?._id)
-            setShowSessionModal(true);
+            if (permission && permission[0].subMenus?.update?.access) {
+                setFormData2((prev) => {
+                    return {
+                        ...prev, name: row?.name
+                    }
+                });
+                setRoleId(row?._id)
+                setShowSessionModal(true);
+            } else {
+                alert("Unauthorize to access this!")
+            }
         } catch (error) {
             setShowLoadingModal(false)
             console.log("error while getting the role", error);
@@ -201,7 +209,7 @@ function ListPermission({ noFade }) {
     }
 
 
-     async function assignPermission(row) {
+    async function assignPermission(row) {
         try {
             setFormData2((prev) => {
                 return {
@@ -219,16 +227,22 @@ function ListPermission({ noFade }) {
 
     async function handleDelete(currentPage, rowsPerPage, text, id) {
         try {
-            const dataObject = {
-                roleId: id,
-                keyword: text,
-                page: currentPage,
-                perPage: rowsPerPage
+
+            if (permission && permission[0].subMenus?.softDelete?.access) {
+                const dataObject = {
+                    roleId: id,
+                    keyword: text,
+                    page: currentPage,
+                    perPage: rowsPerPage
+                }
+                setShowLoadingModal(true)
+                const response = await clientService.softDeleteRole(dataObject);
+                setUpdatedData(response.data?.data?.data)
+                setShowLoadingModal(false);
+            } else {
+                alert("Unauthorize to access this!")
             }
-            setShowLoadingModal(true)
-            const response = await clientService.softDeleteRole(dataObject);
-            setUpdatedData(response.data?.data?.data)
-            setShowLoadingModal(false);
+
         } catch (error) {
             setShowLoadingModal(false)
             console.log("error while getting role data", error);
@@ -238,16 +252,20 @@ function ListPermission({ noFade }) {
 
     async function handleRestore(currentPage, rowsPerPage, text, id) {
         try {
-            const dataObject = {
-                roleId: id,
-                keyword: text,
-                page: currentPage,
-                perPage: rowsPerPage
+            if (permission && permission[0].subMenus?.update?.access) {
+                const dataObject = {
+                    roleId: id,
+                    keyword: text,
+                    page: currentPage,
+                    perPage: rowsPerPage
+                }
+                setShowLoadingModal(true)
+                const response = await clientService.restoreRole(dataObject);
+                setUpdatedData(response.data?.data?.data)
+                setShowLoadingModal(false);
+            } else {
+                alert("Unauthorize to access this!")
             }
-            setShowLoadingModal(true)
-            const response = await clientService.restoreRole(dataObject);
-            setUpdatedData(response.data?.data?.data)
-            setShowLoadingModal(false);
         } catch (error) {
             setShowLoadingModal(false)
             console.log("error while getting role data", error);
@@ -257,17 +275,21 @@ function ListPermission({ noFade }) {
 
     async function handleActiveInactive(currentPage, rowsPerPage, text, status, id) {
         try {
-            const dataObject = {
-                status: status ? "0" : "1",
-                roleId: id,
-                keyword: text,
-                page: currentPage,
-                perPage: rowsPerPage
+            if (permission && permission[0].subMenus?.update?.access) {
+                const dataObject = {
+                    status: status ? "0" : "1",
+                    roleId: id,
+                    keyword: text,
+                    page: currentPage,
+                    perPage: rowsPerPage
+                }
+                setShowLoadingModal(true)
+                const response = await clientService.activeInactiveRole(dataObject);
+                setUpdatedData(response.data?.data?.data)
+                setShowLoadingModal(false)
+            } else {
+                alert("Unauthorize to access this!")
             }
-            setShowLoadingModal(true)
-            const response = await clientService.activeInactiveRole(dataObject);
-            setUpdatedData(response.data?.data?.data)
-            setShowLoadingModal(false)
         } catch (error) {
             setShowLoadingModal(false)
             console.log("error while active inactive status", error);
@@ -276,7 +298,12 @@ function ListPermission({ noFade }) {
 
     function buttonAction() {
         // navigate("/create/clients")
-        setShowSessionModal(true)
+
+        if (permission && permission[0].subMenus?.create?.access) {
+            setShowSessionModal(true)
+        } else {
+            alert("Unauthorize to access this!")
+        }
     }
 
 
@@ -329,7 +356,7 @@ function ListPermission({ noFade }) {
         } catch (error) {
             setIsSubmitting(false);
             console.error("Error submitting role:", error);
-            const errorMessage = error || "An error occurred. Please try again." 
+            const errorMessage = error || "An error occurred. Please try again."
             setErrors({ general: errorMessage });
 
         }
@@ -346,7 +373,22 @@ function ListPermission({ noFade }) {
             }
         }
         getRoles(currentPage, rowsPerPage, text)
-    }, [refreshCount])
+    }, [refreshCount]);
+
+
+
+    useEffect(() => {
+        if (capability && capability?.length > 0) {
+            const administration = capability?.filter((item) => item?.name == "Administration");
+            const menu = administration[0].menu;
+            const permission = menu?.filter((menu) => menu?.name == "Roles & Permissions");
+            setPermission(permission);
+            if (!permission[0].subMenus?.view?.access) {
+                alert("Unauthorize to access this!");
+                navigate("/home")
+            }
+        }
+    }, [capability])
 
 
     return (

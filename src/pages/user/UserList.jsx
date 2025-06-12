@@ -22,6 +22,8 @@ import organizationService from '../../services/organizationService';
 function UserList({ noFade }) {
 
     const { clientUser: currentUser } = useSelector((state) => state.authCustomerSlice);
+    const { capability } = useSelector((state) => state.capabilitySlice);
+    const [permission, setPermission] = useState(null);
 
     const [showLoadingModal, setShowLoadingModal] = useState(false);
     const handleCloseLoadingModal = () => {
@@ -169,7 +171,7 @@ function UserList({ noFade }) {
                                 theme="custom"
                             >
                                 <button
-                                    // onClick={() => handleDelete(currentPage, rowsPerPage, text, row?._id)}
+                                    onClick={() => handleDelete(currentPage, rowsPerPage, text, row?._id)}
                                     className='bg-red-100 dark:bg-red-900 p-2 rounded-md'
                                 >
                                     <FaTrashAlt />
@@ -206,12 +208,16 @@ function UserList({ noFade }) {
 
     async function handleView(id) {
         try {
-            setShowLoadingModal(true)
-            const response = await clientService.getParticularClient(id);
-            setShowLoadingModal(false);
-            setTimeout(() => {
-                navigate("/create/user", { state: { client: response?.data?.data?.data } })
-            }, 600);
+            if (permission && permission[0].subMenus?.update?.access) {
+                setShowLoadingModal(true)
+                const response = await clientService.getParticularClient(id);
+                setShowLoadingModal(false);
+                setTimeout(() => {
+                    navigate("/create/user", { state: { client: response?.data?.data?.data } })
+                }, 600);
+            } else {
+                alert("Unauthorize to access this!")
+            }
         } catch (error) {
             setShowLoadingModal(false)
             console.log("error while getting user data", error);
@@ -221,16 +227,21 @@ function UserList({ noFade }) {
 
     async function handleDelete(currentPage, rowsPerPage, text, id) {
         try {
-            const dataObject = {
-                clientId: id,
-                keyword: text,
-                page: currentPage,
-                perPage: rowsPerPage
+            if (permission && permission[0].subMenus?.softDelete?.access) {
+                const dataObject = {
+                    clientId: id,
+                    keyword: text,
+                    page: currentPage,
+                    perPage: rowsPerPage,
+                    companyId: currentUser?.companyId
+                }
+                setShowLoadingModal(true)
+                const response = await clientService.softDeleteUser(dataObject);
+                setUpdatedData(response.data?.data?.data)
+                setShowLoadingModal(false);
+            } else {
+                alert("Unauthorize to access this!")
             }
-            setShowLoadingModal(true)
-            const response = await clientService.softDeleteClient(dataObject);
-            setUpdatedData(response.data?.data?.data)
-            setShowLoadingModal(false);
         } catch (error) {
             setShowLoadingModal(false)
             console.log("error while getting company data", error);
@@ -240,16 +251,22 @@ function UserList({ noFade }) {
 
     async function handleRestore(currentPage, rowsPerPage, text, id) {
         try {
-            const dataObject = {
-                clientId: id,
-                keyword: text,
-                page: currentPage,
-                perPage: rowsPerPage
+
+            if (permission && permission[0].subMenus?.update?.access) {
+                const dataObject = {
+                    clientId: id,
+                    keyword: text,
+                    page: currentPage,
+                    perPage: rowsPerPage,
+                    companyId: currentUser?.companyId
+                }
+                setShowLoadingModal(true)
+                const response = await clientService.restoreUser(dataObject);
+                setUpdatedData(response.data?.data?.data)
+                setShowLoadingModal(false);
+            } else {
+                alert("Unauthorize to access this!")
             }
-            setShowLoadingModal(true)
-            const response = await clientService.restoreClient(dataObject);
-            setUpdatedData(response.data?.data?.data)
-            setShowLoadingModal(false);
         } catch (error) {
             setShowLoadingModal(false)
             console.log("error while getting client data", error);
@@ -259,18 +276,22 @@ function UserList({ noFade }) {
 
     async function handleActiveInactive(currentPage, rowsPerPage, text, status, id) {
         try {
-            const dataObject = {
-                status: status ? "0" : "1",
-                clientId: id,
-                keyword: text,
-                page: currentPage,
-                perPage: rowsPerPage,
-                companyId: currentUser?.companyId
+            if (permission && permission[0].subMenus?.update?.access) {
+                const dataObject = {
+                    status: status ? "0" : "1",
+                    clientId: id,
+                    keyword: text,
+                    page: currentPage,
+                    perPage: rowsPerPage,
+                    companyId: currentUser?.companyId
+                }
+                setShowLoadingModal(true)
+                const response = await clientService.activeInactiveUser(dataObject);
+                setUpdatedData(response.data?.data?.data)
+                setShowLoadingModal(false)
+            } else {
+                alert("Unauthorize to access this!")
             }
-            setShowLoadingModal(true)
-            const response = await clientService.activeInactiveUser(dataObject);
-            setUpdatedData(response.data?.data?.data)
-            setShowLoadingModal(false)
         } catch (error) {
             setShowLoadingModal(false)
             console.log("error while active inactive status", error);
@@ -280,6 +301,20 @@ function UserList({ noFade }) {
     function buttonAction() {
         navigate("/create/user")
     }
+
+
+    useEffect(() => {
+        if (capability && capability?.length > 0) {
+            const administration = capability?.filter((item) => item?.name == "Administration");
+            const menu = administration[0].menu;
+            const permission = menu?.filter((menu) => menu?.name == "User");
+            setPermission(permission);
+            if (!permission[0].subMenus?.view?.access) {
+                alert("Unauthorize to access this!");
+                navigate("/home")
+            }
+        }
+    }, [capability])
 
     return (
         <div className="flex flex-col md:mx-4  mx-2     mt-3 min-h-screen bg-light dark:bg-dark">

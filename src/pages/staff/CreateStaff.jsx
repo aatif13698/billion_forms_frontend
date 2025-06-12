@@ -11,12 +11,16 @@ import "../../App.css"
 import Select from 'react-select';
 import a from "../../helper/common";
 import rolesService from "../../services/rolesService";
+import { useSelector } from "react-redux";
 
 
 function CreateStaff() {
     const location = useLocation();
     const client = location?.state?.client
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+
+    const { capability } = useSelector((state) => state.capabilitySlice);
+    const [permission, setPermission] = useState(null);
 
     const [formData, setFormData] = useState({
         firstName: "",
@@ -29,7 +33,7 @@ function CreateStaff() {
         confirmPassword: ""
     });
 
-    console.log("formData",formData);
+    console.log("formData", formData);
 
     const [jobRole, setJobRole] = useState([])
 
@@ -69,18 +73,18 @@ function CreateStaff() {
         setFormData({ ...formData, [name]: value });
         let newErrors = { ...errors };
 
-         if (name === "firstName") {
+        if (name === "firstName") {
             if (!value.trim()) {
                 newErrors.firstName = "First Name is required";
-            }  else {
+            } else {
                 delete newErrors.firstName;
             }
         }
 
-         if (name === "lastName") {
+        if (name === "lastName") {
             if (!value.trim()) {
                 newErrors.lastName = "Last Name is required";
-            }  else {
+            } else {
                 delete newErrors.lastName;
             }
         }
@@ -206,7 +210,7 @@ function CreateStaff() {
                 lastName: "",
                 email: "",
                 phone: "",
-                roleId:"",
+                roleId: "",
                 roleName: "",
                 password: "",
                 confirmPassword: ""
@@ -237,7 +241,7 @@ function CreateStaff() {
 
     const handleSelectChange = (selectedOptions) => {
         console.log("selectedOptions", selectedOptions);
-        setFormData({ ...formData, ["roleId"]: selectedOptions?.value, ["roleName"] : selectedOptions?.label  });
+        setFormData({ ...formData, ["roleId"]: selectedOptions?.value, ["roleName"]: selectedOptions?.label });
         setErrors((prev) => ({ ...prev, roleId: "" }))
     };
 
@@ -247,7 +251,7 @@ function CreateStaff() {
             try {
                 const response = await rolesService.getActiveRoles();
                 console.log("response active role", response?.data?.data?.data);
-                const data =  response?.data?.data?.data?.length > 0 ? response?.data?.data?.data?.map(type => ({ value: type?._id, label: type?.name })) : []
+                const data = response?.data?.data?.data?.length > 0 ? response?.data?.data?.data?.map(type => ({ value: type?._id, label: type?.name })) : []
                 setJobRole(data)
             } catch (error) {
                 console.log("error while getting the job role", error);
@@ -255,7 +259,21 @@ function CreateStaff() {
         }
 
         getJobRoles()
-    },[]);
+    }, []);
+
+
+    useEffect(() => {
+        if (capability && capability?.length > 0) {
+            const administration = capability?.filter((item) => item?.name == "Administration");
+            const menu = administration[0].menu;
+            const permission = menu?.filter((menu) => menu?.name == "Staff");
+            setPermission(permission);
+            if (!permission[0].subMenus?.update?.access) {
+                alert("Unauthorize to access this!");
+                navigate("/home")
+            }
+        }
+    }, [capability])
 
     return (
         <div className="flex flex-col md:mx-4  mx-2     mt-3 min-h-screen bg-light dark:bg-dark">
@@ -274,7 +292,7 @@ function CreateStaff() {
                             onChange={handleSelectChange}
                             styles={a.customStyles}
                             value={{ value: formData?.roleId, label: formData?.roleName }}
-                            // isDisabled={company ? true : false}
+                        // isDisabled={company ? true : false}
                         />
                         {errors.roleId && <p className="text-red-500 text-sm mt-1">{errors.roleId}</p>}
                     </div>

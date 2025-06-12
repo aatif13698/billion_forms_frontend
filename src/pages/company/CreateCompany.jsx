@@ -5,11 +5,15 @@ import clientService from "../../services/clientService";
 import Select from 'react-select';
 import a from "../../helper/common"
 import { useLocation, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 function CreateCompany() {
     const location = useLocation();
     const company = location?.state?.company
     const navigate = useNavigate();
+
+    const { capability } = useSelector((state) => state.capabilitySlice);
+    const [permission, setPermission] = useState(null);
 
     // states
     const [formData, setFormData] = useState({
@@ -156,6 +160,21 @@ function CreateCompany() {
         setErrors((prev) => ({ ...prev, adminEmail: "" }))
 
     };
+
+
+
+    useEffect(() => {
+        if (capability && capability?.length > 0) {
+            const administration = capability?.filter((item) => item?.name == "Administration");
+            const menu = administration[0].menu;
+            const permission = menu?.filter((menu) => menu?.name == "Companies");
+            setPermission(permission);
+            if (!permission[0].subMenus?.update?.access) {
+                alert("Unauthorize to access this!");
+                navigate("/home")
+            }
+        }
+    }, [capability])
 
     return (
         <div className="flex flex-col md:mx-4  mx-2     mt-3 min-h-screen bg-light dark:bg-dark">

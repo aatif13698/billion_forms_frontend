@@ -18,8 +18,13 @@ import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css'; // Optional: default CSS styling
 import "../../App.css"
 import subscriptionService from '../../services/subscriptionService';
+import { useSelector } from 'react-redux';
 
 function ListSubscriptionPlan({ noFade }) {
+
+  const { capability } = useSelector((state) => state.capabilitySlice);
+  const [permission, setPermission] = useState(null);
+
   const [showLoadingModal, setShowLoadingModal] = useState(false);
   const handleCloseLoadingModal = () => {
     setShowLoadingModal(false);
@@ -187,12 +192,16 @@ function ListSubscriptionPlan({ noFade }) {
 
   async function handleView(id) {
     try {
-      setShowLoadingModal(true)
-      const response = await subscriptionService.getParticularSubscriptionPlan(id);
-      setShowLoadingModal(false);
-      setTimeout(() => {
-        navigate("/create/subscription", { state: { company: response?.data?.data?.data } })
-      }, 600);
+      if (permission && permission[0].subMenus?.update?.access) {
+        setShowLoadingModal(true)
+        const response = await subscriptionService.getParticularSubscriptionPlan(id);
+        setShowLoadingModal(false);
+        setTimeout(() => {
+          navigate("/create/subscription", { state: { company: response?.data?.data?.data } })
+        }, 600);
+      } else {
+        alert("Unauthorize to access this!")
+      }
     } catch (error) {
       setShowLoadingModal(false)
       console.log("error while getting subscription data", error);
@@ -201,16 +210,20 @@ function ListSubscriptionPlan({ noFade }) {
 
   async function handleDelete(currentPage, rowsPerPage, text, id) {
     try {
-      const dataObject = {
-        subscriptionPlanId: id,
-        keyword: text,
-        page: currentPage,
-        perPage: rowsPerPage
+      if (permission && permission[0].subMenus?.update?.access) {
+        const dataObject = {
+          subscriptionPlanId: id,
+          keyword: text,
+          page: currentPage,
+          perPage: rowsPerPage
+        }
+        setShowLoadingModal(true)
+        const response = await subscriptionService.softDeleteSubscriptionPlan(dataObject);
+        setUpdatedData(response.data?.data?.data)
+        setShowLoadingModal(false);
+      } else {
+        alert("Unauthorize to access this!")
       }
-      setShowLoadingModal(true)
-      const response = await subscriptionService.softDeleteSubscriptionPlan(dataObject);
-      setUpdatedData(response.data?.data?.data)
-      setShowLoadingModal(false);
     } catch (error) {
       setShowLoadingModal(false)
       console.log("error while deleting subscription data", error);
@@ -220,16 +233,20 @@ function ListSubscriptionPlan({ noFade }) {
 
   async function handleRestore(currentPage, rowsPerPage, text, id) {
     try {
-      const dataObject = {
-        subscriptionPlanId: id,
-        keyword: text,
-        page: currentPage,
-        perPage: rowsPerPage
+      if (permission && permission[0].subMenus?.update?.access) {
+        const dataObject = {
+          subscriptionPlanId: id,
+          keyword: text,
+          page: currentPage,
+          perPage: rowsPerPage
+        }
+        setShowLoadingModal(true)
+        const response = await subscriptionService.restoreSubscriptionPlan(dataObject);
+        setUpdatedData(response.data?.data?.data)
+        setShowLoadingModal(false);
+      } else {
+        alert("Unauthorize to access this!")
       }
-      setShowLoadingModal(true)
-      const response = await subscriptionService.restoreSubscriptionPlan(dataObject);
-      setUpdatedData(response.data?.data?.data)
-      setShowLoadingModal(false);
     } catch (error) {
       setShowLoadingModal(false)
       console.log("error while restroring data", error);
@@ -242,23 +259,39 @@ function ListSubscriptionPlan({ noFade }) {
 
   async function handleActiveInactive(currentPage, rowsPerPage, text, status, id) {
     try {
-      const dataObject = {
-        status: status ? "0" : "1",
-        subscriptionPlanId: id,
-        keyword: text,
-        page: currentPage,
-        perPage: rowsPerPage
+      if (permission && permission[0].subMenus?.update?.access) {
+        const dataObject = {
+          status: status ? "0" : "1",
+          subscriptionPlanId: id,
+          keyword: text,
+          page: currentPage,
+          perPage: rowsPerPage
+        }
+        setShowLoadingModal(true)
+        const response = await subscriptionService.activeInactive(dataObject);
+        setUpdatedData(response.data?.data?.data)
+        setShowLoadingModal(false)
+      } else {
+        alert("Unauthorize to access this!")
       }
-      setShowLoadingModal(true)
-      const response = await subscriptionService.activeInactive(dataObject);
-      setUpdatedData(response.data?.data?.data)
-      setShowLoadingModal(false)
     } catch (error) {
       setShowLoadingModal(false)
       console.log("error while active inactive status", error);
     }
   }
 
+  useEffect(() => {
+    if (capability && capability?.length > 0) {
+      const administration = capability?.filter((item) => item?.name == "Administration");
+      const menu = administration[0].menu;
+      const permission = menu?.filter((menu) => menu?.name == "Subscription");
+      setPermission(permission);
+      if (!permission[0].subMenus?.view?.access) {
+        alert("Unauthorize to access this!");
+        navigate("/home")
+      }
+    }
+  }, [capability])
 
 
 

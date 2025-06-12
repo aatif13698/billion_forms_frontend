@@ -206,7 +206,6 @@ const NavMenu = ({ isCollapsed }) => {
                                 menuName = "Permissions"
                             } else {
                                 menuName = name;
-
                             }
 
                             let link;

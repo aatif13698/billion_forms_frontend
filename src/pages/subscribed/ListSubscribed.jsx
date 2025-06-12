@@ -19,7 +19,7 @@
 
 
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import CustomTable from '../../components/CustomTable/CustomTable'
 import useDarkmode from '../../Hooks/useDarkMode';
 import Hamberger from '../../components/Hamberger/Hamberger';
@@ -27,14 +27,22 @@ import { FaRegEye } from "react-icons/fa6";
 
 
 
-import {  useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css'; // Optional: default CSS styling
 import "../../App.css"
 import subscribedUserService from '../../services/subscribedUserService';
 import LoadingModel from '../../components/Loading/LoadingModel';
+import { useSelector } from 'react-redux';
 
 function ListSubscribed({ noFade }) {
+
+
+  const { capability } = useSelector((state) => state.capabilitySlice);
+  const [permission, setPermission] = useState(null);
+
+
+
   const [showLoadingModal, setShowLoadingModal] = useState(false);
   const handleCloseLoadingModal = () => {
     setShowLoadingModal(false);
@@ -133,12 +141,16 @@ function ListSubscribed({ noFade }) {
 
   async function handleView(id) {
     try {
-      setShowLoadingModal(true)
-      const response = await subscribedUserService.getParticularSubscribedUser(id);
-      setShowLoadingModal(false);
-      setTimeout(() => {
-        navigate("/view/subscribed", { state: { company: response?.data?.data } })
-      }, 600);
+      if (permission && permission[0].subMenus?.view?.access) {
+        setShowLoadingModal(true)
+        const response = await subscribedUserService.getParticularSubscribedUser(id);
+        setShowLoadingModal(false);
+        setTimeout(() => {
+          navigate("/view/subscribed", { state: { company: response?.data?.data } })
+        }, 600);
+      } else {
+        alert("Unauthorize to access this!")
+      }
     } catch (error) {
       setShowLoadingModal(false)
       console.log("error while getting topup data", error);
@@ -148,6 +160,21 @@ function ListSubscribed({ noFade }) {
   function buttonAction() {
     navigate("/create/subscribed")
   }
+
+
+
+  useEffect(() => {
+    if (capability && capability?.length > 0) {
+      const administration = capability?.filter((item) => item?.name == "Administration");
+      const menu = administration[0].menu;
+      const permission = menu?.filter((menu) => menu?.name == "Subscribed");
+      setPermission(permission);
+      if (!permission[0].subMenus?.view?.access) {
+        alert("Unauthorize to access this!");
+        navigate("/home")
+      }
+    }
+  }, [capability])
 
   return (
     <div className="flex flex-col md:mx-4  mx-2     mt-3 min-h-screen bg-light dark:bg-dark">

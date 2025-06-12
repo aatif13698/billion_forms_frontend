@@ -10,11 +10,16 @@ import { Dialog, Transition } from "@headlessui/react";
 import LoadingSpinner from '../../components/Loading/LoadingSpinner';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css'; // Optional: default CSS styling
+import { useSelector } from 'react-redux';
 
 
 
 
 function ListClients({ noFade }) {
+
+    const { capability } = useSelector((state) => state.capabilitySlice);
+    const [permission, setPermission] = useState(null);
+
 
     const [showLoadingModal, setShowLoadingModal] = useState(false);
     const handleCloseLoadingModal = () => {
@@ -164,12 +169,16 @@ function ListClients({ noFade }) {
 
     async function handleView(id) {
         try {
-            setShowLoadingModal(true)
-            const response = await clientService.getParticularClient(id);
-            setShowLoadingModal(false);
-            setTimeout(() => {
-                navigate("/create/clients", { state: { client: response?.data?.data?.data } })
-            }, 600);
+            if (permission && permission[0].subMenus?.update?.access) {
+                setShowLoadingModal(true)
+                const response = await clientService.getParticularClient(id);
+                setShowLoadingModal(false);
+                setTimeout(() => {
+                    navigate("/create/clients", { state: { client: response?.data?.data?.data } })
+                }, 600);
+            } else {
+                alert("Unauthorize to access this!")
+            }
         } catch (error) {
             setShowLoadingModal(false)
             console.log("error while getting client data", error);
@@ -179,16 +188,20 @@ function ListClients({ noFade }) {
 
     async function handleDelete(currentPage, rowsPerPage, text, id) {
         try {
-            const dataObject = {
-                clientId: id,
-                keyword: text,
-                page: currentPage,
-                perPage: rowsPerPage
+            if (permission && permission[0].subMenus?.softDelete?.access) {
+                const dataObject = {
+                    clientId: id,
+                    keyword: text,
+                    page: currentPage,
+                    perPage: rowsPerPage
+                }
+                setShowLoadingModal(true)
+                const response = await clientService.softDeleteClient(dataObject);
+                setUpdatedData(response.data?.data?.data)
+                setShowLoadingModal(false);
+            } else {
+                alert("Unauthorize to access this!")
             }
-            setShowLoadingModal(true)
-            const response = await clientService.softDeleteClient(dataObject);
-            setUpdatedData(response.data?.data?.data)
-            setShowLoadingModal(false);
         } catch (error) {
             setShowLoadingModal(false)
             console.log("error while getting company data", error);
@@ -198,16 +211,20 @@ function ListClients({ noFade }) {
 
     async function handleRestore(currentPage, rowsPerPage, text, id) {
         try {
-            const dataObject = {
-                clientId: id,
-                keyword: text,
-                page: currentPage,
-                perPage: rowsPerPage
+            if (permission && permission[0].subMenus?.update?.access) {
+                const dataObject = {
+                    clientId: id,
+                    keyword: text,
+                    page: currentPage,
+                    perPage: rowsPerPage
+                }
+                setShowLoadingModal(true)
+                const response = await clientService.restoreClient(dataObject);
+                setUpdatedData(response.data?.data?.data)
+                setShowLoadingModal(false);
+            } else {
+                alert("Unauthorize to access this!")
             }
-            setShowLoadingModal(true)
-            const response = await clientService.restoreClient(dataObject);
-            setUpdatedData(response.data?.data?.data)
-            setShowLoadingModal(false);
         } catch (error) {
             setShowLoadingModal(false)
             console.log("error while getting client data", error);
@@ -217,30 +234,48 @@ function ListClients({ noFade }) {
 
     async function handleActiveInactive(currentPage, rowsPerPage, text, status, id) {
         try {
-            const dataObject = {
-                status: status ? "0" : "1",
-                clientId: id,
-                keyword: text,
-                page: currentPage,
-                perPage: rowsPerPage
+            if (permission && permission[0].subMenus?.update?.access) {
+                const dataObject = {
+                    status: status ? "0" : "1",
+                    clientId: id,
+                    keyword: text,
+                    page: currentPage,
+                    perPage: rowsPerPage
+                }
+                setShowLoadingModal(true)
+                const response = await clientService.activeInactive(dataObject);
+                setUpdatedData(response.data?.data?.data)
+                setShowLoadingModal(false)
+            } else {
+                alert("Unauthorize to access this!")
             }
-            setShowLoadingModal(true)
-            const response = await clientService.activeInactive(dataObject);
-
-            setUpdatedData(response.data?.data?.data)
-            setShowLoadingModal(false)
-
-
         } catch (error) {
             setShowLoadingModal(false)
-
             console.log("error while active inactive status", error);
         }
     }
 
     function buttonAction() {
-        navigate("/create/clients")
+        if (permission && permission[0].subMenus?.create?.access) {
+            navigate("/create/clients")
+        } else {
+            alert("Unauthorize to access this!")
+        }
     }
+
+
+    useEffect(() => {
+        if (capability && capability?.length > 0) {
+            const administration = capability?.filter((item) => item?.name == "Administration");
+            const menu = administration[0].menu;
+            const permission = menu?.filter((menu) => menu?.name == "Clients");
+            setPermission(permission);
+            if (!permission[0].subMenus?.view?.access) {
+                alert("Unauthorize to access this!");
+                navigate("/home")
+            }
+        }
+    }, [capability])
 
 
     return (

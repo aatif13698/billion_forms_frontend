@@ -24,7 +24,11 @@ function AssignPermission() {
     const id = location?.state?.id;
     const name = location?.state?.name
 
-    const { capability: capabilityarray, isCapability } = useSelector((state) => state.capabilitySlice)
+    const { capability: capabilityarray, isCapability } = useSelector((state) => state.capabilitySlice);
+    const { capability } = useSelector((state) => state.capabilitySlice);
+    const [permission, setPermission] = useState(null)
+
+
 
 
     // console.log("rolesListData2", rolesListData2);
@@ -293,6 +297,22 @@ function AssignPermission() {
         }
 
     }
+
+
+
+
+    useEffect(() => {
+        if (capability && capability?.length > 0) {
+            const administration = capability?.filter((item) => item?.name == "Administration");
+            const menu = administration[0].menu;
+            const permission = menu?.filter((menu) => menu?.name == "Roles & Permissions");
+            setPermission(permission);
+            if (!permission[0].subMenus?.update?.access) {
+                alert("Unauthorize to access this!");
+                navigate("/home")
+            }
+        }
+    }, [capability])
 
 
 

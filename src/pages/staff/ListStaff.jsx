@@ -22,12 +22,14 @@ import organizationService from '../../services/organizationService';
 function ListStaff({ noFade }) {
 
     const { clientUser: currentUser } = useSelector((state) => state.authCustomerSlice);
+    const { capability } = useSelector((state) => state.capabilitySlice);
+    const [permission, setPermission] = useState(null);
 
     const [showLoadingModal, setShowLoadingModal] = useState(false);
     const handleCloseLoadingModal = () => {
         setShowLoadingModal(false);
     };
-    const [companyData, setCompanyData] = useState(null)
+    const [companyData, setCompanyData] = useState(null);
 
 
     const [isDark] = useDarkmode();
@@ -48,7 +50,7 @@ function ListStaff({ noFade }) {
                 )
             }
         },
-         {
+        {
             key: 'Role', header: 'Role', width: '200px',
             render: (value, row) => {
                 return (
@@ -216,12 +218,16 @@ function ListStaff({ noFade }) {
 
     async function handleView(id) {
         try {
-            setShowLoadingModal(true)
-            const response = await clientService.getParticularStaff(id);
-            setShowLoadingModal(false);
-            setTimeout(() => {
-                navigate("/create/staffs", { state: { client: response?.data?.data?.data } })
-            }, 600);
+            if (permission && permission[0].subMenus?.update?.access) {
+                setShowLoadingModal(true)
+                const response = await clientService.getParticularStaff(id);
+                setShowLoadingModal(false);
+                setTimeout(() => {
+                    navigate("/create/staffs", { state: { client: response?.data?.data?.data } })
+                }, 600);
+            } else {
+                alert("Unauthorize to access this!")
+            }
         } catch (error) {
             setShowLoadingModal(false)
             console.log("error while getting data", error);
@@ -231,17 +237,21 @@ function ListStaff({ noFade }) {
 
     async function handleDelete(currentPage, rowsPerPage, text, id) {
         try {
-            const dataObject = {
-                clientId: id,
-                keyword: text,
-                page: currentPage,
-                perPage: rowsPerPage,
-                companyId: currentUser?.companyId
+            if (permission && permission[0].subMenus?.softDelete?.access) {
+                const dataObject = {
+                    clientId: id,
+                    keyword: text,
+                    page: currentPage,
+                    perPage: rowsPerPage,
+                    companyId: currentUser?.companyId
+                }
+                setShowLoadingModal(true);
+                const response = await clientService.softDeleteStaff(dataObject);
+                setUpdatedData(response.data?.data?.data)
+                setShowLoadingModal(false);
+            } else {
+                alert("Unauthorize to access this!")
             }
-            setShowLoadingModal(true);
-            const response = await clientService.softDeleteStaff(dataObject);
-            setUpdatedData(response.data?.data?.data)
-            setShowLoadingModal(false);
         } catch (error) {
             setShowLoadingModal(false)
             console.log("error while soft deleting", error);
@@ -251,17 +261,21 @@ function ListStaff({ noFade }) {
 
     async function handleRestore(currentPage, rowsPerPage, text, id) {
         try {
-            const dataObject = {
-                clientId: id,
-                keyword: text,
-                page: currentPage,
-                perPage: rowsPerPage,
-                companyId: currentUser?.companyId
+            if (permission && permission[0].subMenus?.update?.access) {
+                const dataObject = {
+                    clientId: id,
+                    keyword: text,
+                    page: currentPage,
+                    perPage: rowsPerPage,
+                    companyId: currentUser?.companyId
+                }
+                setShowLoadingModal(true)
+                const response = await clientService.restoreStaff(dataObject);
+                setUpdatedData(response.data?.data?.data)
+                setShowLoadingModal(false);
+            } else {
+                alert("Unauthorize to access this!")
             }
-            setShowLoadingModal(true)
-            const response = await clientService.restoreStaff(dataObject);
-            setUpdatedData(response.data?.data?.data)
-            setShowLoadingModal(false);
         } catch (error) {
             setShowLoadingModal(false)
             console.log("error while restoring", error);
@@ -271,18 +285,22 @@ function ListStaff({ noFade }) {
 
     async function handleActiveInactive(currentPage, rowsPerPage, text, status, id) {
         try {
-            const dataObject = {
-                status: status ? "0" : "1",
-                clientId: id,
-                keyword: text,
-                page: currentPage,
-                perPage: rowsPerPage,
-                companyId: currentUser?.companyId
+            if (permission && permission[0].subMenus?.update?.access) {
+                const dataObject = {
+                    status: status ? "0" : "1",
+                    clientId: id,
+                    keyword: text,
+                    page: currentPage,
+                    perPage: rowsPerPage,
+                    companyId: currentUser?.companyId
+                }
+                setShowLoadingModal(true)
+                const response = await clientService.activeInactiveStaff(dataObject);
+                setUpdatedData(response.data?.data?.data)
+                setShowLoadingModal(false)
+            } else {
+                alert("Unauthorize to access this!")
             }
-            setShowLoadingModal(true)
-            const response = await clientService.activeInactiveStaff(dataObject);
-            setUpdatedData(response.data?.data?.data)
-            setShowLoadingModal(false)
         } catch (error) {
             setShowLoadingModal(false)
             console.log("error while active inactive status", error);
@@ -290,8 +308,28 @@ function ListStaff({ noFade }) {
     }
 
     function buttonAction() {
-        navigate("/create/staffs")
+        if (permission && permission[0].subMenus?.create?.access) {
+            navigate("/create/staffs")
+        } else {
+            alert("Unauthorize to access this!")
+        }
     }
+
+
+
+
+    useEffect(() => {
+        if (capability && capability?.length > 0) {
+            const administration = capability?.filter((item) => item?.name == "Administration");
+            const menu = administration[0].menu;
+            const permission = menu?.filter((menu) => menu?.name == "Staff");
+            setPermission(permission);
+            if (!permission[0].subMenus?.view?.access) {
+                alert("Unauthorize to access this!");
+                navigate("/home")
+            }
+        }
+    }, [capability])
 
     return (
         <div className="flex flex-col md:mx-4  mx-2     mt-3 min-h-screen bg-light dark:bg-dark">

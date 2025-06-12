@@ -22,9 +22,16 @@ import { Country, State, City } from "country-state-city";
 import subscriptionService from "../../services/subscriptionService";
 import topupService from "../../services/topupService";
 import subscribedUserService from "../../services/subscribedUserService";
+import { useInsertionEffect } from "react";
+import { useSelector } from "react-redux";
 
 
 function CreatedSubscribed() {
+
+    const { capability } = useSelector((state) => state.capabilitySlice);
+    const [permission, setPermission] = useState(null);
+
+
     const location = useLocation();
     const company = location?.state?.company
     const navigate = useNavigate();
@@ -40,8 +47,8 @@ function CreatedSubscribed() {
         subscriptionId: "",
     });
 
-    console.log("formData",formData);
-    
+    console.log("formData", formData);
+
 
     const [formData2, setFormData2] = useState({
         userId: "",
@@ -52,8 +59,8 @@ function CreatedSubscribed() {
     const [subscriptions, setSubscriptions] = useState([]);
     const [topups, setTopups] = useState([]);
 
-    console.log("formData2",formData2);
-    
+    console.log("formData2", formData2);
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -198,6 +205,21 @@ function CreatedSubscribed() {
             console.log("error while getting the topup plans");
         }
     }
+
+
+
+    useEffect(() => {
+        if (capability && capability?.length > 0) {
+            const administration = capability?.filter((item) => item?.name == "Administration");
+            const menu = administration[0].menu;
+            const permission = menu?.filter((menu) => menu?.name == "Subscribed");
+            setPermission(permission);
+            if (!permission[0].subMenus?.update?.access) {
+                alert("Unauthorize to access this!");
+                navigate("/home")
+            }
+        }
+    }, [capability])
 
 
 

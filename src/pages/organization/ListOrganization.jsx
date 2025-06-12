@@ -22,6 +22,8 @@ function ListOrganization() {
   };
 
   const { clientUser: currentUser, isAuth: isLoggedIn } = useSelector((state) => state?.authCustomerSlice);
+  const { capability } = useSelector((state) => state.capabilitySlice);
+  const [permission, setPermission] = useState(null);
   const [organizations, setOrganizations] = useState([])
 
 
@@ -45,17 +47,35 @@ function ListOrganization() {
 
   async function viewOrganization(id) {
     try {
-      setShowLoadingModal(true);
-      const response = await organizationService.getParticularOrganization(id);
-      setShowLoadingModal(false);
-      setTimeout(() => {
-        navigate("/view/organization", { state: { organization: response?.data?.data?.data } })
-      }, 600);
+      if (permission && permission[0].subMenus?.view?.access) {
+        setShowLoadingModal(true);
+        const response = await organizationService.getParticularOrganization(id);
+        setShowLoadingModal(false);
+        setTimeout(() => {
+          navigate("/view/organization", { state: { organization: response?.data?.data?.data } })
+        }, 600);
+      } else {
+        alert("Unauthorize to access this!")
+      }
     } catch (error) {
       setShowLoadingModal(false);
       console.log("error while getting the particular organization", error);
     }
   }
+
+
+  useEffect(() => {
+    if (capability && capability?.length > 0) {
+      const administration = capability?.filter((item) => item?.name == "Administration");
+      const menu = administration[0].menu;
+      const permission = menu?.filter((menu) => menu?.name == "Organization");
+      setPermission(permission);
+      if (!permission[0].subMenus?.view?.access) {
+        alert("Unauthorize to access this!");
+        navigate("/home")
+      }
+    }
+  }, [capability])
 
   return (
     <div className="flex flex-col md:mx-4  mx-2     mt-3 min-h-screen bg-light dark:bg-dark">
