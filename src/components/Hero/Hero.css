@@ -1,0 +1,19 @@
+.pImg {
+    position: relative;
+}
+
+@media (max-width: 640px) {
+    .cImg {
+        top: 60%;
+        right: 45%;
+        transform: translate(50%, 0);
+    }
+}
+@media (max-width: 460px) {
+    .cImg {
+        width: 75%;
+        top: 65%;
+        right: 30%;
+        transform: translate(50%, 0);
+    }
+}

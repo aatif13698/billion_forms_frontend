@@ -70,7 +70,7 @@ const Navbar = ({ isOpen, setIsOpen }) => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.5 }}
       >
-        <div className="px-8 md:px-0 lg:px-12 xl:px-20 fixed top-0 w-screen z-40 bg-white shadow-2xl flex justify-between items-center py-3">
+        <div className="px-8 md:px-0 lg:px-12 xl:px-20 sticky top-0 w-screen z-40 bg-white shadow-xl flex justify-between items-center py-3">
           {/* Logo section */}
           <div className=" text-2xl flex items-center gap-2 font-bold">
             <img src={logo} className="w-20 h-10 object-contain " alt="Logo" />
