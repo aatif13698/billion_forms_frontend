@@ -186,7 +186,7 @@ const Navbar = ({ isOpen, setIsOpen }) => {
         className="  w-[95%] shadow-lg"
         style={glassStyle}
       >
-        <div className="px-4 sm:px-6 lg:px-8 xl:px-12 flex justify-between items-center py-3 max-w-7xl mx-auto">
+        <div className="px-4   flex justify-between items-center py-3 ">
           {/* Logo section */}
           <div className="text-2xl flex items-center gap-2 font-bold">
             <img src={logo} className=" md:w-40 w-20 h-10 object-contain" alt="Logo" />
