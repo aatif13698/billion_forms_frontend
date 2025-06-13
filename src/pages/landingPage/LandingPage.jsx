@@ -5,8 +5,10 @@ import ResponsiveMenu from '../../components/Navbar/ResponsiveMenu';
 import Hero from '../../components/Hero/Hero';
 import OurVison from '../../components/OurVission/OurVission';
 import Img1 from "../../assets/images/ourmission.png"
-import Img2 from "../../assets/images/notFound.png"
-
+import Img2 from "../../assets/images/aboutUS.jpg"
+import AboutUs from '../../components/AboutUs/AboutUs';
+import Banner from '../../components/Banner/Banner';
+import Footer from '../../components/Footer/Footer';
 
 
 const ourVison = {
@@ -57,106 +59,26 @@ function LandingPage({ companyIdentifier }) {
     }, [companyIdentifier])
 
     return (
-        <main className="overflow-x-hidden h-screen" style={{ position: "relative" }}>
+        <main className="overflow-x-hidden bg-landingBg h-screen w-full" style={{ position: "relative" }}>
             <Navbar isOpen={isOpen} setIsOpen={setIsOpen} />
             <ResponsiveMenu isOpen={isOpen} setIsOpen={setIsOpen} />
             <section id="home" >
-                <Hero />
+                <Hero isOpen={isOpen} setIsOpen={setIsOpen} />
+            </section>
+            <section id="aboutUs">
+                <AboutUs {...aboutUs} />
+            </section>
+            <section>
+                <Banner />
             </section>
             <section id="ourMission">
                 <OurVison {...ourVison} />
             </section>
 
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
-            <div>adsfdsf</div>
+            <Footer openModal={openModal} closeModal={closeModal} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} name={name} setName={setName} />
+
+
+
 
         </main>
     )

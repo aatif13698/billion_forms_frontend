@@ -51,6 +51,9 @@ const conf = withMT({
         hambergerLight : "#b3ecf0",
         hambergerDark : "rgb(0 92 110 / 60%)",
         // sidebarHoverBgLight: ""
+
+
+        landingBg : "#252B9A"
       },
       backgroundImage: {
         'custom-gradient-sidebar': "linear-gradient(to bottom, #9bf7ff, #077588, #00404b)",
@@ -62,6 +65,10 @@ const conf = withMT({
         'custom-gradient-bottom-light' : "linear-gradient(to bottom, #025d64, #077588, #0c4853)",
         'custom-gradient-session-light' : "linear-gradient(to bottom, #508087, #00b0cc, #4e7b82)",
         'custom-gradient-session-dark' : "linear-gradient(to bottom, #4b6f74, #292b2d, #2d484b)",
+        'custom-gradient-blue-teal': "linear-gradient(to bottom, #213B9D, #46A8B1)",
+        'custom-gradient-blue-cyan': "linear-gradient(184deg, rgba(69, 111, 232, 1) 0%, rgba(20, 139, 186, 1) 50%, rgba(69, 111, 232, 1) 100%)",
+
+
       }
     },
   },

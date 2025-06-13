@@ -1,0 +1,19 @@
+
+#banner {
+    font-family: "DMSerifDisplay-Regular";
+    color: #100146;
+}
+
+
+#banner:hover{
+ background-color: #100146;
+ cursor: pointer;
+}
+
+#banner:hover p {
+    color: #FFFFFF;
+
+}
+/* div label{
+    font-family: "GreycliffCF-Regular";
+} */
