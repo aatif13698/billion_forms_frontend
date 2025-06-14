@@ -88,7 +88,7 @@ function Form() {
                     message: formData.message,
                 };
 
-                const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/create/request`, dataObject);
+                const response = await axios.post(`${import.meta.env.VITE_API_URL}/client/request/create/request`, dataObject);
                 console.log('Response from booking demo:', response);
 
                 setFormData({
