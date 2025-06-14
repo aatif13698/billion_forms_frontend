@@ -7,6 +7,7 @@ import useWidth from "../../Hooks/useWidth";
 import useDarkmode from "../../Hooks/useDarkMode";
 import customLogo from "../../assets/logo/logo2.png";
 import logo from "../../assets/logo/logo.png"
+import lightLogo from "../../assets/logo/aestree-logo-dark.png"
 import "../../App.css"
 
 export const Sidebar = ({ isCollapsed }) => {
@@ -52,7 +53,7 @@ export const Sidebar = ({ isCollapsed }) => {
         >
           {/* Logo */}
           <div className="h-[10%]">
-            <Logo logoSrc={logo} to="/home" />
+            <Logo logoSrc={isDark ? lightLogo : logo} to="/home" />
             <hr className="border-t mt-0 border-gray-700" />
           </div>
 

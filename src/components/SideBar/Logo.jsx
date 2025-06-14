@@ -51,7 +51,7 @@ const Logo = ({
       <img
         src={logoSrc}
         alt={altText}
-        className=" w-auto object-contain"
+        className={` ${isDark ? "w-[90%]" : "w-[100%]"}  object-contain`}
         style={{
           ...imgStyles,
           filter: isDark ? 'brightness(1.2)' : 'none', // Optional dark mode adjustment

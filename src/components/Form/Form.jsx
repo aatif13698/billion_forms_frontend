@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import axios from 'axios';
-import dropDown from '../../assets/down-arrow.png';
+import Swal from "sweetalert2";
+
 
 function Form() {
     const [formData, setFormData] = useState({
@@ -87,7 +88,7 @@ function Form() {
                     message: formData.message,
                 };
 
-                const response = await axios.post('/api/w-site/insert', dataObject);
+                const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/create/request`, dataObject);
                 console.log('Response from booking demo:', response);
 
                 setFormData({
@@ -102,7 +103,13 @@ function Form() {
                     email: '',
                     message: '',
                 });
-                // toast.success(response.data.message);
+                Swal.fire({
+                    icon: "success",
+                    title: "Success",
+                    text: "Field order saved successfully!",
+                    timer: 1500,
+                    showConfirmButton: false,
+                });
             } catch (error) {
                 console.error('Error while booking free demo:', error.response?.data || error.message);
             }

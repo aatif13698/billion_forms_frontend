@@ -72,18 +72,13 @@ function LandingPage({ companyIdentifier }) {
             <section>
                 <Banner />
             </section>
-            <section id="contactUs">
-                <ContactUs />
-            </section>
             <section id="ourMission">
                 <OurVison {...ourVison} />
             </section>
-
+            <section id="contactUs">
+                <ContactUs />
+            </section>
             <Footer openModal={openModal} closeModal={closeModal} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} name={name} setName={setName} />
-
-
-
-
         </main>
     )
 }
