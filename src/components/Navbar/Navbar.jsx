@@ -177,7 +177,7 @@ const Navbar = ({ isOpen, setIsOpen }) => {
 
   return (
 
-    <div className='fixed md:top-6 top-2 left-0  w-[100%]  z-50 flex justify-center  '>
+    <div className='fixed md:top-3 top-2 left-0  w-[100%]  z-50 flex justify-center  '>
 
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -219,7 +219,7 @@ const Navbar = ({ isOpen, setIsOpen }) => {
                   className="text-white text-sm lg:text-base rounded-md px-4 lg:px-6 py-2 md:ml-4 ml-2 hover:bg-[#1a0266] transition-colors duration-300"
                   style={{ background: '#100146', fontFamily: 'GreycliffCF, sans-serif' }}
                 >
-                  Book a free Demo
+                  Request a free Demo
                 </button>
               </li>
             </ul>

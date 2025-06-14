@@ -116,7 +116,7 @@ const AboutUs = ({ image, title, subtitle, link, tag, reverse }) => {
                             <img
                                 src={image}
                                 alt={title}
-                                className="about-us-image rounded-md w-[100%] max-w-[30rem]"
+                                className="about-us-image rounded-md shadow-lg w-[100%] "
                             />
                         </motion.div>
 

@@ -254,7 +254,7 @@ const Hero = ({ isOpen, setIsOpen }) => {
                                     className="flex items-center text-sm sm:text-base lg:text-lg text-white bg-[#100146] rounded-md px-4 sm:px-6 py-2 hover:bg-[#1a0266] transition-colors duration-300"
                                     style={{ fontFamily: 'GreycliffCF, sans-serif' }}
                                 >
-                                    Book a free Demo
+                                    Request a free Demo
                                     <span className="ml-2">
                                         <MdArrowOutward />
                                     </span>

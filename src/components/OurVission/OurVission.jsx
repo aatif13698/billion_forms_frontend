@@ -9,7 +9,7 @@ const OurVison = ({ image, title, subtitle, link, tag, reverse }) => {
     <>
 
       <style>
-        {`
+        {/* {`
                   .mainCard1{
                                            background-image: url(${background});
                                                                   background-size: cover;
@@ -17,10 +17,13 @@ const OurVison = ({ image, title, subtitle, link, tag, reverse }) => {
                                                                   background-repeat: no-repeat;
                                           }
                     
-                `}
+                `} */}
+                
       </style>
-      <div className=" flex justify-center   ">
-        <div className="px-10 md:max-w-[90vw] py-10">
+       <div
+                className="contact-us-container flex justify-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8 "
+            >
+                <div className="w-full max-w-7xl">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 space-y-6 md:space-y-0  pt-0 ">
             <div className="flex mainCard1 flex-col justify-center text-left md:text-left space-y-4 ">
               <motion.h1
@@ -62,7 +65,7 @@ const OurVison = ({ image, title, subtitle, link, tag, reverse }) => {
                 transition={{ type: "spring", stiffness: 100, delay: 0.2 }}
                 src={image}
                 alt=""
-                className="w-[100%] max-w-[30rem] rounded-md	 h-aut object-contain"
+                className="w-[100%]  rounded-md	 h-aut object-contain"
               />
             </div>
           </div>

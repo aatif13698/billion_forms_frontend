@@ -9,6 +9,7 @@ import Img2 from "../../assets/images/aboutUS.jpg"
 import AboutUs from '../../components/AboutUs/AboutUs';
 import Banner from '../../components/Banner/Banner';
 import Footer from '../../components/Footer/Footer';
+import ContactUs from '../../components/ContactUs/ContactUs';
 
 
 const ourVison = {
@@ -70,6 +71,9 @@ function LandingPage({ companyIdentifier }) {
             </section>
             <section>
                 <Banner />
+            </section>
+            <section id="contactUs">
+                <ContactUs />
             </section>
             <section id="ourMission">
                 <OurVison {...ourVison} />
