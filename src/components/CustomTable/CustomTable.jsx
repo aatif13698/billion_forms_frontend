@@ -43,6 +43,7 @@ function CustomTable({
     useEffect(() => {
         if (updatedData && updatedData?.length > 0) {
             setData(updatedData)
+            setTotalItems(updatedData?.length);
         }
     }, [updatedData])
 

@@ -37,6 +37,8 @@ const CreateStaff = lazy(() => import("../src/pages/staff/CreateStaff"));
 const EditFormByAdmin = lazy(() => import("../src/pages/customField/EditFormByAdmin"));
 const ListPermission = lazy(() =>  import("../src/pages/permission/ListPermission"));
 const AssignPermission = lazy(() => import("../src/pages/permission/AssignPermission"));
+const DemoRequest = lazy(() => import("../src/pages/DemoRequest/DemoRequest"));
+const CreateDemoRequest = lazy(() => import("../src/pages/DemoRequest/CreateDemoRequest"));
 
 const LandingPage = lazy(() => import("../src/pages/landingPage/LandingPage"))
 
@@ -112,6 +114,9 @@ export default function App() {
               <Route path="update/clients" element={<CreateClients />} />
               <Route path="view/clients" element={<CreateClients />} />
               <Route path="list/clients" element={<ListClients />} />
+              <Route path="list/request" element={<DemoRequest />} />
+              <Route path="create/request" element={<CreateDemoRequest />} />
+              <Route path="view/request" element={<CreateDemoRequest />} />
               <Route path="create/user" element={<CreateUser />} />
               <Route path="update/user" element={<CreateUser />} />
               <Route path="view/user" element={<CreateUser />} />
