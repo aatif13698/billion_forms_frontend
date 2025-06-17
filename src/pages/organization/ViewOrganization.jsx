@@ -439,7 +439,7 @@ function ViewOrganization({ noFade }) {
                                                             </p>
                                                         </div>
                                                         <div className="border-b-2 pb-2">
-                                                            <span className="font-bold">Total Forms Received <span className="mt-1">{item?.formReceived || 0}</span></span>
+                                                            <span className="font-bold">Total Forms Received <span className="mt-1">{item?.formReceived || 0}({`new ${item?.newFormCounts}`})</span></span>
 
                                                             <button
                                                                 onClick={() => {
@@ -520,7 +520,7 @@ function ViewOrganization({ noFade }) {
                                                                     Total Forms Received
                                                                 </th>
                                                                 <td className="py-2 px-3 flex gap-2 items-center sm:px-4 w-[60%]">
-                                                                    <span>{item?.formReceived || 0}</span>
+                                                                    <span>{item?.formReceived || 0}({`new ${item?.newFormCounts}`})</span>
                                                                     <button
                                                                         onClick={() => {
                                                                             navigate(`/list/forms/${common.encryptId(item?._id)}`)

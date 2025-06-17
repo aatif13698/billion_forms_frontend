@@ -819,7 +819,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange, rowsPerPage, onRows
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="text-white bg-blue-700 dark:text-white px-2 py-2 text-[.8rem]"
+        className="text-white bg-blue-700 dark:text-white px-2 py-1 text-[.7rem]"
         aria-label="Previous page"
       >
         Previous
@@ -830,7 +830,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange, rowsPerPage, onRows
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="text-white bg-green-700 dark:text-white px-2 py-2 text-[.8rem]"
+        className="text-white bg-green-700 dark:text-white px-2 py-1 text-[.7rem]"
         aria-label="Next page"
       >
         Next
@@ -863,10 +863,13 @@ function ListForm() {
   const [downloadJobs, setDownloadJobs] = useState({});
   const [serialNumberLimit, setSerialNumberLimit] = useState('');
   const { clientUser: currentUser } = useSelector((state) => state.authCustomerSlice);
-  const [refreshCount, setRefreshCount] = useState(0)
+  const [refreshCount, setRefreshCount] = useState(0);
+  const [enableAll, setEnableAll] = useState(false)
   const navigate = useNavigate();
 
   console.log("serialNumberLimit", serialNumberLimit);
+  console.log("sessionData", sessionData);
+
 
 
   // Fetch data
@@ -888,7 +891,7 @@ function ListForm() {
           sessionService.getSession(decryptedId).catch(() => {
             throw new Error('Failed to fetch session data');
           }),
-          customFieldService.getAllFormsBySession(decryptedId).catch(() => {
+          customFieldService.getAllFormsBySession(decryptedId, enableAll).catch(() => {
             throw new Error('Failed to fetch forms data');
           }),
         ]);
@@ -906,7 +909,7 @@ function ListForm() {
         setFilesName(filesNameArray);
         setOrganizationData(session.organizationId);
         setSessionData(session);
-        setFormsData(forms.reverse());
+        setFormsData(forms);
         setIsLoading(false);
       } catch (err) {
         setError(err.message || 'An unexpected error occurred');
@@ -915,7 +918,7 @@ function ListForm() {
     };
 
     fetchData();
-  }, [encryptedId, refreshCount]);
+  }, [encryptedId, refreshCount, enableAll]);
 
   // Parse JSON strings safely
   const parseValue = (value) => {
@@ -1274,8 +1277,47 @@ function ListForm() {
     } catch (error) {
       console.log("Error deleting form:", error);
       const errorMessage = error || 'An error occurred while deleting form';
-    } 
+    }
   };
+
+  const handleUpdateId = async () => {
+    try {
+      const dataObject = {
+        sessionId: sessionData?._id,
+        formId: `AES-BF-25-FM${serialNumberLimit}`
+      }
+      const response = await customFieldService.updateLastPrintedForm({ ...dataObject });
+      setSerialNumberLimit("");
+      setRefreshCount((prev) => prev+1)
+      Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: "Updated Successfully",
+        showConfirmButton: false,
+        timer: 1500,
+        toast: true,
+        customClass: {
+          popup: 'my-toast-size'
+        }
+      });
+      setRefreshCount((prev) => prev + 1)
+    } catch (error) {
+      const errorMessage = error || 'An error occurred while updating form id';
+      console.log("errorMessage", errorMessage);
+      Swal.fire({
+        position: "top-end",
+        icon: "error",
+        title: errorMessage,
+        showConfirmButton: false,
+        timer: 1500,
+        toast: true,
+        customClass: {
+          popup: 'my-toast-size'
+        }
+      });
+    }
+  };
+
 
   // Conditional Rendering
   if (isLoading) {
@@ -1350,25 +1392,7 @@ function ListForm() {
                 'Download Excel'
               )}
             </button>
-            <div className="flex items-center md:w-[50%] sm:w-[100%] gap-2">
-              <input
-                type="text"
-                value={serialNumberLimit}
-                onChange={handleSerialNumberChange}
-                placeholder="Max Serial Number (e.g., 16026)"
-                className="md:w-[60%] w-[100%] px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent text-textLight dark:text-textDark focus:outline-none focus:ring-2 focus:ring-blue-500"
-                aria-label="Filter by maximum serial number"
-              />
-              {serialNumberLimit && (
-                <button
-                  onClick={() => setSerialNumberLimit('')}
-                  className="text-sm bg-red-300 p-1 rounded-md  text-white hover:text-gray-700 dark:hover:text-gray-200"
-                  aria-label="Clear serial number filter"
-                >
-                  Clear
-                </button>
-              )}
-            </div>
+
           </div>
           <input
             type="text"
@@ -1382,6 +1406,53 @@ function ListForm() {
             aria-label="Search forms"
           />
         </div>
+
+        <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div className="flex items-center md:w-[50%] sm:w-[100%] gap-2">
+            <input
+              type="text"
+              value={serialNumberLimit}
+              onChange={handleSerialNumberChange}
+              placeholder="Max Serial Number (e.g., 16026)"
+              className="md:w-[60%] w-[100%] px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent text-textLight dark:text-textDark focus:outline-none focus:ring-2 focus:ring-blue-500"
+              aria-label="Filter by maximum serial number"
+            />
+            {serialNumberLimit && (
+              <>
+                <button
+                  onClick={() => setSerialNumberLimit('')}
+                  className="text-sm bg-red-300 p-1 rounded-md  text-white hover:text-gray-700 dark:hover:text-gray-200"
+                  aria-label="Clear serial number filter"
+                >
+                  Clear
+                </button>
+                <button
+                  onClick={handleUpdateId}
+                  className="text-sm bg-green-300 p-1 rounded-md  text-white hover:text-gray-700 dark:hover:text-gray-200"
+                  aria-label="Clear serial number filter"
+                >
+                  Update ID
+                </button>
+              </>
+
+            )}
+          </div>
+          <div>
+            <button
+              onClick={() => setEnableAll(!enableAll)}
+              className="w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark flex items-center justify-center shadow-lg"
+              aria-label="Download forms as Excel"
+            >
+              {
+                enableAll  ? "Diable All" : "Enable All"
+              }
+              
+            </button>
+
+          </div>
+
+        </div>
+
 
         {filteredForms.length > 0 ? (
           <>
