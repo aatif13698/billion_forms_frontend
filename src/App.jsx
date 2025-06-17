@@ -6,6 +6,7 @@ import AuthLayout from "./layout/AuthLayout";
 const Layout = lazy(() => import("./layout/Layout"));
 const Login = lazy(() => import("../src/pages/login/Login"));
 const SignUp = lazy(() => import("../src/pages/signup/SignUp"));
+const Profile = lazy(() => import("../src/pages/profile/Profile"))
 const Home = lazy(() => import("../src/pages/home/Home"));
 const CreateCustomField = lazy(() => import("../src/pages/demo/customField/CreateCustomField"));
 const CreateCompany = lazy(() => import("../src/pages/company/CreateCompany"));
@@ -102,9 +103,9 @@ export default function App() {
           <Route element={<PrivateRoute isLoggedIn={isLoggedIn} />} >
             <Route path="/" element={<Layout />}>
               <Route path="home1" element={<Home />} />
+              <Route path="profile" element={<Profile />} />
               <Route path="list/permissions" element={<ListPermission />} />
               <Route path="assign/permissions" element={<AssignPermission />} />
-
               <Route path="createCustomField" element={<CreateCustomField />} />
               <Route path="create/companies" element={<CreateCompany />} />
               <Route path="update/companies" element={<CreateCompany />} />

@@ -22,11 +22,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { logOut } from "../../store/reducer/auth/authCustomerSlice";
 import { MdDarkMode } from "react-icons/md";
 import { CiLight } from "react-icons/ci";
+import { useNavigate } from "react-router-dom";
 
 const Header = ({ isCollapsed, toggleMobileSidebar, setIsCollapsed, toggleSidebar }) => {
 
 
     const dispatch = useDispatch();
+    const navigate = useNavigate()
     const [isDark, setDarkMode] = useDarkmode();
     const { width, breakpoints } = useWidth();
     const { clientUser } = useSelector((state) => state.authCustomerSlice);
@@ -185,7 +187,7 @@ const Header = ({ isCollapsed, toggleMobileSidebar, setIsCollapsed, toggleSideba
                                 <button
                                     className="flex items-center gap-3 px-4 py-2 text-sm w-[100%] text-left hover:bg-gray-100  dark:hover:bg-gray-700 transition-all rounded-md"
                                     role="menuitem"
-                                // onClick={() => navigate("/account")} // Navigate without reload
+                                onClick={() => navigate("/profile")} // Navigate without reload
                                 >
                                     <FcBusinessman className="h-6 w-6" />
                                     <p className="text-textLight dark:text-textDark">Profile</p>
