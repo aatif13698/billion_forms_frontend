@@ -177,7 +177,7 @@ const Navbar = ({ isOpen, setIsOpen }) => {
 
   return (
 
-    <div className='fixed md:top-3 top-2 left-0  w-[100%]  z-50 flex justify-center  '>
+    <div className='fixed md:top-3 top-2 md:left-[-.60rem] md:right-[.50rem] left-0 right-0  w-[100%]  z-50 flex justify-center  '>
 
       <motion.div
         initial={{ opacity: 0, y: -20 }}

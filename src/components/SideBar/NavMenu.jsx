@@ -261,6 +261,7 @@ const NavMenu = ({ isCollapsed }) => {
                                         "/list/forms",
                                         "/editformbyadmin",
                                     ],
+                                    "/list/request" : ["/list/request", "/view/request"],
                                     "/list/companies": ["/list/companies", "/create/companies", "/update/companies", "/view/companies"],
                                     "/list/subscription": ["/list/subscription", "/create/subscription", "/update/subscription", "/view/subscription"],
                                     "/list/topup": ["/list/topup", "/create/topup"],

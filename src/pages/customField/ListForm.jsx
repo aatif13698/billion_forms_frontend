@@ -1145,7 +1145,7 @@ function ListForm() {
       const uniqueId = uuidv4();
       socket.emit('joinDownload', { userId: currentUser.id, jobId: uniqueId });
 
-      const response = await customFieldService.initiateDownloadByField(common.decryptId(encryptedId), fieldName, uniqueId);
+      const response = await customFieldService.initiateDownloadByField(common.decryptId(encryptedId), fieldName, uniqueId,enableAll );
       const jobId = response.headers['x-job-id'] || response.headers['X-Job-Id'];
       socket.emit('joinDownload', { userId: currentUser.id, jobId: jobId });
 
@@ -1413,7 +1413,7 @@ function ListForm() {
               type="text"
               value={serialNumberLimit}
               onChange={handleSerialNumberChange}
-              placeholder="Max Serial Number (e.g., 16026)"
+              placeholder="Set Max Serial Number (e.g., 16026)"
               className="md:w-[60%] w-[100%] px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent text-textLight dark:text-textDark focus:outline-none focus:ring-2 focus:ring-blue-500"
               aria-label="Filter by maximum serial number"
             />
