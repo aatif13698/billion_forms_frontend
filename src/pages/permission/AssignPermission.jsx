@@ -341,7 +341,7 @@ function AssignPermission() {
                                 </span>
                             </div>
                             :
-                            <div className="bg-cardBgLight dark:bg-cardBgDark rounded-lg shadow-lg  p-2 mb-6">
+                            <div className="bg-cardBgLight dark:bg-cardBgDark rounded-lg shadow-lg  p-2 mb-20">
                                 <div className='flex flex-col  overflow-hidden overflow-x-hidden  md:mx-auto px-0 '>
                                     <div className='  px-4 py-5 flex justify-between items-center  '>
                                         <div>

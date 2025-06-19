@@ -185,13 +185,13 @@ const BottomTab = ({ show, toggleMobileSidebar }) => {
                 <span className="menu-icon ">
                   <Icons
                     icon={item.icon}
-                    color={isActive ? '#3b82f6' : '#ffffff'} // Blue for active, white for inactive
+                    color={isActive ? '#00ffe8' : '#ffffff'} // Blue for active, white for inactive
                     size={20}
                     className="my-icon"
                   />
                 </span>
                 <span
-                  className={`text-[0.65rem] ${isActive ? 'text-blue-600 ' : 'text-white'}`}
+                  className={`text-[0.65rem] ${isActive ? 'text-[#00ffe8] ' : 'text-white'}`}
                 >
                   {item.title}
                 </span>

@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaInstagram, FaSignOutAlt, FaUser } from "react-icons/fa";
 import logo from "../../assets/logo/logo.png";
-import logoWhite from "../../assets/logo/logo.png";
+import logoWhite from "../../assets/logo/aestree-logo-dark.png";
+
 
 import useWidth from "../../Hooks/useWidth";
 import { GoHeart } from "react-icons/go";
