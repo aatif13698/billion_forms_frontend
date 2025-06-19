@@ -206,7 +206,11 @@ function ViewOrganization({ noFade }) {
         try {
             setIsDataLoading(true);
             const response = await sessionService.getAllSession(client?.userId, client?._id);
-            setSessions(response?.data?.data?.data);
+            const sessions = response?.data?.data?.data;
+
+            const activeSession = sessions?.length > 0 ? sessions.filter((item) => item?.isActive == true ) : [];
+            const inActiveSession = sessions?.length > 0 ? sessions.filter((item) => item?.isActive == false ) : [];
+            setSessions([...activeSession, ...inActiveSession ]);
             setIsDataLoading(false);
 
         } catch (error) {
@@ -390,7 +394,7 @@ function ViewOrganization({ noFade }) {
                                     sessions.map((item, index) => (
                                         <div
                                             key={index}
-                                            className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg my-4 overflow-hidden"
+                                            className={` ${!item?.isActive ? " filter grayscale-[100]" : "" } bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg my-4 overflow-hidden`}
                                             aria-label={`Session ${item?.name} for ${item?.for}`}
                                         >
                                             <div className="flex flex-col md:flex-row border-b border-gray-300 dark:border-gray-600">
