@@ -92,7 +92,7 @@ const Layout = () => {
           </div>
 
           {/* mottom tab */}
-          {width < breakpoints.sm ? <BottomTab show={showBottomTab} /> : ""}
+          {width < breakpoints.sm ? <BottomTab show={showBottomTab} toggleMobileSidebar={toggleMobileSidebar}  /> : ""}
         </div>
       </div>
 

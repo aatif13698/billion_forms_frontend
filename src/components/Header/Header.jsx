@@ -39,10 +39,6 @@ const Header = ({ isCollapsed, toggleMobileSidebar, setIsCollapsed, toggleSideba
     const dropdownRef = useRef(null);
     const profileDropdownRef = useRef(null);
 
-
-
-
-
     useEffect(() => {
         if (width < breakpoints.lg) {
             setIsCollapsed(true)
