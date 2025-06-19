@@ -267,7 +267,7 @@ const Profile = () => {
               <div className="mb-8">
                 <div className="flex justify-between items-center mb-4">
                   <h2
-                    className="text-xl sm:text-2xl font-semibold text-[#100146]"
+                    className="text-xl sm:text-2xl font-semibold text-[#100146] dark:text-white"
                     style={{ fontFamily: 'GreycliffCF, sans-serif' }}
                   >
                     Personal Information
@@ -288,7 +288,7 @@ const Profile = () => {
                     <div className="flex flex-col">
                       <label
                         htmlFor="firstName"
-                        className="text-sm sm:text-base text-[#100146] mb-1"
+                        className="text-sm sm:text-base text-[#100146] dark:text-white mb-1"
                         style={{ fontFamily: 'GreycliffCF, sans-serif' }}
                       >
                         First Name
@@ -317,7 +317,7 @@ const Profile = () => {
                     <div className="flex flex-col">
                       <label
                         htmlFor="lastName"
-                        className="text-sm sm:text-base text-[#100146] mb-1"
+                        className="text-sm sm:text-base text-[#100146] dark:text-white mb-1"
                         style={{ fontFamily: 'GreycliffCF, sans-serif' }}
                       >
                         Last Name
@@ -346,7 +346,7 @@ const Profile = () => {
                     <div className="flex flex-col">
                       <label
                         htmlFor="email"
-                        className="text-sm sm:text-base text-[#100146] mb-1"
+                        className="text-sm sm:text-base text-[#100146] dark:text-white mb-1"
                         style={{ fontFamily: 'GreycliffCF, sans-serif' }}
                       >
                         Email
@@ -375,7 +375,7 @@ const Profile = () => {
                     <div className="flex flex-col">
                       <label
                         htmlFor="phone"
-                        className="text-sm sm:text-base text-[#100146] mb-1"
+                        className="text-sm sm:text-base text-[#100146] dark:text-white mb-1"
                         style={{ fontFamily: 'GreycliffCF, sans-serif' }}
                       >
                         Phone Number
@@ -404,7 +404,7 @@ const Profile = () => {
                     <div className="flex flex-col sm:col-span-2">
                       <label
                         htmlFor="password"
-                        className="text-sm sm:text-base text-[#100146] mb-1"
+                        className="text-sm sm:text-base text-[#100146] dark:text-white mb-1"
                         style={{ fontFamily: 'GreycliffCF, sans-serif' }}
                       >
                         Password (Optional)
@@ -447,13 +447,13 @@ const Profile = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div>
                       <p
-                        className="text-sm sm:text-base text-[#100146]/60"
+                        className="text-sm sm:text-base text-[#100146] dark:text-white/60"
                         style={{ fontFamily: 'GreycliffCF, sans-serif' }}
                       >
                         First Name
                       </p>
                       <p
-                        className="text-sm sm:text-base text-[#100146]"
+                        className="text-sm sm:text-base text-[#100146] dark:text-white"
                         style={{ fontFamily: 'GreycliffCF, sans-serif' }}
                       >
                         {profileData.firstName || 'N/A'}
@@ -461,13 +461,13 @@ const Profile = () => {
                     </div>
                     <div>
                       <p
-                        className="text-sm sm:text-base text-[#100146]/60"
+                        className="text-sm sm:text-base text-[#100146] dark:text-white/60"
                         style={{ fontFamily: 'GreycliffCF, sans-serif' }}
                       >
                         Last Name
                       </p>
                       <p
-                        className="text-sm sm:text-base text-[#100146]"
+                        className="text-sm sm:text-base text-[#100146] dark:text-white"
                         style={{ fontFamily: 'GreycliffCF, sans-serif' }}
                       >
                         {profileData.lastName || 'N/A'}
@@ -475,13 +475,13 @@ const Profile = () => {
                     </div>
                     <div>
                       <p
-                        className="text-sm sm:text-base text-[#100146]/60"
+                        className="text-sm sm:text-base text-[#100146] dark:text-white/60"
                         style={{ fontFamily: 'GreycliffCF, sans-serif' }}
                       >
                         Email
                       </p>
                       <p
-                        className="text-sm sm:text-base text-[#100146]"
+                        className="text-sm sm:text-base text-[#100146] dark:text-white"
                         style={{ fontFamily: 'GreycliffCF, sans-serif' }}
                       >
                         {profileData.email || 'N/A'}
@@ -489,13 +489,13 @@ const Profile = () => {
                     </div>
                     <div>
                       <p
-                        className="text-sm sm:text-base text-[#100146]/60"
+                        className="text-sm sm:text-base text-[#100146] dark:text-white/60"
                         style={{ fontFamily: 'GreycliffCF, sans-serif' }}
                       >
                         Phone Number
                       </p>
                       <p
-                        className="text-sm sm:text-base text-[#100146]"
+                        className="text-sm sm:text-base text-[#100146] dark:text-white"
                         style={{ fontFamily: 'GreycliffCF, sans-serif' }}
                       >
                         {profileData.phone || 'N/A'}
@@ -508,7 +508,7 @@ const Profile = () => {
               {/* Google Meeting Link Section */}
               <div>
                 <h2
-                  className="text-xl sm:text-2xl font-semibold text-[#100146] mb-4"
+                  className="text-xl sm:text-2xl font-semibold text-[#100146] dark:text-white mb-4"
                   style={{ fontFamily: 'GreycliffCF, sans-serif' }}
                 >
                   Meeting Link
@@ -518,7 +518,7 @@ const Profile = () => {
                     <div className="flex flex-col">
                       <label
                         htmlFor="meetingLink"
-                        className="text-sm sm:text-base text-[#100146] mb-1"
+                        className="text-sm sm:text-base text-[#100146] dark:text-white mb-1"
                         style={{ fontFamily: 'GreycliffCF, sans-serif' }}
                       >
                         Meeting Link (Optional)
@@ -560,13 +560,13 @@ const Profile = () => {
                 ) : (
                   <div>
                     <p
-                      className="text-sm sm:text-base text-[#100146]/60"
+                      className="text-sm sm:text-base text-[#100146] dark:text-white/60"
                       style={{ fontFamily: 'GreycliffCF, sans-serif' }}
                     >
                       Meeting Link
                     </p>
                     <p
-                      className="text-sm sm:text-base text-[#100146] break-all"
+                      className="text-sm sm:text-base text-[#100146] dark:text-white break-all"
                       style={{ fontFamily: 'GreycliffCF, sans-serif' }}
                     >
                       {profileData.meetingLink ? (
@@ -574,7 +574,7 @@ const Profile = () => {
                           href={profileData.meetingLink}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-[#100146] hover:underline"
+                          className="text-[#100146] dark:text-white hover:underline"
                         >
                           {profileData.meetingLink}
                         </a>

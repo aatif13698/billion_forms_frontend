@@ -1,3 +1,5 @@
+
+
 // import React, { useEffect, useState, useMemo } from 'react';
 // import { useNavigate, useParams } from 'react-router-dom';
 // import { FaEnvelope, FaExclamationCircle, FaRegEye, FaTrashAlt } from 'react-icons/fa';
@@ -15,24 +17,17 @@
 // import { useSelector } from 'react-redux';
 // import { v4 as uuidv4 } from 'uuid';
 
-// // test qqq
-
 // console.log("VITE_SOCKET_API_URL", import.meta.env.VITE_SOCKET_API_URL);
-
 
 // let socket;
 
 // if (import.meta.env.VITE_NODE_ENV == "development") {
 //   socket = io(import.meta.env.VITE_SOCKET_API_URL);
-
 // } else {
 //   socket = io(import.meta.env.VITE_SOCKET_API_URL, {
-//     path: '/api/socket.io', // Match backend path
-//     // transports: ['websocket', 'polling'], // Ensure fallback to polling if needed
-//     // withCredentials: true,
+//     path: '/api/socket.io',
 //   });
 // }
-
 
 // // Error Message Component
 // const ErrorMessage = ({ message }) => (
@@ -68,7 +63,7 @@
 //       <button
 //         onClick={() => onPageChange(currentPage - 1)}
 //         disabled={currentPage === 1}
-//         className="text-white bg-blue-700 dark:text-white px-2 py-2 text-[.8rem]"
+//         className="text-white bg-blue-700 dark:text-white px-2 py-1 text-[.7rem]"
 //         aria-label="Previous page"
 //       >
 //         Previous
@@ -79,7 +74,7 @@
 //       <button
 //         onClick={() => onPageChange(currentPage + 1)}
 //         disabled={currentPage === totalPages}
-//         className="text-white bg-green-700 dark:text-white px-2 py-2 text-[.8rem]"
+//         className="text-white bg-green-700 dark:text-white px-2 py-1 text-[.7rem]"
 //         aria-label="Next page"
 //       >
 //         Next
@@ -109,10 +104,15 @@
 //   const [rowsPerPage, setRowsPerPage] = useState(5);
 //   const [isDownloading, setIsDownloading] = useState(false);
 //   const [isCopying, setIsCopying] = useState(false);
-//   const [downloadJobs, setDownloadJobs] = useState({}); // Track jobs by fieldName
-
+//   const [downloadJobs, setDownloadJobs] = useState({});
+//   const [serialNumberLimit, setSerialNumberLimit] = useState('');
 //   const { clientUser: currentUser } = useSelector((state) => state.authCustomerSlice);
+//   const [refreshCount, setRefreshCount] = useState(0);
+//   const [enableAll, setEnableAll] = useState(false)
 //   const navigate = useNavigate();
+
+//   console.log("serialNumberLimit", serialNumberLimit);
+//   console.log("sessionData", sessionData);
 
 
 
@@ -135,7 +135,7 @@
 //           sessionService.getSession(decryptedId).catch(() => {
 //             throw new Error('Failed to fetch session data');
 //           }),
-//           customFieldService.getAllFormsBySession(decryptedId).catch(() => {
+//           customFieldService.getAllFormsBySession(decryptedId, enableAll).catch(() => {
 //             throw new Error('Failed to fetch forms data');
 //           }),
 //         ]);
@@ -153,7 +153,7 @@
 //         setFilesName(filesNameArray);
 //         setOrganizationData(session.organizationId);
 //         setSessionData(session);
-//         setFormsData(forms.reverse());
+//         setFormsData(forms);
 //         setIsLoading(false);
 //       } catch (err) {
 //         setError(err.message || 'An unexpected error occurred');
@@ -162,7 +162,7 @@
 //     };
 
 //     fetchData();
-//   }, [encryptedId]);
+//   }, [encryptedId, refreshCount, enableAll]);
 
 //   // Parse JSON strings safely
 //   const parseValue = (value) => {
@@ -187,10 +187,9 @@
 //       { key: 'createdAt', label: 'Created At', format: (value) => new Date(value).toLocaleDateString() },
 //     ];
 
-
 //     const actionColumn = [
 //       { key: 'action', label: 'Action' },
-//     ]
+//     ];
 
 //     const dynamicKeys = new Set();
 //     formsData.forEach((form) => {
@@ -212,21 +211,46 @@
 //     return [...fixedColumns, ...dynamicColumns, ...dynamicColumns2, ...actionColumn];
 //   }, [formsData, filesName]);
 
-//   // Filter forms based on search query
-//   const filteredForms = useMemo(() => {
-//     if (!searchQuery) return formsData;
+//   // Extract numeric part from serial number
+//   const getSerialNumberValue = (serialNumber) => {
+//     if (typeof serialNumber !== 'string') return 0;
+//     const match = serialNumber.match(/^AES-BF-25-FM(\d+)$/);
+//     return match ? parseInt(match[1], 10) : 0;
+//   };
 
-//     const lowerQuery = searchQuery.toLowerCase().trim();
-//     return formsData.filter((form) => {
-//       const values = [
-//         form.serialNumber,
-//         form.firstName,
-//         form.phone,
-//         ...Object.values(form.otherThanFiles || {}),
-//       ].map((value) => parseValue(value)?.toString().toLowerCase());
-//       return values.some((value) => value?.includes(lowerQuery));
-//     });
-//   }, [formsData, searchQuery]);
+//   // Filter forms based on search query and serial number limit
+//   const filteredForms = useMemo(() => {
+//     let filtered = formsData;
+
+//     // Apply search query filter
+//     if (searchQuery) {
+//       const lowerQuery = searchQuery.toLowerCase().trim();
+//       filtered = filtered.filter((form) => {
+//         const values = [
+//           form.serialNumber,
+//           form.firstName,
+//           form.phone,
+//           ...Object.values(form.otherThanFiles || {}),
+//         ].map((value) => parseValue(value)?.toString().toLowerCase());
+//         return values.some((value) => value?.includes(lowerQuery));
+//       });
+//     }
+
+//     // Apply serial number limit filter
+//     if (serialNumberLimit) {
+//       const limit = Number(serialNumberLimit);
+//       if (!isNaN(limit) && limit > 0) {
+//         filtered = filtered.filter((form) => {
+//           const serialValue = getSerialNumberValue(form.serialNumber);
+//           console.log("serialValue", serialValue);
+
+//           return serialValue <= limit;
+//         });
+//       }
+//     }
+
+//     return filtered;
+//   }, [formsData, searchQuery, serialNumberLimit]);
 
 //   // Paginate filtered forms
 //   const totalPages = Math.ceil(filteredForms.length / rowsPerPage);
@@ -282,7 +306,8 @@
 
 //       const sessionName = sessionData?.name?.replace(/[^a-zA-Z0-9]/g, '_') || 'Session';
 //       const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-//       const fileName = `Forms_${sessionName}_${date}.xlsx`;
+//       const suffix = serialNumberLimit ? `_UpToSerial${serialNumberLimit}` : '';
+//       const fileName = `Forms_${sessionName}_${date}${suffix}.xlsx`;
 
 //       XLSX.writeFile(wb, fileName);
 //       Swal.fire({
@@ -354,34 +379,20 @@
 //     }
 //   };
 
-
 //   const handleDownloadByField = async (fieldName) => {
 //     try {
-//       // Update downloadJobs to show pending state
 //       setDownloadJobs((prev) => ({
 //         ...prev,
 //         [fieldName]: { jobId: null, status: 'pending', progress: 0, fieldName },
 //       }));
 
 //       const uniqueId = uuidv4();
-
-//       console.log("uniqueId", uniqueId);
-
-
-
-
 //       socket.emit('joinDownload', { userId: currentUser.id, jobId: uniqueId });
 
-
-//       // Fetch the ZIP file with authentication
-//       const response = await customFieldService.initiateDownloadByField(common.decryptId(encryptedId), fieldName, uniqueId);
-//       console.log("headers ", response.headers);
-
+//       const response = await customFieldService.initiateDownloadByField(common.decryptId(encryptedId), fieldName, uniqueId,enableAll );
 //       const jobId = response.headers['x-job-id'] || response.headers['X-Job-Id'];
-//       // Join WebSocket room for this job
 //       socket.emit('joinDownload', { userId: currentUser.id, jobId: jobId });
 
-//       // Convert response to Blob
 //       const blob = await response.data;
 //       const url = window.URL.createObjectURL(blob);
 //       const link = document.createElement('a');
@@ -392,7 +403,6 @@
 //       document.body.removeChild(link);
 //       window.URL.revokeObjectURL(url);
 
-//       // Update state to processing
 //       setDownloadJobs((prev) => ({
 //         ...prev,
 //         [fieldName]: { jobId, status: 'processing', progress: 0, fieldName },
@@ -424,7 +434,6 @@
 //     });
 
 //     socket.on('downloadProgress', (data) => {
-//       // console.log('Received progress:', data);
 //       setDownloadJobs((prev) => ({
 //         ...prev,
 //         [data.fieldName]: {
@@ -447,9 +456,7 @@
 //       }
 //     });
 
-
 //     socket.on('downloadProgressLive', (data) => {
-//       // console.log('Received progress:', data);
 //       if (data.progress == 100) {
 //         setDownloadJobs((prev) => ({
 //           ...prev,
@@ -472,7 +479,6 @@
 //             errorMessage: data.errorMessage,
 //           },
 //         }));
-
 //       }
 //     });
 
@@ -484,6 +490,78 @@
 //       socket.disconnect();
 //     };
 //   }, [currentUser?.id]);
+
+//   // Validate serial number input (numeric part only)
+//   const handleSerialNumberChange = (e) => {
+//     const value = e.target.value;
+//     if (value === '' || /^[0-9]*$/.test(value)) {
+//       setSerialNumberLimit(value);
+//       setCurrentPage(1);
+//     }
+//   };
+
+//   const handleDeleteForm = async (id) => {
+//     try {
+//       const dataObject = {
+//         formId: id,
+//       }
+//       const response = await customFieldService.deleteForm({ ...dataObject });
+//       Swal.fire({
+//         position: "top-end",
+//         icon: "success",
+//         title: "Deleted Successfully",
+//         showConfirmButton: false,
+//         timer: 1500,
+//         toast: true,
+//         customClass: {
+//           popup: 'my-toast-size'
+//         }
+//       });
+//       setRefreshCount((prev) => prev + 1)
+//     } catch (error) {
+//       console.log("Error deleting form:", error);
+//       const errorMessage = error || 'An error occurred while deleting form';
+//     }
+//   };
+
+//   const handleUpdateId = async () => {
+//     try {
+//       const dataObject = {
+//         sessionId: sessionData?._id,
+//         formId: `AES-BF-25-FM${serialNumberLimit}`
+//       }
+//       const response = await customFieldService.updateLastPrintedForm({ ...dataObject });
+//       setSerialNumberLimit("");
+//       setRefreshCount((prev) => prev+1)
+//       Swal.fire({
+//         position: "top-end",
+//         icon: "success",
+//         title: "Updated Successfully",
+//         showConfirmButton: false,
+//         timer: 1500,
+//         toast: true,
+//         customClass: {
+//           popup: 'my-toast-size'
+//         }
+//       });
+//       setRefreshCount((prev) => prev + 1)
+//     } catch (error) {
+//       const errorMessage = error || 'An error occurred while updating form id';
+//       console.log("errorMessage", errorMessage);
+//       Swal.fire({
+//         position: "top-end",
+//         icon: "error",
+//         title: errorMessage,
+//         showConfirmButton: false,
+//         timer: 1500,
+//         toast: true,
+//         customClass: {
+//           popup: 'my-toast-size'
+//         }
+//       });
+//     }
+//   };
+
 
 //   // Conditional Rendering
 //   if (isLoading) {
@@ -523,7 +601,7 @@
 //         </h3>
 
 //         <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-//           <div className="flex flex-col sm:flex-row gap-2">
+//           <div className="flex flex-col sm:flex-row gap-2  md:w-[70%] sm:w-[100%]">
 //             <button
 //               onClick={handleDownloadExcel}
 //               disabled={isDownloading || filteredForms.length === 0}
@@ -558,40 +636,7 @@
 //                 'Download Excel'
 //               )}
 //             </button>
-//             <button
-//               onClick={handleCopyData}
-//               disabled={isCopying || filteredForms.length === 0}
-//               className="w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark flex items-center justify-center shadow-lg"
-//               aria-label="Copy forms data to clipboard"
-//             >
-//               {isCopying ? (
-//                 <>
-//                   <svg
-//                     className="animate-spin mr-2 h-4 w-4 text-white"
-//                     xmlns="http://www.w3.org/2000/svg"
-//                     fill="none"
-//                     viewBox="0 0 24 24"
-//                   >
-//                     <circle
-//                       className="opacity-25"
-//                       cx="12"
-//                       cy="12"
-//                       r="10"
-//                       stroke="currentColor"
-//                       strokeWidth="4"
-//                     ></circle>
-//                     <path
-//                       className="opacity-75"
-//                       fill="currentColor"
-//                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-//                     ></path>
-//                   </svg>
-//                   Copying...
-//                 </>
-//               ) : (
-//                 'Copy'
-//               )}
-//             </button>
+
 //           </div>
 //           <input
 //             type="text"
@@ -605,6 +650,53 @@
 //             aria-label="Search forms"
 //           />
 //         </div>
+
+//         <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+//           <div className="flex items-center md:w-[50%] sm:w-[100%] gap-2">
+//             <input
+//               type="text"
+//               value={serialNumberLimit}
+//               onChange={handleSerialNumberChange}
+//               placeholder="Set Max Serial Number (e.g., 16026)"
+//               className="md:w-[60%] w-[100%] px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent text-textLight dark:text-textDark focus:outline-none focus:ring-2 focus:ring-blue-500"
+//               aria-label="Filter by maximum serial number"
+//             />
+//             {serialNumberLimit && (
+//               <>
+//                 <button
+//                   onClick={() => setSerialNumberLimit('')}
+//                   className="text-sm bg-red-300 p-1 rounded-md  text-white hover:text-gray-700 dark:hover:text-gray-200"
+//                   aria-label="Clear serial number filter"
+//                 >
+//                   Clear
+//                 </button>
+//                 <button
+//                   onClick={handleUpdateId}
+//                   className="text-sm bg-green-300 p-1 rounded-md  text-white hover:text-gray-700 dark:hover:text-gray-200"
+//                   aria-label="Clear serial number filter"
+//                 >
+//                   Update ID
+//                 </button>
+//               </>
+
+//             )}
+//           </div>
+//           <div>
+//             <button
+//               onClick={() => setEnableAll(!enableAll)}
+//               className="w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark flex items-center justify-center shadow-lg"
+//               aria-label="Download forms as Excel"
+//             >
+//               {
+//                 enableAll  ? "Diable All" : "Enable All"
+//               }
+              
+//             </button>
+
+//           </div>
+
+//         </div>
+
 
 //         {filteredForms.length > 0 ? (
 //           <>
@@ -643,12 +735,10 @@
 //                           const fileValue = form?.files?.find((file) => file.fieldName === key);
 //                           value = fileValue ? common.extractFilename(fileValue.fileUrl) : null;
 //                         } else if (col.key.includes('action')) {
-
 //                           value = (
 //                             <div className='flex flex-row gap-2'>
 //                               <button
 //                                 onClick={() => {
-//                                   // console.log("clicked view", form)
 //                                   navigate(`/editformbyadmin/${common.encryptId(form.sessionId)}/${common.encryptId(form._id)}`)
 //                                 }}
 //                                 className="flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-yellow-400 to-yellow-600 dark:from-yellow-500 dark:to-yellow-700 rounded-lg  hover:from-yellow-500 hover:to-yellow-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -657,14 +747,14 @@
 //                                 View/Edit
 //                               </button>
 //                               <button
+//                                 onClick={() => handleDeleteForm(form._id)}
 //                                 className="flex items-center gap-1 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-red-500 to-red-700 dark:from-red-600 dark:to-red-800 rounded-lg hover:from-red-600 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-red-500"
 //                               >
 //                                 <FaTrashAlt />
 //                                 Delete
 //                               </button>
 //                             </div>
-//                           )
-
+//                           );
 //                         } else {
 //                           value = form[col.key];
 //                         }
@@ -754,8 +844,6 @@
 // export default ListForm;
 
 
-
-// new code 1
 import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FaEnvelope, FaExclamationCircle, FaRegEye, FaTrashAlt } from 'react-icons/fa';
@@ -768,22 +856,16 @@ import common from '../../helper/common';
 import sessionService from '../../services/sessionService';
 import customFieldService from '../../services/customFieldService';
 import LoadingSpinner from '../../components/Loading/LoadingSpinner';
+import FilterModal from '../../components/FilterModel/FilterModal'; // New component
 import styles from '../../components/CustomTable/CustomTable.module.css';
 import io from 'socket.io-client';
 import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 
-console.log("VITE_SOCKET_API_URL", import.meta.env.VITE_SOCKET_API_URL);
-
-let socket;
-
-if (import.meta.env.VITE_NODE_ENV == "development") {
-  socket = io(import.meta.env.VITE_SOCKET_API_URL);
-} else {
-  socket = io(import.meta.env.VITE_SOCKET_API_URL, {
-    path: '/api/socket.io',
-  });
-}
+// Initialize Socket.IO
+const socket = import.meta.env.VITE_NODE_ENV === 'development'
+  ? io(import.meta.env.VITE_SOCKET_API_URL)
+  : io(import.meta.env.VITE_SOCKET_API_URL, { path: '/api/socket.io' });
 
 // Error Message Component
 const ErrorMessage = ({ message }) => (
@@ -862,15 +944,12 @@ function ListForm() {
   const [isCopying, setIsCopying] = useState(false);
   const [downloadJobs, setDownloadJobs] = useState({});
   const [serialNumberLimit, setSerialNumberLimit] = useState('');
+  const [isFilterOpen, setIsFilterOpen] = useState(false); // New state for filter modal
+  const [selectedFilters, setSelectedFilters] = useState({}); // New state for filter selections
   const { clientUser: currentUser } = useSelector((state) => state.authCustomerSlice);
   const [refreshCount, setRefreshCount] = useState(0);
-  const [enableAll, setEnableAll] = useState(false)
+  const [enableAll, setEnableAll] = useState(false);
   const navigate = useNavigate();
-
-  console.log("serialNumberLimit", serialNumberLimit);
-  console.log("sessionData", sessionData);
-
-
 
   // Fetch data
   useEffect(() => {
@@ -888,12 +967,8 @@ function ListForm() {
         }
 
         const [sessionResponse, formsResponse] = await Promise.all([
-          sessionService.getSession(decryptedId).catch(() => {
-            throw new Error('Failed to fetch session data');
-          }),
-          customFieldService.getAllFormsBySession(decryptedId, enableAll).catch(() => {
-            throw new Error('Failed to fetch forms data');
-          }),
+          sessionService.getSession(decryptedId),
+          customFieldService.getAllFormsBySession(decryptedId, enableAll),
         ]);
 
         const session = sessionResponse?.data?.data?.data;
@@ -943,9 +1018,7 @@ function ListForm() {
       { key: 'createdAt', label: 'Created At', format: (value) => new Date(value).toLocaleDateString() },
     ];
 
-    const actionColumn = [
-      { key: 'action', label: 'Action' },
-    ];
+    const actionColumn = [{ key: 'action', label: 'Action' }];
 
     const dynamicKeys = new Set();
     formsData.forEach((form) => {
@@ -967,6 +1040,55 @@ function ListForm() {
     return [...fixedColumns, ...dynamicColumns, ...dynamicColumns2, ...actionColumn];
   }, [formsData, filesName]);
 
+  // Extract unique filter options for dynamic fields
+  const filterOptions = useMemo(() => {
+    const options = [];
+
+    // OtherThanFiles fields
+    const dynamicKeys = new Set();
+    formsData.forEach((form) => {
+      if (form.otherThanFiles) {
+        Object.keys(form.otherThanFiles).forEach((key) => dynamicKeys.add(key));
+      }
+    });
+
+    Array.from(dynamicKeys).forEach((key) => {
+      const values = [...new Set(
+        formsData
+          .map((form) => parseValue(form.otherThanFiles?.[key]))
+          .filter((value) => value && value !== '-')
+      )].sort();
+      if (values.length > 0) {
+        options.push({
+          field: `otherThanFiles.${key}`,
+          label: key.charAt(0).toUpperCase() + key.slice(1),
+          options: values,
+        });
+      }
+    });
+
+    // Files fields
+    filesName.forEach((key) => {
+      const values = [...new Set(
+        formsData
+          .map((form) => {
+            const file = form.files?.find((f) => f.fieldName === key);
+            return file ? common.extractFilename(file.fileUrl) : null;
+          })
+          .filter((value) => value)
+      )].sort();
+      if (values.length > 0) {
+        options.push({
+          field: `files.${key}`,
+          label: key.charAt(0).toUpperCase() + key.slice(1),
+          options: values,
+        });
+      }
+    });
+
+    return options;
+  }, [formsData, filesName]);
+
   // Extract numeric part from serial number
   const getSerialNumberValue = (serialNumber) => {
     if (typeof serialNumber !== 'string') return 0;
@@ -974,7 +1096,7 @@ function ListForm() {
     return match ? parseInt(match[1], 10) : 0;
   };
 
-  // Filter forms based on search query and serial number limit
+  // Filter forms based on search query, serial number limit, and advanced filters
   const filteredForms = useMemo(() => {
     let filtered = formsData;
 
@@ -998,15 +1120,32 @@ function ListForm() {
       if (!isNaN(limit) && limit > 0) {
         filtered = filtered.filter((form) => {
           const serialValue = getSerialNumberValue(form.serialNumber);
-          console.log("serialValue", serialValue);
-
           return serialValue <= limit;
         });
       }
     }
 
+    // Apply advanced filters
+    Object.entries(selectedFilters).forEach(([field, value]) => {
+      if (value) {
+        if (field.startsWith('otherThanFiles.')) {
+          const key = field.split('.')[1];
+          filtered = filtered.filter((form) => {
+            const formValue = parseValue(form.otherThanFiles?.[key]);
+            return formValue === value;
+          });
+        } else if (field.startsWith('files.')) {
+          const key = field.split('.')[1];
+          filtered = filtered.filter((form) => {
+            const file = form.files?.find((f) => f.fieldName === key);
+            return file && common.extractFilename(file.fileUrl) === value;
+          });
+        }
+      }
+    });
+
     return filtered;
-  }, [formsData, searchQuery, serialNumberLimit]);
+  }, [formsData, searchQuery, serialNumberLimit, selectedFilters]);
 
   // Paginate filtered forms
   const totalPages = Math.ceil(filteredForms.length / rowsPerPage);
@@ -1135,6 +1274,7 @@ function ListForm() {
     }
   };
 
+  // Handle Download by Field
   const handleDownloadByField = async (fieldName) => {
     try {
       setDownloadJobs((prev) => ({
@@ -1145,9 +1285,14 @@ function ListForm() {
       const uniqueId = uuidv4();
       socket.emit('joinDownload', { userId: currentUser.id, jobId: uniqueId });
 
-      const response = await customFieldService.initiateDownloadByField(common.decryptId(encryptedId), fieldName, uniqueId,enableAll );
+      const response = await customFieldService.initiateDownloadByField(
+        common.decryptId(encryptedId),
+        fieldName,
+        uniqueId,
+        enableAll
+      );
       const jobId = response.headers['x-job-id'] || response.headers['X-Job-Id'];
-      socket.emit('joinDownload', { userId: currentUser.id, jobId: jobId });
+      socket.emit('joinDownload', { userId: currentUser.id, jobId });
 
       const blob = await response.data;
       const url = window.URL.createObjectURL(blob);
@@ -1176,6 +1321,7 @@ function ListForm() {
     }
   };
 
+  // Socket.IO connection
   useEffect(() => {
     if (!currentUser?.id) {
       console.warn('No user ID available for WebSocket connection');
@@ -1201,7 +1347,7 @@ function ListForm() {
         },
       }));
 
-      if (data.progress == 100) {
+      if (data.progress === 100) {
         Swal.fire({
           icon: 'success',
           title: data.status.charAt(0).toUpperCase() + data.status.slice(1),
@@ -1213,29 +1359,16 @@ function ListForm() {
     });
 
     socket.on('downloadProgressLive', (data) => {
-      if (data.progress == 100) {
-        setDownloadJobs((prev) => ({
-          ...prev,
-          [data.fieldName]: {
-            jobId: data.jobId,
-            status: "completed",
-            progress: 100,
-            fieldName: data.fieldName,
-            errorMessage: data.errorMessage,
-          },
-        }));
-      } else {
-        setDownloadJobs((prev) => ({
-          ...prev,
-          [data.fieldName]: {
-            jobId: data.jobId,
-            status: data.status,
-            progress: data.progress,
-            fieldName: data.fieldName,
-            errorMessage: data.errorMessage,
-          },
-        }));
-      }
+      setDownloadJobs((prev) => ({
+        ...prev,
+        [data.fieldName]: {
+          jobId: data.jobId,
+          status: data.progress === 100 ? 'completed' : data.status,
+          progress: data.progress,
+          fieldName: data.fieldName,
+          errorMessage: data.errorMessage,
+        },
+      }));
     });
 
     socket.on('connect_error', (err) => {
@@ -1247,7 +1380,7 @@ function ListForm() {
     };
   }, [currentUser?.id]);
 
-  // Validate serial number input (numeric part only)
+  // Validate serial number input
   const handleSerialNumberChange = (e) => {
     const value = e.target.value;
     if (value === '' || /^[0-9]*$/.test(value)) {
@@ -1256,71 +1389,86 @@ function ListForm() {
     }
   };
 
+  // Handle Delete Form
   const handleDeleteForm = async (id) => {
     try {
-      const dataObject = {
-        formId: id,
-      }
-      const response = await customFieldService.deleteForm({ ...dataObject });
+      const dataObject = { formId: id };
+      await customFieldService.deleteForm(dataObject);
       Swal.fire({
-        position: "top-end",
-        icon: "success",
-        title: "Deleted Successfully",
+        position: 'top-end',
+        icon: 'success',
+        title: 'Deleted Successfully',
         showConfirmButton: false,
         timer: 1500,
         toast: true,
-        customClass: {
-          popup: 'my-toast-size'
-        }
+        customClass: { popup: 'my-toast-size' },
       });
-      setRefreshCount((prev) => prev + 1)
+      setRefreshCount((prev) => prev + 1);
     } catch (error) {
-      console.log("Error deleting form:", error);
-      const errorMessage = error || 'An error occurred while deleting form';
+      console.error('Error deleting form:', error);
+      Swal.fire({
+        position: 'top-end',
+        icon: 'error',
+        title: 'Error deleting form',
+        showConfirmButton: false,
+        timer: 1500,
+        toast: true,
+        customClass: { popup: 'my-toast-size' },
+      });
     }
   };
 
+  // Handle Update ID
   const handleUpdateId = async () => {
     try {
       const dataObject = {
         sessionId: sessionData?._id,
-        formId: `AES-BF-25-FM${serialNumberLimit}`
-      }
-      const response = await customFieldService.updateLastPrintedForm({ ...dataObject });
-      setSerialNumberLimit("");
-      setRefreshCount((prev) => prev+1)
+        formId: `AES-BF-25-FM${serialNumberLimit}`,
+      };
+      await customFieldService.updateLastPrintedForm(dataObject);
+      setSerialNumberLimit('');
+      setRefreshCount((prev) => prev + 1);
       Swal.fire({
-        position: "top-end",
-        icon: "success",
-        title: "Updated Successfully",
+        position: 'top-end',
+        icon: 'success',
+        title: 'Updated Successfully',
         showConfirmButton: false,
         timer: 1500,
         toast: true,
-        customClass: {
-          popup: 'my-toast-size'
-        }
+        customClass: { popup: 'my-toast-size' },
       });
-      setRefreshCount((prev) => prev + 1)
     } catch (error) {
-      const errorMessage = error || 'An error occurred while updating form id';
-      console.log("errorMessage", errorMessage);
+      console.error('Error updating form ID:', error);
       Swal.fire({
-        position: "top-end",
-        icon: "error",
-        title: errorMessage,
+        position: 'top-end',
+        icon: 'error',
+        title: error.message || 'Error updating form ID',
         showConfirmButton: false,
         timer: 1500,
         toast: true,
-        customClass: {
-          popup: 'my-toast-size'
-        }
+        customClass: { popup: 'my-toast-size' },
       });
     }
   };
 
+  // Handle filter application
+  const handleApplyFilters = () => {
+    setIsFilterOpen(false);
+    setCurrentPage(1);
+  }
+
+  // Handle filter reset
+  const handleResetFilters = () => {
+    setSelectedFilters({});
+    setIsFilterOpen(false);
+    setCurrentPage(1);
+  }
+
+  // Count active filters
+  const activeFilterCount = Object.values(selectedFilters).filter(Boolean).length;
 
   // Conditional Rendering
-  if (isLoading) {
+  if (isLoading && !error && !formsData.length) {
     return <LoadingSpinner />;
   }
 
@@ -1329,9 +1477,9 @@ function ListForm() {
   }
 
   return (
-    <div className="flex flex-col md claw mx-4 mt-3 min-h-screen bg-light dark:bg-dark">
+    <div className="flex flex-col md:claw mx-4 mt-3 min-h-screen bg-light dark:bg-dark">
       <Hamberger text="Forms / List" />
-      <div className="w-[100%] mb-4 bg-cardBgLight dark:bg-cardBgDark shadow-lg rounded-lg p-1">
+      <div className="w-[100%] mb-4 bg-cardBgLight dark:bg-dark shadow-lg rounded-lg p-1">
         <div className="relative bg-light dark:bg-transparent overflow-hidden transition-transform duration-300">
           <div className="absolute inset-0 bg-cover" />
           <div className="relative z-10 hover:bg-opacity-40 flex flex-col justify-start py-6 px-4">
@@ -1357,7 +1505,7 @@ function ListForm() {
         </h3>
 
         <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-          <div className="flex flex-col sm:flex-row gap-2  md:w-[70%] sm:w-[100%]">
+          <div className="flex flex-col sm:flex-row gap-2 md:w-[70%] sm:w-[100%]">
             <button
               onClick={handleDownloadExcel}
               disabled={isDownloading || filteredForms.length === 0}
@@ -1392,7 +1540,52 @@ function ListForm() {
                 'Download Excel'
               )}
             </button>
-
+            <button
+              onClick={handleCopyData}
+              disabled={isCopying || filteredForms.length === 0}
+              className="w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark flex items-center justify-center shadow-lg"
+              aria-label="Copy forms data to clipboard"
+            >
+              {isCopying ? (
+                <>
+                  <svg
+                    className="animate-spin mr-2 h-4 w-4 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Copying...
+                </>
+              ) : (
+                'Copy Data'
+              )}
+            </button>
+            <button
+              onClick={() => setIsFilterOpen(true)}
+              className="relative w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark flex items-center justify-center shadow-lg"
+              aria-label="Open advanced filters"
+            >
+              Advanced Filter
+              {activeFilterCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {activeFilterCount}
+                </span>
+              )}
+            </button>
           </div>
           <input
             type="text"
@@ -1421,38 +1614,41 @@ function ListForm() {
               <>
                 <button
                   onClick={() => setSerialNumberLimit('')}
-                  className="text-sm bg-red-300 p-1 rounded-md  text-white hover:text-gray-700 dark:hover:text-gray-200"
+                  className="text-sm bg-red-300 p-1 rounded-md text-white hover:bg-red-400"
                   aria-label="Clear serial number filter"
                 >
                   Clear
                 </button>
                 <button
                   onClick={handleUpdateId}
-                  className="text-sm bg-green-300 p-1 rounded-md  text-white hover:text-gray-700 dark:hover:text-gray-200"
-                  aria-label="Clear serial number filter"
+                  className="text-sm bg-green-300 p-1 rounded-md text-white hover:bg-green-400"
+                  aria-label="Update form ID"
                 >
                   Update ID
                 </button>
               </>
-
             )}
           </div>
           <div>
             <button
               onClick={() => setEnableAll(!enableAll)}
               className="w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark flex items-center justify-center shadow-lg"
-              aria-label="Download forms as Excel"
+              aria-label={enableAll ? 'Disable all' : 'Enable all'}
             >
-              {
-                enableAll  ? "Diable All" : "Enable All"
-              }
-              
+              {enableAll ? 'Disable All' : 'Enable All'}
             </button>
-
           </div>
-
         </div>
 
+        <FilterModal
+          isOpen={isFilterOpen}
+          onClose={() => setIsFilterOpen(false)}
+          onApply={handleApplyFilters}
+          onReset={handleResetFilters}
+          filterOptions={filterOptions}
+          selectedFilters={selectedFilters}
+          setSelectedFilters={setSelectedFilters}
+        />
 
         {filteredForms.length > 0 ? (
           <>
@@ -1492,12 +1688,14 @@ function ListForm() {
                           value = fileValue ? common.extractFilename(fileValue.fileUrl) : null;
                         } else if (col.key.includes('action')) {
                           value = (
-                            <div className='flex flex-row gap-2'>
+                            <div className="flex flex-row gap-2">
                               <button
-                                onClick={() => {
-                                  navigate(`/editformbyadmin/${common.encryptId(form.sessionId)}/${common.encryptId(form._id)}`)
-                                }}
-                                className="flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-yellow-400 to-yellow-600 dark:from-yellow-500 dark:to-yellow-700 rounded-lg  hover:from-yellow-500 hover:to-yellow-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                onClick={() =>
+                                  navigate(
+                                    `/editformbyadmin/${common.encryptId(form.sessionId)}/${common.encryptId(form._id)}`
+                                  )
+                                }
+                                className="flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-yellow-400 to-yellow-600 dark:from-yellow-500 dark:to-yellow-700 rounded-lg hover:from-yellow-500 hover:to-yellow-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
                               >
                                 <FaRegEye />
                                 View/Edit

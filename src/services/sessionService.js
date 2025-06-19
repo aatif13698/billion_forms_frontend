@@ -1,11 +1,12 @@
 import axios from "axios";
-const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
 
 
 
 const createSession = async (data) => {
     try {
-        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/create/session`, data ,
+        const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/create/session`, data,
             {
                 headers: {
                     Authorization: `Bearer ${authToken}`,
@@ -29,7 +30,9 @@ const createSession = async (data) => {
 
 const updateSession = async (data) => {
     try {
-        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/update/session`, data ,
+        const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/update/session`, data,
             {
                 headers: {
                     Authorization: `Bearer ${authToken}`,
