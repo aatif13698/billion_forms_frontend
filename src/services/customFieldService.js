@@ -397,7 +397,7 @@ const initiateDownload = async (sessionId) => {
 }
 
 
-const initiateDownloadByField = async (sessionId, fieldName, uniqueId, enableAll) => {
+const initiateDownloadByField = async (sessionId, fieldName, uniqueId, enableAll, filters) => {
     try {
 
         // old
@@ -417,7 +417,7 @@ const initiateDownloadByField = async (sessionId, fieldName, uniqueId, enableAll
         console.log("uniqueIdqqq",uniqueId);
         
         return axios.get(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/download-by-field`, {
-            params: { sessionId, fieldName, uniqueId, getall : enableAll ? "1" : "0"  },
+            params: { sessionId, fieldName, uniqueId, getall : enableAll ? "1" : "0", filters : filters },
             responseType: 'blob', // Handle binary data
             headers: {
                 Authorization: `Bearer ${authToken}`,

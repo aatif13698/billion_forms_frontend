@@ -152,7 +152,7 @@ function AssignUser() {
                     <div className="h-[1.8px] bg-black dark:bg-white mb-4"></div>
                     <form className="grid grid-cols-1 md:grid-cols-1 gap-4">
                         <div>
-                            <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">Admin Email</label>
+                            <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">Select User Email</label>
                             <Select
                                 options={users}
                                 className="basic-multi-select bg-transparent"

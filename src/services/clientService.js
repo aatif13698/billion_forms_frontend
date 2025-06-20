@@ -522,6 +522,8 @@ const getAllUser = async (companyId) => {
 
 const assignUser = async (data) => {
     try {
+    const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+
         const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/assign/user`, { ...data },
             {
                 headers: {

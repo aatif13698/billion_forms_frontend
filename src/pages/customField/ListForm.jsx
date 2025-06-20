@@ -951,6 +951,9 @@ function ListForm() {
   const [enableAll, setEnableAll] = useState(false);
   const navigate = useNavigate();
 
+  console.log("selectedFilters",selectedFilters);
+  
+
   // Fetch data
   useEffect(() => {
     const fetchData = async () => {
@@ -1068,23 +1071,23 @@ function ListForm() {
     });
 
     // Files fields
-    filesName.forEach((key) => {
-      const values = [...new Set(
-        formsData
-          .map((form) => {
-            const file = form.files?.find((f) => f.fieldName === key);
-            return file ? common.extractFilename(file.fileUrl) : null;
-          })
-          .filter((value) => value)
-      )].sort();
-      if (values.length > 0) {
-        options.push({
-          field: `files.${key}`,
-          label: key.charAt(0).toUpperCase() + key.slice(1),
-          options: values,
-        });
-      }
-    });
+    // filesName.forEach((key) => {
+    //   const values = [...new Set(
+    //     formsData
+    //       .map((form) => {
+    //         const file = form.files?.find((f) => f.fieldName === key);
+    //         return file ? common.extractFilename(file.fileUrl) : null;
+    //       })
+    //       .filter((value) => value)
+    //   )].sort();
+    //   if (values.length > 0) {
+    //     options.push({
+    //       field: `files.${key}`,
+    //       label: key.charAt(0).toUpperCase() + key.slice(1),
+    //       options: values,
+    //     });
+    //   }
+    // });
 
     return options;
   }, [formsData, filesName]);
@@ -1289,7 +1292,8 @@ function ListForm() {
         common.decryptId(encryptedId),
         fieldName,
         uniqueId,
-        enableAll
+        enableAll,
+        selectedFilters,
       );
       const jobId = response.headers['x-job-id'] || response.headers['X-Job-Id'];
       socket.emit('joinDownload', { userId: currentUser.id, jobId });
@@ -1540,7 +1544,7 @@ function ListForm() {
                 'Download Excel'
               )}
             </button>
-            <button
+            {/* <button
               onClick={handleCopyData}
               disabled={isCopying || filteredForms.length === 0}
               className="w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark flex items-center justify-center shadow-lg"
@@ -1573,7 +1577,7 @@ function ListForm() {
               ) : (
                 'Copy Data'
               )}
-            </button>
+            </button> */}
             <button
               onClick={() => setIsFilterOpen(true)}
               className="relative w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark flex items-center justify-center shadow-lg"
