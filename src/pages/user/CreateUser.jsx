@@ -211,7 +211,7 @@ function CreateUser() {
                 }
             });
 
-            navigate("/list/users")
+            navigate("/list/user")
 
         } catch (error) {
             console.log("Error creating user:", error);

@@ -21,7 +21,15 @@ const createClient = async (data) => {
 
 const createUser = async (data) => {
     try {
-        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/create/user`, { ...data });
+        const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/create/user`, { ...data },
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
         return response;
     } catch (error) {
         if (error.response) {
@@ -157,6 +165,8 @@ const updateClient = async (data) => {
 
 const updateUser = async (data) => {
     try {
+        const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+
         const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/update/user`, { ...data },
             {
                 headers: {
