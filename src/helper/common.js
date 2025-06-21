@@ -76,14 +76,14 @@ const encryptId = (id) => {
 
 
 const decryptId = (encryptedId) => {
-    try {
-        const decoded = decodeURIComponent(encryptedId);
-        const bytes = CryptoJS.AES.decrypt(decoded, SECRET_KEY);
-        return bytes.toString(CryptoJS.enc.Utf8);
-    } catch (error) {
-        console.error("Decryption failed:", error);
-        return null;
-    }
+  try {
+    const decoded = decodeURIComponent(encryptedId);
+    const bytes = CryptoJS.AES.decrypt(decoded, SECRET_KEY);
+    return bytes.toString(CryptoJS.enc.Utf8);
+  } catch (error) {
+    console.error("Decryption failed:", error);
+    return null;
+  }
 };
 
 
@@ -95,29 +95,48 @@ const decryptId = (encryptedId) => {
 
 
 function extractFilename(url) {
-    // Validate input
-    if (!url || typeof url !== 'string') {
-      return 'Invalid or missing URL'
-    }
+  // Validate input
+  if (!url || typeof url !== 'string') {
+    return 'Invalid or missing URL'
+  }
 
-    // Parse URL
-    const parsedUrl = new URL(url);
-    const pathSegments = parsedUrl.pathname.split('/').filter(segment => segment);
+  // Parse URL
+  const parsedUrl = new URL(url);
+  const pathSegments = parsedUrl.pathname.split('/').filter(segment => segment);
 
-    // Check if path has at least one segment (filename)
-    if (pathSegments.length === 0) {
-      return 'URL has no path segments';
-    }
+  // Check if path has at least one segment (filename)
+  if (pathSegments.length === 0) {
+    return 'URL has no path segments';
+  }
 
-    // Return the last segment (filename)
-    const filename = pathSegments[pathSegments.length - 1];
-    if (!filename) {
-     return 'No filename found in URL'
-    }
+  // Return the last segment (filename)
+  const filename = pathSegments[pathSegments.length - 1];
+  if (!filename) {
+    return 'No filename found in URL'
+  }
 
-    return filename;
-  
+  return filename;
+
 }
+
+function extractAfterFM(input) {
+  const match = input.match(/FM(\d+)/);
+  return match ? match[1] : null;
+}
+
+function createSerialRanges(serials, limit = 20) {
+  const result = [];
+  for (let i = 0; i < serials.length; i += limit) {
+    const chunk = serials.slice(i, i + limit);
+    result.push({
+      start: chunk[chunk.length - 1], // smallest serial in the chunk
+      end: chunk[0],                  // highest serial in the chunk
+
+    });
+  }
+  return result;
+}
+
 
 
 export default {
@@ -127,5 +146,7 @@ export default {
   formatDateToYYYYMMDD,
   encryptId,
   decryptId,
-  extractFilename
+  extractFilename,
+  extractAfterFM,
+  createSerialRanges
 }

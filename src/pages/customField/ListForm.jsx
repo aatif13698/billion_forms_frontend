@@ -690,7 +690,7 @@
 //               {
 //                 enableAll  ? "Diable All" : "Enable All"
 //               }
-              
+
 //             </button>
 
 //           </div>
@@ -951,8 +951,8 @@ function ListForm() {
   const [enableAll, setEnableAll] = useState(false);
   const navigate = useNavigate();
 
-  console.log("selectedFilters",selectedFilters);
-  
+  console.log("selectedFilters", selectedFilters);
+
 
   // Fetch data
   useEffect(() => {
@@ -1150,6 +1150,51 @@ function ListForm() {
     return filtered;
   }, [formsData, searchQuery, serialNumberLimit, selectedFilters]);
 
+  console.log("filteredForms", filteredForms);
+
+  const [limitOptions, setLimitOptions] = useState([]);
+  const [limit, setLimit] = useState(20);
+  const [page, setPage] = useState(1)
+
+  console.log("limitOptions", limitOptions);
+  console.log("page",page);
+  
+
+
+  // useEffect(() => {
+  //   if(filteredForms && filteredForms.length > 0){
+  //     const serialNumberArray = filteredForms?.map((item) => {
+  //       const extracted = common.extractAfterFM(item?.serialNumber)
+  //       return extracted
+  //     });
+  //     const serialRange =  common.createSerialRanges(serialNumberArray.reverse());
+  //     const serialOptions = serialRange?.map((option, index) => {
+  //       return {
+  //         ...option, page: index+1
+  //       }
+  //     });
+  //     setLimitOptions(serialOptions)
+  //   }
+  // },[filteredForms])
+
+  useEffect(() => {
+    if (!filteredForms?.length) return;
+
+    const serialNumberArray = filteredForms
+      .map(item => common.extractAfterFM(item?.serialNumber))
+      .reverse();
+
+    const serialRanges = common.createSerialRanges(serialNumberArray, limit);
+
+    const serialOptions = serialRanges.map((range, index) => ({
+      ...range,
+      page: index + 1,
+    }));
+
+    setLimitOptions(serialOptions);
+  }, [filteredForms, limit]);
+
+
   // Paginate filtered forms
   const totalPages = Math.ceil(filteredForms.length / rowsPerPage);
   const paginatedForms = useMemo(() => {
@@ -1294,6 +1339,8 @@ function ListForm() {
         uniqueId,
         enableAll,
         selectedFilters,
+        limit,
+        page
       );
       const jobId = response.headers['x-job-id'] || response.headers['X-Job-Id'];
       socket.emit('joinDownload', { userId: currentUser.id, jobId });
@@ -1740,7 +1787,7 @@ function ListForm() {
             />
             <div className="flex justify-end">
               <span className="text-[.85rem] mx-4">
-                Total Data - <span className="font-bold">{formsData?.length}</span>
+                Total Data - <span className="font-bold">{filteredForms?.length}</span>
               </span>
             </div>
           </>
@@ -1761,19 +1808,54 @@ function ListForm() {
             filesName.map((file) => (
               <div key={file} className="flex flex-col gap-2 my-2">
                 <div className="flex gap-2 items-center">
-                  <span>
-                    Download <span className="text-green-700">{file}</span> :
-                  </span>
-                  <button
-                    onClick={() => handleDownloadByField(file)}
-                    disabled={downloadJobs[file]?.status === 'pending' || downloadJobs[file]?.status === 'processing'}
-                    className="w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark flex items-center justify-center gap-1 shadow-lg"
-                  >
-                    <FiDownload className="text-base" />
-                    {downloadJobs[file]?.status === 'pending' || downloadJobs[file]?.status === 'processing'
-                      ? 'Preparing...'
-                      : 'Download'}
-                  </button>
+
+                  <div>
+                    <div className="mb-4">
+                      <label
+                        htmlFor={`filter-${file}`}
+                        className="block text-sm font-medium text-textLight dark:text-textDark mb-1"
+                      >
+                        select Limit
+                      </label>
+                      <select
+                        id={`filter-${file}`}
+                        // value={page}
+                        onChange={(e) => {
+                          setPage(e.target.value)
+                        }}
+                        className="w-[100%] px-1 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent text-textLight dark:text-textDark focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        aria-label={`Filter by ${file}`}
+                      >
+                        <option value=""></option>
+                        {limitOptions.map((option) => (
+                          <option key={option?.page} value={option.page} className="text-black dark:text-white dark:bg-black">
+                            {option.start+ "-" +option.end}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className='flex gap-2 items-center'>
+                    <span>
+                      Download <span className="text-green-700">{file}</span> :
+                    </span>
+                    <button
+                      onClick={() => handleDownloadByField(file)}
+                      disabled={downloadJobs[file]?.status === 'pending' || downloadJobs[file]?.status === 'processing'}
+                      className="w-auto p-2 text-sm text-white rounded-lg transition-all duration-300 ease-in-out bg-custom-gradient-button-dark dark:bg-custom-gradient-button-light hover:bg-custom-gradient-button-light dark:hover:bg-custom-gradient-button-dark flex items-center justify-center gap-1 shadow-lg"
+                    >
+                      <FiDownload className="text-base" />
+                      {downloadJobs[file]?.status === 'pending' || downloadJobs[file]?.status === 'processing'
+                        ? 'Preparing...'
+                        : 'Download'}
+                    </button>
+
+                  </div>
+
+
+
+
                 </div>
                 {downloadJobs[file] && (
                   <div className="ml-4">
