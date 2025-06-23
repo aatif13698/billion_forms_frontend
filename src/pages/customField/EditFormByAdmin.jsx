@@ -218,8 +218,8 @@ function EditFormByAdmin() {
                     for (let j = 0; j < customData.length; j++) {
                         const data = customData[j];
                         if (data?.key == filedLabel) {
-                            const parse = JSON.parse(data?.value);
-                            dataObject[fieldName] = { value: parse?.value, label: parse?.value }
+                            // const parse = JSON.parse(data?.value);
+                            dataObject[fieldName] = { value: data?.value, label: data?.value }
                         }
                     }
 
@@ -525,7 +525,8 @@ function EditFormByAdmin() {
                     if (field.type === "file" && value instanceof File) {
                         formData.append(fieldName, value);
                     } else if (field.type === "multiselect" || field.type === "select") {
-                        const stringData = JSON.stringify(value)
+                        // const stringData = JSON.stringify(value)
+                        const stringData = value?.value;
                         formData.append(label, stringData);
                     } else {
                         formData.append(label, value);

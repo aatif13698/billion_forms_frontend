@@ -128,6 +128,8 @@ function createSerialRanges(serials, limit = 20) {
   const result = [];
   for (let i = 0; i < serials.length; i += limit) {
     const chunk = serials.slice(i, i + limit);
+    // console.log("chunk",chunk);
+    
     result.push({
       start: chunk[chunk.length - 1], // smallest serial in the chunk
       end: chunk[0],                  // highest serial in the chunk

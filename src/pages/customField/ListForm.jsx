@@ -941,7 +941,6 @@ function ListForm() {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [isDownloading, setIsDownloading] = useState(false);
-  const [isCopying, setIsCopying] = useState(false);
   const [downloadJobs, setDownloadJobs] = useState({});
   const [serialNumberLimit, setSerialNumberLimit] = useState('');
   const [isFilterOpen, setIsFilterOpen] = useState(false); // New state for filter modal
@@ -951,7 +950,9 @@ function ListForm() {
   const [enableAll, setEnableAll] = useState(false);
   const navigate = useNavigate();
 
-  console.log("selectedFilters", selectedFilters);
+  // console.log("formsData",formsData);
+  
+  // console.log("selectedFilters", selectedFilters);
 
 
   // Fetch data
@@ -1055,12 +1056,17 @@ function ListForm() {
       }
     });
 
+    // console.log("formsData 11", formsData);
+    
+
     Array.from(dynamicKeys).forEach((key) => {
       const values = [...new Set(
         formsData
           .map((form) => parseValue(form.otherThanFiles?.[key]))
           .filter((value) => value && value !== '-')
       )].sort();
+      // console.log("values 11",values);
+      
       if (values.length > 0) {
         options.push({
           field: `otherThanFiles.${key}`,
@@ -1150,14 +1156,14 @@ function ListForm() {
     return filtered;
   }, [formsData, searchQuery, serialNumberLimit, selectedFilters]);
 
-  console.log("filteredForms", filteredForms);
+  // console.log("filteredForms", filteredForms);
 
   const [limitOptions, setLimitOptions] = useState([]);
   const [limit, setLimit] = useState(20);
   const [page, setPage] = useState(1)
 
-  console.log("limitOptions", limitOptions);
-  console.log("page",page);
+  // console.log("limitOptions", limitOptions);
+  // console.log("page",page);
   
 
 
@@ -1183,6 +1189,9 @@ function ListForm() {
     const serialNumberArray = filteredForms
       .map(item => common.extractAfterFM(item?.serialNumber))
       .reverse();
+
+      // console.log("serialNumberArray",serialNumberArray);
+      
 
     const serialRanges = common.createSerialRanges(serialNumberArray, limit);
 
@@ -1272,55 +1281,7 @@ function ListForm() {
     }
   };
 
-  // Handle Copy Data
-  const handleCopyData = async () => {
-    setIsCopying(true);
-    try {
-      const headers = columns.map((col) => col.label);
-      const headerRow = headers.join('\t');
-
-      const dataRows = filteredForms.map((form) => {
-        const row = columns.map((col) => {
-          let value;
-          if (col.key.includes('otherThanFiles.')) {
-            const key = col.key.split('.')[1];
-            value = form.otherThanFiles?.[key];
-          } else if (col.key.includes('files.')) {
-            const key = col.key.split('.')[1];
-            const fileValue = form?.files?.find((file) => file.fieldName === key);
-            value = fileValue ? common.extractFilename(fileValue.fileUrl) : null;
-          } else {
-            value = form[col.key];
-          }
-          value = parseValue(value);
-          if (col.format) {
-            value = col.format(value);
-          }
-          return (value || '-').toString().replace(/\t/g, ' ').replace(/\n/g, ' ');
-        });
-        return row.join('\t');
-      });
-
-      const tsvContent = [headerRow, ...dataRows].join('\n');
-      await navigator.clipboard.writeText(tsvContent);
-      Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: `Copied ${filteredForms.length} rows to clipboard!`,
-        timer: 1500,
-        showConfirmButton: false,
-      });
-    } catch (error) {
-      console.error('Error copying data:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Failed to copy data to clipboard. Please try again.',
-      });
-    } finally {
-      setIsCopying(false);
-    }
-  };
+ 
 
   // Handle Download by Field
   const handleDownloadByField = async (fieldName) => {

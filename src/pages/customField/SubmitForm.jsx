@@ -1300,7 +1300,10 @@ function SubmitForm() {
           if (field.type === "file" && value instanceof File) {
             formData.append(fieldName, value);
           } else if (field.type === "multiselect" || field.type === "select") {
-            const stringData = JSON.stringify(value);
+            // console.log("value 1212",value);
+            
+            // const stringData = JSON.stringify(value);
+            const stringData = value?.value;
             formData.append(label, stringData);
           } else {
             formData.append(label, value);
