@@ -21,6 +21,35 @@ const createRequest = async (data) => {
     }
 }
 
+
+
+const addReply = async (id, data) => {
+    try {
+        const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/${id}/reply`, { ...data },
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
+        return response;
+    } catch (error) {
+        if (error.response) {
+            return Promise.reject(error.response.data.message);
+        } else if (error.request) {
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+}
+
+
+
+
+
+
 const getDemoRequest = async (currentPage, rowsPerPage, text) => {
     const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
     try {
@@ -130,5 +159,6 @@ export default {
     softDeleteRequest,
     restoreRequest,
     createRequest,
-    getParticularRequest
+    getParticularRequest,
+    addReply
 }
