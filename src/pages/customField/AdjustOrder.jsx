@@ -35,7 +35,6 @@ function AdjustOrder() {
             try {
                 setIsDataLoading(true);
                 const response = await customFieldService.getCustomForms(
-                    data?.organization?.userId,
                     data?.session?._id
                 );
                 setExistingFields(response?.data?.data?.data || []);
@@ -164,7 +163,6 @@ function AdjustOrder() {
                 order: gridConfig.order,
             }));
             await customFieldService.updateOrder(
-                data?.organization?.userId,
                 data?.session?._id,
                 updatedFields
             );

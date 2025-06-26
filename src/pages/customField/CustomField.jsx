@@ -140,7 +140,7 @@ function CustomField() {
         const fetchFields = async () => {
             try {
                 setIsDataLoading(true);
-                const response = await customFieldService.getCustomForms(data?.organization?.userId, data?.session?._id);
+                const response = await customFieldService.getCustomForms( data?.session?._id);
                 setExistingFields(response?.data?.data?.data);
                 setCreatedFields([]);
                 setIsDataLoading(false);
@@ -254,7 +254,7 @@ function CustomField() {
                 span: Number(formData.gridConfig.span),
                 order: Number(formData.gridConfig.order)
             },
-            userId: data?.organization?.userId,
+            // userId: data?.organization?.userId,
             sessionId: data?.session?._id
         };
         try {
@@ -438,7 +438,7 @@ function CustomField() {
             const sessionId = data?.session?._id;
             const fieldId = id;
 
-            const response = await customFieldService.deleteCustomField(userId, sessionId, fieldId);
+            const response = await customFieldService.deleteCustomField( sessionId, fieldId);
             console.log("response", response);
             Swal.fire({
                 position: "top-end",

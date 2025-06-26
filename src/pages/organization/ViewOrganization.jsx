@@ -205,7 +205,7 @@ function ViewOrganization({ noFade }) {
     async function getSessions(params) {
         try {
             setIsDataLoading(true);
-            const response = await sessionService.getAllSession(client?.userId, client?._id);
+            const response = await sessionService.getAllSession(client?._id);
             const sessions = response?.data?.data?.data;
 
             const activeSession = sessions?.length > 0 ? sessions.filter((item) => item?.isActive == true ) : [];

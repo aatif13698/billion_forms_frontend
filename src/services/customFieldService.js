@@ -71,11 +71,11 @@ const createCustomForm = async (data) => {
 }
 
 
-const getCustomForms = async (userId, sessionId) => {
+const getCustomForms = async (sessionId) => {
     const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
     try {
         const response = await axios.get(
-            `${import.meta.env.VITE_API_URL}/api/superadmin/administration/get/field/all/${userId}/${sessionId}`,
+            `${import.meta.env.VITE_API_URL}/api/superadmin/administration/get/field/all/${sessionId}`,
             {
                 headers: {
                     Authorization: `Bearer ${authToken}`,
@@ -155,10 +155,10 @@ const getFormData = async (id) => {
 
 
 
-const deleteCustomField = async (userId, sessionId, fieldId) => {
+const deleteCustomField = async (sessionId, fieldId) => {
     const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
     try {
-        const response = await axios.delete(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/delete/field/${userId}/${sessionId}/${fieldId}`, {
+        const response = await axios.delete(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/delete/field/${sessionId}/${fieldId}`, {
             headers: {
                 Authorization: `Bearer ${authToken}`,
             }
@@ -178,10 +178,10 @@ const deleteCustomField = async (userId, sessionId, fieldId) => {
 
 
 
-const updateOrder = async (userId, sessionId, data) => {
+const updateOrder = async (sessionId, data) => {
     const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
     try {
-        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/update/order/field/${userId}/${sessionId}`, { fields: data }, {
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/update/order/field/${sessionId}`, { fields: data }, {
             headers: {
                 Authorization: `Bearer ${authToken}`,
                 "Content-Type": "application/json",
@@ -414,10 +414,11 @@ const initiateDownloadByField = async (sessionId, fieldName, uniqueId, enableAll
 
         // new
 
-        console.log("uniqueIdqqq",uniqueId);
-        
+        console.log("uniqueIdqqq", uniqueId);
+        const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+
         return axios.get(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/download-by-field`, {
-            params: { sessionId, fieldName, uniqueId, getall : enableAll ? "1" : "0", filters : filters, perPage: limit, page: page },
+            params: { sessionId, fieldName, uniqueId, getall: enableAll ? "1" : "0", filters: filters, perPage: limit, page: page },
             responseType: 'blob', // Handle binary data
             headers: {
                 Authorization: `Bearer ${authToken}`,

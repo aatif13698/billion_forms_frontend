@@ -56,11 +56,11 @@ const updateSession = async (data) => {
 
 
 
-const getAllSession = async (userId, organizationId) => {
+const getAllSession = async ( organizationId) => {
     const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
     try {
         const response = await axios.get(
-            `${import.meta.env.VITE_API_URL}/api/superadmin/administration/get/session/all/${userId}/${organizationId}`,
+            `${import.meta.env.VITE_API_URL}/api/superadmin/administration/get/session/all/${organizationId}`,
             {
                 headers: {
                     Authorization: `Bearer ${authToken}`,

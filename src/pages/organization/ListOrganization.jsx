@@ -7,6 +7,7 @@ import { FaEnvelope, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
 import LoadingModel from '../../components/Loading/LoadingModel'
 import LoadingSpinner from '../../components/Loading/LoadingSpinner';
 import fallBackLogo from "../../assets/logo/aestree-logo.png"
+import { current } from '@reduxjs/toolkit'
 
 
 function ListOrganization() {
@@ -24,7 +25,10 @@ function ListOrganization() {
   const { clientUser: currentUser, isAuth: isLoggedIn } = useSelector((state) => state?.authCustomerSlice);
   const { capability } = useSelector((state) => state.capabilitySlice);
   const [permission, setPermission] = useState(null);
-  const [organizations, setOrganizations] = useState([])
+  const [organizations, setOrganizations] = useState([]);
+
+  console.log("currentUser",currentUser);
+  
 
 
   useEffect(() => {
@@ -83,6 +87,9 @@ function ListOrganization() {
       <div className="bg-cardBgLight dark:bg-cardBgDark rounded-lg shadow-lg md:p-6 p-2 mb-40">
         <div className='flex justify-between md:flex-row flex-col gap-3 '>
           <div>
+
+          {
+            currentUser?.role?.id == 3 ? "" : 
             <button
               onClick={() => navigate("/create/organization")}
               className="w-auto text-sm p-2 text-white py-2 rounded-lg transition-all duration-300 ease-in-out 
@@ -92,6 +99,8 @@ function ListOrganization() {
             >
               Add Organization
             </button>
+          }
+            
           </div>
           <div className='flex justify-center items-center'>
             <input
