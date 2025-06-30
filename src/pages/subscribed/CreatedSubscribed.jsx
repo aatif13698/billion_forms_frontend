@@ -47,7 +47,11 @@ function CreatedSubscribed() {
         subscriptionId: "",
     });
 
+    const [selectedSubscriptioin, setSelectedSubscription] = useState(null)
+
     console.log("formData", formData);
+    console.log("selectedSubscriptioin", selectedSubscriptioin);
+
 
 
     const [formData2, setFormData2] = useState({
@@ -59,7 +63,7 @@ function CreatedSubscribed() {
     const [subscriptions, setSubscriptions] = useState([]);
     const [topups, setTopups] = useState([]);
 
-    console.log("formData2", formData2);
+    console.log("subscriptions", subscriptions);
 
 
     const handleChange = (e) => {
@@ -78,6 +82,8 @@ function CreatedSubscribed() {
                 newErrors.subscriptionId = "Plan is required";
             } else {
                 delete newErrors.subscriptionId;
+                const subsc = subscriptions?.length > 0 ? subscriptions?.find((item) => item?._id == value) : null
+                setSelectedSubscription(subsc)
             }
         }
         setErrors(newErrors);
@@ -276,6 +282,39 @@ function CreatedSubscribed() {
                         </select>
                         {errors.subscriptionId && <p className="text-red-500 text-sm mt-1">{errors?.subscriptionId}</p>}
                     </div>
+
+                    {
+
+                        selectedSubscriptioin  && (
+                            <>
+                            <div className="">
+                                <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">
+                                    Start Date
+                                </label>
+                                <input
+                                    type="text"
+                                    className="w-[100%] bg-white text-black dark:bg-cardBgDark dark:text-white p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    value={new Date().toLocaleDateString()} // e.g., "5/25/2025"
+                                    readOnly
+                                />
+                            </div>
+                             <div className="">
+                                <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">
+                                    End Date
+                                </label>
+                                <input
+                                    type="text"
+                                    className="w-[100%] bg-white text-black dark:bg-cardBgDark dark:text-white p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    value={common.calculateEndDate(selectedSubscriptioin?.validityPeriod)} // e.g., "5/25/2025"
+                                    readOnly
+                                />
+                            </div>
+                            </>
+                            
+                        )
+
+
+                    }
                 </form>
                 {responseError.length > 0 && (
                     <div className="w-[100%] mt-4 flex flex-col gap-1 p-4 bg-red-100 rounded-md">

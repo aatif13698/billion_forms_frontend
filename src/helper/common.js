@@ -139,6 +139,34 @@ function createSerialRanges(serials, limit = 20) {
   return result;
 }
 
+const calculateEndDate = function (validityPeriod) {
+  const startDate = new Date();
+  let endDate;
+
+  switch (validityPeriod) {
+    case 'monthly':
+      endDate = new Date(startDate.setMonth(startDate.getMonth() + 1));
+      break;
+    case 'quarterly':
+      endDate = new Date(startDate.setMonth(startDate.getMonth() + 3));
+      break;
+    case 'halfyearly':
+      endDate = new Date(startDate.setMonth(startDate.getMonth() + 6));
+      break;
+    case 'yearly':
+      endDate = new Date(startDate.setFullYear(startDate.getFullYear() + 1));
+      break;
+    case 'infinite':
+      return null; // No end date for infinite plans
+    default:
+      return null;
+  }
+
+  // Format the date as MM/DD/YYYY
+  const formatted = `${endDate.getMonth() + 1}/${endDate.getDate()}/${endDate.getFullYear()}`;
+  return formatted;
+};
+
 
 
 export default {
@@ -150,5 +178,6 @@ export default {
   decryptId,
   extractFilename,
   extractAfterFM,
-  createSerialRanges
+  createSerialRanges,
+  calculateEndDate
 }
