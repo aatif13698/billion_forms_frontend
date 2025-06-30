@@ -179,6 +179,7 @@ function ViewSubscribed() {
                         <h2 class="text-lg  mb-2 text-white">Total Forms :<span className="ml-1 font-semibold">{company?.totalFormLimit == "0" ? "0" : company?.totalFormLimit || "N/A"}</span></h2>
                         <h2 class="text-lg  mb-2 text-white">Total Organisations :<span className="ml-1 font-semibold">{company?.totalOrgLimit == "0" ? "0" : company?.totalOrgLimit  || 'N/A'}</span></h2>
                         <h2 class="text-lg  mb-2 text-white">Total Users :<span className="ml-1 font-semibold">{company?.totalUserLimint == "0" ? "0" : company?.totalUserLimint || 'N/A'}</span></h2>
+                        <h2 class="text-lg  mb-2 text-white">Expiry Date :<span className="ml-1 font-semibold">{company?.finalExpiryDate !== null  ? common.formatDateToReadableString(company?.finalExpiryDate)  :  'Unlimited'}</span></h2>
                     </div>
                 </div>
 
