@@ -305,7 +305,7 @@ function CreatedSubscribed() {
                                 <input
                                     type="text"
                                     className="w-[100%] bg-white text-black dark:bg-cardBgDark dark:text-white p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={common.calculateEndDate(selectedSubscriptioin?.validityPeriod)} // e.g., "5/25/2025"
+                                    value={ selectedSubscriptioin?.validityPeriod == "infinite" ? "Unlimited" :  common.calculateEndDate(selectedSubscriptioin?.validityPeriod)} // e.g., "5/25/2025"
                                     readOnly
                                 />
                             </div>
