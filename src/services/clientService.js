@@ -4,7 +4,13 @@ const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
 
 const createClient = async (data) => {
     try {
-        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/create/cleint`, { ...data });
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/create/cleint`, { ...data },
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
         return response;
     } catch (error) {
         if (error.response) {

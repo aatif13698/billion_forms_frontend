@@ -138,7 +138,7 @@ function DemoRequest({ noFade }) {
     async function handleView(id) {
         try {
             if (permission && permission[0].subMenus?.view?.access) {
-                setShowLoadingModal(true)
+                setShowLoadingModal(true);
                 const response = await demoRequestService.getParticularRequest(id);
                 setShowLoadingModal(false);
                 setTimeout(() => {
@@ -200,28 +200,7 @@ function DemoRequest({ noFade }) {
     }
 
 
-    async function handleActiveInactive(currentPage, rowsPerPage, text, status, id) {
-        try {
-            if (permission && permission[0].subMenus?.update?.access) {
-                const dataObject = {
-                    status: status ? "0" : "1",
-                    clientId: id,
-                    keyword: text,
-                    page: currentPage,
-                    perPage: rowsPerPage
-                }
-                setShowLoadingModal(true)
-                const response = await clientService.activeInactive(dataObject);
-                setUpdatedData(response.data?.data?.data)
-                setShowLoadingModal(false)
-            } else {
-                alert("Unauthorize to access this!")
-            }
-        } catch (error) {
-            setShowLoadingModal(false)
-            console.log("error while active inactive status", error);
-        }
-    }
+   
 
     function buttonAction() {
         if (permission && permission[0].subMenus?.create?.access) {
