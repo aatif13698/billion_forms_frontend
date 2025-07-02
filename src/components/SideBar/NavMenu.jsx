@@ -159,18 +159,21 @@ import { PiPaperPlaneTiltFill } from "react-icons/pi";
 import { FaArrowUpFromBracket } from "react-icons/fa6";
 import { MdOutlineSubscriptions } from "react-icons/md";
 import { FaUserTie } from "react-icons/fa";
+import { BsPersonVcardFill } from "react-icons/bs";
+
 import { FaUsersViewfinder } from "react-icons/fa6";
 import Icons from "./Icons";
 import useWidth from "../../Hooks/useWidth";
 import useDarkmode from "../../Hooks/useDarkMode";
 import logo from "../../assets/logo/logo2.png";
 import { useSelector } from "react-redux";
+import { IoMdPersonAdd } from "react-icons/io";
 
 // Mapping of menu names to icons
 const menuIconMap = {
     Dashboard: AiOutlineDashboard,
     Organization: FaRegBuilding,
-    User: FaUser,
+    User: BsPersonVcardFill,
     Staff: FaUserTie,
     Requests: FaUserPlus,
     Clients: FaUserCheck,
@@ -179,6 +182,8 @@ const menuIconMap = {
     Topup: FaArrowUpFromBracket,
     Subscribed: MdOutlineSubscriptions,
     "Roles & Permissions": FaUser,
+    Leads : IoMdPersonAdd
+    
 };
 
 const NavMenu = ({ isCollapsed }) => {

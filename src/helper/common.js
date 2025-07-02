@@ -144,6 +144,9 @@ const calculateEndDate = function (validityPeriod) {
   let endDate;
 
   switch (validityPeriod) {
+    case 'weekly':
+      endDate = new Date(startDate.setDate(startDate.getDate() + 7));
+      break;
     case 'monthly':
       endDate = new Date(startDate.setMonth(startDate.getMonth() + 1));
       break;

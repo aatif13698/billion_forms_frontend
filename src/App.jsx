@@ -118,6 +118,11 @@ export default function App() {
               <Route path="list/request" element={<DemoRequest />} />
               <Route path="create/request" element={<CreateDemoRequest />} />
               <Route path="view/request" element={<CreateDemoRequest />} />
+
+              <Route path="list/leads" element={<DemoRequest />} />
+
+
+
               <Route path="create/user" element={<CreateUser />} />
               <Route path="update/user" element={<CreateUser />} />
               <Route path="view/user" element={<CreateUser />} />

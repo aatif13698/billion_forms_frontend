@@ -10,6 +10,9 @@ import { FaUsersViewfinder } from "react-icons/fa6";
 import { PiPaperPlaneTiltFill } from "react-icons/pi";
 import { FaArrowUpFromBracket } from "react-icons/fa6";
 import { MdOutlineSubscriptions } from "react-icons/md";
+import { BsPersonVcardFill } from "react-icons/bs";
+import { IoMdPersonAdd } from "react-icons/io";
+
 
 
 
@@ -20,7 +23,7 @@ import { MdOutlineSubscriptions } from "react-icons/md";
 export const menuIconMap = {
   Dashboard: AiOutlineDashboard,
   Organization: FaRegBuilding,
-  User: FaUser,
+  User: BsPersonVcardFill,
   Staff: FaUserTie,
   Requests: FaUserPlus,
   Clients: FaUserCheck,
@@ -29,6 +32,7 @@ export const menuIconMap = {
   Topup: FaArrowUpFromBracket,
   Subscribed: MdOutlineSubscriptions,
   'Roles & Permissions': FaUser,
+  Leads : IoMdPersonAdd
 };
 
 // Mapping of menu links to additional active routes
@@ -67,6 +71,7 @@ export const generateMenuItems = (capability, roleId) => {
         if (menu.access) {
           const name = menu.name;
           const menuName = name === 'Roles & Permissions' ? 'Permissions' : name;
+          
           const link =
             menuName === 'Roles & Permissions'
               ? '/list/rolesPermissions'

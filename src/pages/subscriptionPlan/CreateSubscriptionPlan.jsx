@@ -37,7 +37,9 @@ function CreateSubscriptionPlan() {
         formLimit: "",
         organisationLimit: "",
         userLimint: "",
-        validityPeriod: ""
+        validityPeriod: "",
+        isDemoSubscription: false,
+        
     });
 
     console.log("formData", formData);
@@ -146,7 +148,8 @@ function CreateSubscriptionPlan() {
                 formLimit: company?.formLimit,
                 organisationLimit: company?.organisationLimit,
                 userLimint: company?.userLimint,
-                validityPeriod: company?.validityPeriod
+                validityPeriod: company?.validityPeriod,
+                isDemoSubscription: company?.isDemoSubscription
             }));
             const selectedCountry = Country?.getAllCountries()?.find((item) => item?.name == company?.country);
             setCountryData((prev) => ({
@@ -248,7 +251,8 @@ function CreateSubscriptionPlan() {
                 formLimit: "",
                 organisationLimit: "",
                 userLimint: "",
-                validityPeriod: ""
+                validityPeriod: "",
+                isDemoSubscription: false
             });
 
             navigate("/list/subscription")
@@ -369,6 +373,10 @@ function CreateSubscriptionPlan() {
 
                         >
                             <option value="">--select validity--</option>
+                              <option
+                                className="bg-white text-black dark:bg-cardBgDark dark:text-white"
+
+                                value="weekly">Weekly (7 days)</option>
                             <option
                                 className="bg-white text-black dark:bg-cardBgDark dark:text-white"
 
@@ -458,6 +466,21 @@ function CreateSubscriptionPlan() {
 
                         />
                         {errors.userLimint && <p className="text-red-500 text-sm mt-1">{errors?.userLimint}</p>}
+                    </div>
+                    <div className="flex gap-2 items-center">
+                        <input
+                            type="checkbox"
+                            name="isDemoSubscription"
+                            checked={formData?.isDemoSubscription}
+                            onChange={() => setFormData((prev) => {
+                                return {
+                                    ...prev,
+                                    isDemoSubscription: !formData?.isDemoSubscription
+                                }
+                            })}
+                            className="w-[1rem] h-[1rem]"
+                        />
+                        <label className="block text-formLabelLight dark:text-formLabelDark mb-1 font-medium">Is Demo Subscription</label>
                     </div>
 
                 </form>

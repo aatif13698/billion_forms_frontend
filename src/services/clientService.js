@@ -4,6 +4,8 @@ const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
 
 const createClient = async (data) => {
     try {
+        const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+
         const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/create/cleint`, { ...data },
             {
                 headers: {
@@ -50,6 +52,8 @@ const createUser = async (data) => {
 
 const updateStaff = async (data) => {
     try {
+        const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+
         const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/update/superadmin/staff`, { ...data },
             {
                 headers: {
@@ -149,6 +153,8 @@ const restoreStaff = async (data) => {
 
 const updateClient = async (data) => {
     try {
+        const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+
         const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/update/client`, { ...data },
             {
                 headers: {
@@ -273,6 +279,8 @@ const getClients = async (currentPage, rowsPerPage, text) => {
 
 const createRole = async (data) => {
     try {
+        const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+
         const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/roles/create/role`, { ...data },
             {
                 headers: {
@@ -295,6 +303,8 @@ const createRole = async (data) => {
 
 const updateRole = async (data) => {
     try {
+        const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+
         const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/roles/update/role`, { ...data },
             {
                 headers: {
@@ -528,7 +538,7 @@ const getAllUser = async (companyId) => {
 
 const assignUser = async (data) => {
     try {
-    const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+        const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
 
         const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/assign/user`, { ...data },
             {
@@ -554,7 +564,15 @@ const assignUser = async (data) => {
 
 const createStaff = async (data) => {
     try {
-        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/create/superadmin/staff`, { ...data });
+        const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/create/superadmin/staff`, { ...data },
+             {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
         return response;
     } catch (error) {
         if (error.response) {
