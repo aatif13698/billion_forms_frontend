@@ -151,6 +151,31 @@ const restoreStaff = async (data) => {
 
 
 
+const convertToClient = async (data) => {
+    try {
+        const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
+
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/superadmin/administration/convert/to/cleint`, { ...data },
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
+        return response;
+    } catch (error) {
+        if (error.response) {
+            return Promise.reject(error.response.data.message);
+        } else if (error.request) {
+            return Promise.reject("Network error. Please try again.");
+        } else {
+            return Promise.reject("An error occurred. Please try again later.");
+        }
+    }
+}
+
+
+
 const updateClient = async (data) => {
     try {
         const authToken = localStorage.getItem("SAAS_BILLION_FORMS_customer_token");
@@ -830,6 +855,7 @@ const restoreUser = async (data) => {
 
 export default {
     createClient,
+    convertToClient,
     updateClient,
     activeInactive,
     getClients,

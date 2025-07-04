@@ -41,6 +41,10 @@ const AssignPermission = lazy(() => import("../src/pages/permission/AssignPermis
 const DemoRequest = lazy(() => import("../src/pages/DemoRequest/DemoRequest"));
 const CreateDemoRequest = lazy(() => import("../src/pages/DemoRequest/CreateDemoRequest"));
 
+
+const DemoSubscribed = lazy(() => import("../src/pages/DemoSubscribed/DemoSubscribed"));
+const ViewDemoSubscribed = lazy(() => import("../src/pages/DemoSubscribed/ViewDemoSubscribed"))
+
 const LandingPage = lazy(() => import("../src/pages/landingPage/LandingPage"))
 
 import PublicRoute from "./routes/PublicRoute";
@@ -119,8 +123,8 @@ export default function App() {
               <Route path="create/request" element={<CreateDemoRequest />} />
               <Route path="view/request" element={<CreateDemoRequest />} />
 
-              <Route path="list/leads" element={<DemoRequest />} />
-
+              <Route path="list/leads" element={<DemoSubscribed />} />
+              <Route path="view/lead" element={<ViewDemoSubscribed />} />
 
 
               <Route path="create/user" element={<CreateUser />} />

@@ -353,11 +353,15 @@ function CreateDemoRequest() {
         subscriptionId: formData2.subscriptionId
       }
       const response = await subscribedUserService.createDemoSubscribedUser(dataObject);
+
+      console.log("response ddd", response?.data?.data?.subscription?._id);
+      
       setFormData2({
         subscriptionId: "",
       });
-      setIsDemoSubmitting(false)
-      navigate("/list/subscribed")
+      setIsDemoSubmitting(false);
+      handleView(response?.data?.data?.subscription?._id)
+      // navigate("/list/subscribed")
     } catch (error) {
       console.error("Error creating customer plan:", error);
       const errorMessage = error || 'An error occurred while creating customer plan';
@@ -366,6 +370,22 @@ function CreateDemoRequest() {
       setIsDemoSubmitting(false);
     }
   };
+
+
+   async function handleView(id) {
+      try {
+          // setShowLoadingModal(true)
+          const response = await subscribedUserService.getParticularSubscribedUser(id);
+          // setShowLoadingModal(false);
+          setTimeout(() => {
+            navigate("/view/lead", { state: { company: response?.data?.data } })
+          }, 600);
+      } catch (error) {
+        setShowLoadingModal(false)
+        console.log("error while getting topup data", error);
+      }
+    }
+  
 
   return (
     <div className="flex flex-col mx-2 md:mx-4 mt-3 min-h-screen bg-light dark:bg-dark">

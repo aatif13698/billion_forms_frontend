@@ -1,19 +1,3 @@
-// import React from 'react'
-
-// function ListSubscribed() {
-//   return (
-//     <div>
-//       List Subscribed
-//     </div>
-//   )
-// }
-
-// export default ListSubscribed
-
-
-
-
-
 
 
 
@@ -26,7 +10,6 @@ import Hamberger from '../../components/Hamberger/Hamberger';
 import { FaRegEye } from "react-icons/fa6";
 
 
-
 import { useNavigate } from 'react-router-dom';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css'; // Optional: default CSS styling
@@ -36,13 +19,10 @@ import LoadingModel from '../../components/Loading/LoadingModel';
 import { useSelector } from 'react-redux';
 import common from '../../helper/common';
 
-function ListSubscribed({ noFade }) {
-
+function DemoSubscribed({ noFade }) {
 
   const { capability } = useSelector((state) => state.capabilitySlice);
   const [permission, setPermission] = useState(null);
-
-
 
   const [showLoadingModal, setShowLoadingModal] = useState(false);
   const handleCloseLoadingModal = () => {
@@ -68,7 +48,7 @@ function ListSubscribed({ noFade }) {
     {
       header: 'Customer Name', width: 'auto',
       render: (value, row) => {
-        const fullName = (row?.userId?.firstName + " " + (row?.userId?.lastName ? row?.userId?.lastName : ""));
+        const fullName = (row?.userId?.firstName + " " + (row?.userId?.lastName ? row?.userId?.lastName : "") );
         return (
           <span className={`whitespace-nowrap  text-black dark:text-white  rounded-md`} >
             {fullName}
@@ -77,16 +57,16 @@ function ListSubscribed({ noFade }) {
       }
     },
      {
-          header: 'Expiry Date', width: 'auto',
-          render: (value, row) => {
-            const date = (row?.finalExpiryDate );
-            return (
-              <span className={`whitespace-nowrap  text-black dark:text-white  rounded-md`} >
-                {common.formatDateToReadableString(date)}
-              </span>
-            )
-          }
-        },
+      header: 'Expiry Date', width: 'auto',
+      render: (value, row) => {
+        const date = (row?.finalExpiryDate );
+        return (
+          <span className={`whitespace-nowrap  text-black dark:text-white  rounded-md`} >
+            {common.formatDateToReadableString(date)}
+          </span>
+        )
+      }
+    },
     {
       header: 'Total Forms', width: 'auto',
       render: (value, row) => {
@@ -144,7 +124,7 @@ function ListSubscribed({ noFade }) {
 
   async function getData(currentPage, rowsPerPage, text) {
     try {
-      const response = await subscribedUserService.getSubscribedUserList(currentPage, rowsPerPage, text);
+      const response = await subscribedUserService.getDemoSubscribedUserList(currentPage, rowsPerPage, text);
       return response
     } catch (error) {
       throw error
@@ -158,7 +138,7 @@ function ListSubscribed({ noFade }) {
         const response = await subscribedUserService.getParticularSubscribedUser(id);
         setShowLoadingModal(false);
         setTimeout(() => {
-          navigate("/view/subscribed", { state: { company: response?.data?.data } })
+          navigate("/view/lead", { state: { company: response?.data?.data } })
         }, 600);
       } else {
         alert("Unauthorize to access this!")
@@ -170,11 +150,7 @@ function ListSubscribed({ noFade }) {
   }
 
   function buttonAction() {
-    if (permission && permission[0].subMenus?.create?.access) {
-      navigate("/create/subscribed")
-    } else {
-      alert("Unauthorize to access this!")
-    }
+    navigate("/list/request")
   }
 
 
@@ -193,7 +169,7 @@ function ListSubscribed({ noFade }) {
 
   return (
     <div className="flex flex-col md:mx-4  mx-2     mt-3 min-h-screen bg-light dark:bg-dark">
-      <Hamberger text={"Subscribed / List"} />
+      <Hamberger text={"Lead / List"} />
       <div className="bg-cardBgLight dark:bg-cardBgDark rounded-lg shadow-lg md:p-6 p-2 mb-6">
         <CustomTable
           columns={columns}
@@ -204,7 +180,7 @@ function ListSubscribed({ noFade }) {
           rowTextColor={isDark ? "#fff" : "#3f8e90"}
           alternateRowBackground={isDark ? "#16414ca3" : "#80abb124"}
           defaultRowsPerPage={10}
-          buttonName={"Assign Subscription"}
+          buttonName={"Assign Demo"}
           buttonAction={buttonAction}
           currentPage={currentPage}
           updatedData={updatedData}
@@ -221,4 +197,4 @@ function ListSubscribed({ noFade }) {
   )
 }
 
-export default ListSubscribed
+export default DemoSubscribed

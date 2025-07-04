@@ -272,6 +272,7 @@ const NavMenu = ({ isCollapsed }) => {
                                     "/list/topup": ["/list/topup", "/create/topup"],
                                     "/list/subscribed": ["/list/subscribed", "/create/subscribed", "/view/subscribed"],
                                     "/list/permissions": ["/list/permissions", "/assign/permissions"],
+                                    "/list/leads": ["/list/leads", "/view/lead"],
                                 };
                                 const activeRoutes = additionalActiveRoutes[item.link] || [item.link];
                                 const isItemActive = activeRoutes.some((route) => currentPath.startsWith(route));
