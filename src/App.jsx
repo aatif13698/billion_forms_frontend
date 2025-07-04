@@ -45,7 +45,9 @@ const CreateDemoRequest = lazy(() => import("../src/pages/DemoRequest/CreateDemo
 const DemoSubscribed = lazy(() => import("../src/pages/DemoSubscribed/DemoSubscribed"));
 const ViewDemoSubscribed = lazy(() => import("../src/pages/DemoSubscribed/ViewDemoSubscribed"))
 
-const LandingPage = lazy(() => import("../src/pages/landingPage/LandingPage"))
+const LandingPage = lazy(() => import("../src/pages/landingPage/LandingPage"));
+
+const Dashboard = lazy(() => import("../src/pages/Dashboard/Dashboard"))
 
 import PublicRoute from "./routes/PublicRoute";
 import PrivateRoute from "./routes/PrivateRoute";
@@ -106,6 +108,7 @@ export default function App() {
 
           <Route element={<PrivateRoute isLoggedIn={isLoggedIn} />} >
             <Route path="/" element={<Layout />}>
+              <Route path="dashboard" element={<Dashboard />} />
               <Route path="home1" element={<Home />} />
               <Route path="profile" element={<Profile />} />
               <Route path="list/permissions" element={<ListPermission />} />
