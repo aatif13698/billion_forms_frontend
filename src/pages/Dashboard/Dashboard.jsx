@@ -108,9 +108,10 @@ const Dashboard = () => {
 
         if (response?.data?.success) {
           setDashboardData(response.data.data);
-        } else {
-          throw new Error(response?.data?.message || 'Failed to fetch dashboard data');
-        }
+        } 
+        // else {
+        //   throw new Error(response?.data?.message || 'Failed to fetch dashboard data');
+        // }
       } catch (err) {
         console.error('Error fetching dashboard data:', err);
         setError('Failed to load dashboard data. Please try again.');
