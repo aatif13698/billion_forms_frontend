@@ -182,22 +182,30 @@ const menuIconMap = {
     Topup: FaArrowUpFromBracket,
     Subscribed: MdOutlineSubscriptions,
     "Roles & Permissions": FaUser,
-    Leads : IoMdPersonAdd
-    
+    Leads: IoMdPersonAdd
+
 };
 
 const NavMenu = ({ isCollapsed }) => {
     const { width, breakpoints } = useWidth();
     const [isDark, setDarkMode] = useDarkmode();
     const { capability } = useSelector((state) => state.capabilitySlice);
+    const { clientUser: currentUser } = useSelector((state) => state.authCustomerSlice);
+
+    console.log("clinet role", currentUser);
+
+
     const [menuItems, setMenuItems] = useState([]);
     const location = useLocation();
 
     useEffect(() => {
         const generateMenuItems = () => {
-            const items = [
-                { title: "Dashboard", icon: AiOutlineDashboard, link: "/dashboard" }, // Dashboard is always included
-            ];
+            const items = [];
+
+            if (currentUser && currentUser?.role?.id < 3) {
+                items.push({ title: "Dashboard", icon: AiOutlineDashboard, link: "/dashboard" })
+
+            }
 
             if (capability && capability.length > 0) {
                 const adminCapability = capability.find((cap) => cap.name === "Administration");
@@ -205,18 +213,19 @@ const NavMenu = ({ isCollapsed }) => {
                     adminCapability.menu.forEach((menu) => {
                         if (menu.access) {
                             const name = menu.name;
-                            let menuName;;
-
+                            console.log("name", name);
+                            let menuName;
+                            console.log("menuName", menuName);
                             if (name == "Roles & Permissions") {
                                 menuName = "Permissions"
                             } else {
                                 menuName = name;
                             }
-
                             let link;
                             if (menuName == "Roles & Permissions") {
                                 link = `/list/rolesPermissions`;
-                            } else {
+                            }
+                            else {
                                 link = menuName === "Dashboard" ? "/dashboard" : `/list/${menuName.toLowerCase()}`;
                             }
                             items.push({
@@ -229,11 +238,14 @@ const NavMenu = ({ isCollapsed }) => {
                 }
             }
 
+            console.log("items", items);
+
+
             setMenuItems(items);
         };
 
         generateMenuItems();
-    }, [capability]);
+    }, [capability, currentUser]);
 
     const getNavItemClass = (isActive) => {
         return `nav-item my-2 w-[100%] rounded-md transition duration-500 
@@ -266,7 +278,7 @@ const NavMenu = ({ isCollapsed }) => {
                                         "/list/forms",
                                         "/editformbyadmin",
                                     ],
-                                    "/list/request" : ["/list/request", "/view/request"],
+                                    "/list/request": ["/list/request", "/view/request"],
                                     "/list/companies": ["/list/companies", "/create/companies", "/update/companies", "/view/companies"],
                                     "/list/subscription": ["/list/subscription", "/create/subscription", "/update/subscription", "/view/subscription"],
                                     "/list/topup": ["/list/topup", "/create/topup"],

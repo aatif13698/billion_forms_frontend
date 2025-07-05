@@ -136,12 +136,27 @@ const Login = ({ companyIdentifier }) => {
             );
             localStorage.setItem("SAAS_BILLION_FORMS_expiryTime", data?.token?.expiresIn);
             dispatch(setClientUser(data?.user));
-            dispatch(setCapability(data?.capability))
+            dispatch(setCapability(data?.capability));
+
+            console.log("data?.user?.role?.id",data?.user?.role?.id);
+            
+
+            if (data?.user?.role?.id < 3) {
+
+                console.log("this 111");
+                
+                navigate("/dashboard");
+
+            } else {
+
+                console.log("this 222");
+
+                navigate("/demo/dashboard");
+            }
 
             // Update loading toast to success
             toast.success('Login successful!');
 
-            navigate("/dashboard");
 
         } catch (error) {
 

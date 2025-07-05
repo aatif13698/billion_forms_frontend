@@ -1,7 +1,7 @@
 
 
 import React, { useEffect, useState, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Bar, Doughnut } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -72,6 +72,8 @@ const Dashboard = () => {
   const [isDark] = useDarkmode();
   const { clientUser: currentUser, isAuth: isLoggedIn } = useSelector((state) => state?.authCustomerSlice);
 
+  const navigate = useNavigate()
+
   useEffect(() => {
     const fetchDashboardData = async () => {
       if (!isLoggedIn || !currentUser?.role?.id) {
@@ -115,7 +117,10 @@ const Dashboard = () => {
       } catch (err) {
         console.error('Error fetching dashboard data:', err);
         setError('Failed to load dashboard data. Please try again.');
-        toast.error('Failed to load dashboard data.');
+        // toast.error('Failed to load dashboard data.');
+
+        navigate("/demo/dashboard")
+        
       } finally {
         setLoading(false);
       }
@@ -202,7 +207,7 @@ const Dashboard = () => {
           },
         },
         title: {
-          display: true,
+          display: false,
           text: 'Activity Overview',
           font: {
             size: window.innerWidth < 640 ? 14 : 16, // Smaller title on mobile
@@ -228,7 +233,7 @@ const Dashboard = () => {
           },
         },
         title: {
-          display: true,
+          display: false,
           text: 'User Distribution',
           font: {
             size: window.innerWidth < 640 ? 14 : 16,
@@ -296,13 +301,6 @@ const Dashboard = () => {
               color="bg-custom-gradient-button-light dark:bg-custom-gradient-button-dark"
               isDark={isDark}
             />
-            <MetricCard 
-              title="Leads"
-              value={dashboardData?.leads || 0}
-              icon={FaChartLine}
-              color="bg-custom-gradient-button-light dark:bg-custom-gradient-button-dark"
-              isDark={isDark}
-            />
             <MetricCard
               title="Requests This Week"
               value={dashboardData?.requestsThisWeek || 0}
@@ -310,6 +308,14 @@ const Dashboard = () => {
               color="bg-custom-gradient-button-light dark:bg-custom-gradient-button-dark"
               isDark={isDark}
             />
+            <MetricCard 
+              title="Leads"
+              value={dashboardData?.leads || 0}
+              icon={FaChartLine}
+              color="bg-custom-gradient-button-light dark:bg-custom-gradient-button-dark"
+              isDark={isDark}
+            />
+            
           </>
         )}
         <MetricCard

@@ -60,9 +60,11 @@ export const additionalActiveRoutes = {
 
 // Generate menu items based on capability and role
 export const generateMenuItems = (capability, roleId) => {
-  const items = [
-    { id: 'dashboard', title: 'Dashboard', icon: AiOutlineDashboard, link: '/dashboard' },
-  ];
+  const items = [];
+
+  if(roleId < 3){
+     items.push({ id: 'dashboard', title: 'Dashboard', icon: AiOutlineDashboard, link: '/dashboard' })
+  }
 
   if (roleId === 1 && capability?.length > 0) {
     const adminCapability = capability.find((cap) => cap.name === 'Administration');
